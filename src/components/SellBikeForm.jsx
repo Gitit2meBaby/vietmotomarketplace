@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { db, auth, storage } from '../firebase'
 import {
-    getDocs,
     collection,
     addDoc,
-    deleteDoc,
-    doc,
-    updateDoc
+    serverTimestamp,
 } from 'firebase/firestore'
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
@@ -29,11 +26,28 @@ const SellBikeForm = () => {
 
     const [showPreview, setShowPreview] = useState(false)
 
+    const [priceError, setPriceError] = useState(false)
+    const [currencyError, setCurrencyError] = useState(false)
+    const [modelError, setModelError] = useState(false)
+
+    const handlePriceChange = (e) => {
+        setPrice(e.target.value)
+        setPriceError(false)
+        setCurrencyError(false)
+    }
+
+    const handleModelChange = (e) => {
+        setModel(e.target.value)
+        setModelError(false)
+    }
 
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
-        const sellRef = collection(db, 'selling');
+        checkPriceField()
+        checkModelField()
+
+        const sellRef = collection(db, 'listings');
 
         try {
             await addDoc(sellRef, {
@@ -42,12 +56,14 @@ const SellBikeForm = () => {
                 model: model,
                 location: location,
                 seller: seller,
+                transaction: 'sell',
                 description: description,
                 contact: contact,
-                featureImage: featureImageUpload,
-                secondImage: secondImageUpload,
-                thirdImage: thirdImageUpload,
+                featureImage: imageUrls[0],
+                secondImage: imageUrls[1],
+                thirdImage: imageUrls[2],
                 userId: auth?.currentUser?.uid,
+                createdAt: serverTimestamp(),
             });
 
 
@@ -64,6 +80,20 @@ const SellBikeForm = () => {
         }
     };
 
+    const checkPriceField = () => {
+        if (price == '') {
+            setPriceError(true)
+        } else if (price > 1 && price < 100000) {
+            setCurrencyError(true)
+        }
+    }
+
+    const checkModelField = () => {
+        if (model == '') {
+            setModelError(true)
+        }
+    }
+
     const handleImageUpload = async (image) => {
         try {
             if (!image) {
@@ -71,28 +101,38 @@ const SellBikeForm = () => {
                 return;
             }
 
+            console.log('featureImageUpload:', featureImageUpload);
+            console.log('secondImageUpload:', secondImageUpload);
+            console.log('thirdImageUpload:', thirdImageUpload);
+
             const imageName = image.name + v4();
             const filesFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}/${imageName}`);
 
             await uploadBytes(filesFolderRef, image);
 
             // Fetch the updated file list and update the state
-            const response = await listAll(filesFolderRef);
-            const urls = await Promise.all(response.items.map((item) => getDownloadURL(item)));
+            try {
+                const response = await listAll(filesFolderRef);
 
-            setImageUrls([...imageUrls, ...urls]);
+                if (response.items.length > 0) {
+                    const url = await getDownloadURL(response.items[0]);
+
+                    setImageUrls([...imageUrls, url]);
+
+                    console.log('url:', url);
+                    console.log('imageName:', imageName);
+                    console.log('imageUrls:', imageUrls);
+                } else {
+                    console.error('No items found in the response.');
+                }
+            } catch (error) {
+                console.error('Error listing files:', error);
+            }
 
         } catch (error) {
             console.error('Error uploading image:', error);
         }
     };
-
-    const showLogs = () => {
-        console.log('urls', imageUrls)
-        console.log('feature', featureImageUpload);
-        console.log('second', secondImageUpload);
-        console.log('third', thirdImageUpload);
-    }
 
     return (
         <>
@@ -166,9 +206,15 @@ const SellBikeForm = () => {
                             type="text"
                             placeholder="ie Honda Wave 2010"
                             value={model}
-                            onChange={(e) => setModel(e.target.value)}
+                            onChange={(e) => handleModelChange(e)}
                         />Make and Model
                     </label>
+
+                    {modelError && (
+                        <div className="form-error">
+                            <p>Must include a model!</p>
+                        </div>
+                    )}
 
                     <label>
                         <input
@@ -176,18 +222,25 @@ const SellBikeForm = () => {
                             type="number"
                             placeholder="in Vietnamese Dong"
                             value={price}
-                            onChange={(e) => setPrice(e.target.value)}
+                            onChange={(e) => handlePriceChange(e)}
                         />Price
                     </label>
+
+                    {priceError || currencyError && (
+                        <div className="form-error">
+                            <p>{priceError ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
+                        </div>
+                    )}
 
                     <label htmlFor="location"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                     >Location
                         <select name="location" id="location">
-                            <option value="Hanoi" selected>Hanoi</option>
+                            <option value="Hanoi">Hanoi</option>
                             <option value="HCMC">HCMC</option>
                             <option value="Danang">Danang</option>
+                            <option value="Hoi An">Hoi An</option>
                             <option value="Nha Trang">Nha Trang</option>
                             <option value="Mui Ne">Mui Ne</option>
                             <option value="Dalat">Dalat</option>
@@ -205,57 +258,54 @@ const SellBikeForm = () => {
                         Contact
                         <textarea name="contact" id="contact" cols="30" rows="10"></textarea>
                     </label>
-
-                    <div>
-                        <label>Feature Image
-                            <input type='file' onChange={(e) => setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
-                        </label>
-                        <button onClick={() => handleImageUpload(featureImageUpload)}>Upload File</button>
-                    </div>
-
-
-                    {featureImageUpload != null && (
-                        <div>
-                            <label>
-                                <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[0])} />
-                            </label>
-                            <button onClick={() => handleImageUpload(secondImageUpload)}>Upload File</button>
-                        </div>
-                    )}
-
-                    {secondImageUpload != null && (
-
-                        <div>
-                            <label>
-                                <input type='file' onChange={(e) => setThirdImageUpload(e.target.files[0])} />
-                            </label>
-                            <button onClick={() => handleImageUpload(thirdImageUpload)}>Upload File</button>
-                        </div>
-                    )}
-                    <button type="submit">Post Bike</button>
-
-
-                    <button type="button" onClick={() => setShowPreview(true)}>Preview</button>
-
-                    {showPreview && (
-                        <Preview
-                            type={type}
-                            price={price}
-                            location={location}
-                            seller={seller}
-                            description={description}
-                            contact={contact}
-                            model={model}
-                            featureImage={featureImageUpload}
-                            secondImage={secondImageUpload}
-                            thirdImage={thirdImageUpload}
-                            setShowPreview={setShowPreview}
-                        />
-                    )}
-
                 </form>
 
-                <button onClick={() => showLogs()}>Show Logs</button>
+                <div>
+                    <label>Feature Image
+                        <input type='file' onChange={(e) => setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
+                    </label>
+                    <button onClick={() => handleImageUpload(featureImageUpload)}>Upload File</button>
+                </div>
+
+
+                {featureImageUpload != null && (
+                    <div>
+                        <label>
+                            <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[1])} />
+                        </label>
+                        <button onClick={() => handleImageUpload(secondImageUpload)}>Upload File</button>
+                    </div>
+                )}
+
+                {secondImageUpload != null && (
+
+                    <div>
+                        <label>
+                            <input type='file' onChange={(e) => setThirdImageUpload(e.target.files[2])} />
+                        </label>
+                        <button onClick={() => handleImageUpload(thirdImageUpload)}>Upload File</button>
+                    </div>
+                )}
+                <button type="submit">Post</button>
+
+
+                <button type="button" onClick={() => setShowPreview(true)}>Preview</button>
+
+                {showPreview && (
+                    <Preview
+                        type={type}
+                        price={price}
+                        location={location}
+                        seller={seller}
+                        description={description}
+                        contact={contact}
+                        model={model}
+                        featureImage={featureImageUpload}
+                        secondImage={secondImageUpload}
+                        thirdImage={thirdImageUpload}
+                        setShowPreview={setShowPreview}
+                    />
+                )}
             </section>
         </>
     );

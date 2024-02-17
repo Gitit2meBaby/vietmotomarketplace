@@ -35,12 +35,17 @@ const RentBikeForm = () => {
 
     const [showPreview, setShowPreview] = useState(false)
 
-    const handleImageUpload = async (image) => {
+    const handleImageUpload = async (image, e) => {
+        e.preventDefault()
         try {
             if (!image) {
                 console.error('No file selected for upload.');
                 return;
             }
+
+            console.log('featureRentalImageUpload:', featureRentalImageUpload);
+            console.log('secondRentalImageUpload:', secondRentalImageUpload);
+            console.log('thirdRentalImageUpload:', thirdRentalImageUpload);
 
             const imageName = image.name + v4();
             const filesFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}/${imageName}`);
@@ -51,8 +56,12 @@ const RentBikeForm = () => {
             const response = await listAll(filesFolderRef);
             const urls = await Promise.all(response.items.map((item) => getDownloadURL(item)));
 
-            setImageUrls([...imageUrls, ...urls]);
+            setImageUrls((prevUrls) => [...prevUrls, ...urls]);
 
+            console.log('all urls:', urls);
+            console.log('imageName:', imageName);
+
+            return urls[0];
         } catch (error) {
             console.error('Error uploading image:', error);
         }
@@ -67,9 +76,12 @@ const RentBikeForm = () => {
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
+
+
         const rentRef = collection(db, 'renting');
 
         try {
+
             await addDoc(rentRef, {
                 type: typeRental,
                 pricePerDay: pricePerDay,
@@ -100,6 +112,13 @@ const RentBikeForm = () => {
             console.error("Error adding document: ", error);
         }
     };
+
+    useEffect(() => {
+        console.log('featureRentalImageUpload:', featureRentalImageUpload);
+        console.log('secondRentalImageUpload:', secondRentalImageUpload);
+        console.log('thirdRentalImageUpload:', thirdRentalImageUpload);
+    }, [featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload]);
+
 
 
     return (
@@ -191,6 +210,7 @@ const RentBikeForm = () => {
                         <option value="Hanoi">Hanoi</option>
                         <option value="HCMC">HCMC</option>
                         <option value="Danang">Danang</option>
+                        <option value="Hoi An">Hoi An</option>
                         <option value="Nha Trang">Nha Trang</option>
                         <option value="Mui Ne">Mui Ne</option>
                         <option value="Dalat">Dalat</option>
@@ -213,6 +233,7 @@ const RentBikeForm = () => {
                                 <option value="Hanoi">Hanoi</option>
                                 <option value="HCMC">HCMC</option>
                                 <option value="Danang">Danang</option>
+                                <option value="Hoi An">Hoi An</option>
                                 <option value="Nha Trang">Nha Trang</option>
                                 <option value="Mui Ne">Mui Ne</option>
                                 <option value="Dalat">Dalat</option>
@@ -223,63 +244,64 @@ const RentBikeForm = () => {
                     <label htmlFor='description'
                         onChange={(e) => setDescriptionRental(e.target.value)}>
                         Description
-                        <textarea name="description" id="description" cols="30" rows="10"></textarea>
+                        <textarea name="description" id="descriptionRental" cols="30" rows="10"></textarea>
                     </label>
 
                     <label htmlFor='contact'
                         onChange={(e) => setContactRental(e.target.value)}>
                         Contact
-                        <textarea name="contact" id="contact" cols="30" rows="10"></textarea>
+                        <textarea name="contact" id="contactRental" cols="30" rows="10"></textarea>
                     </label>
-                    <div>
-                        <label>Feature Image
-                            <input type='file' onChange={(e) => setRentalFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
-                        </label>
-                        <button onClick={() => handleImageUpload(featureRentalImageUpload)}>Upload File</button>
-                    </div>
-
-
-                    {featureRentalImageUpload != null && (
-                        <div>
-                            <label>
-                                <input type='file' onChange={(e) => setRentalSecondImageUpload(e.target.files[0])} />
-                            </label>
-                            <button onClick={() => handleImageUpload(secondRentalImageUpload)}>Upload File</button>
-                        </div>
-                    )}
-
-                    {secondRentalImageUpload != null && (
-
-                        <div>
-                            <label>
-                                <input type='file' onChange={(e) => setRentalThirdImageUpload(e.target.files[0])} />
-                            </label>
-                            <button onClick={() => handleImageUpload(thirdRentalImageUpload)}>Upload File</button>
-                        </div>
-                    )}
-
-                    <button type="button" onClick={() => setShowPreview(true)}>Preview</button>
-
-                    {showPreview && (
-                        <Preview
-                            type={typeRental}
-                            pricePerDay={pricePerDay}
-                            pricePerWeek={pricePerWeek}
-                            pricePerMonth={pricePerMonth}
-                            location={locationRental}
-                            description={descriptionRental}
-                            contact={contactRental}
-                            model={modelRental}
-                            featureImage={featureRentalImageUpload}
-                            secondImage={secondRentalImageUpload}
-                            thirdImage={thirdRentalImageUpload}
-                            setShowPreview={setShowPreview}
-                        />
-                    )}
-
-                    <button type="submit">Post Bike</button>
-
                 </form>
+
+                <div>
+                    <label>Feature Image
+                        <input type='file' onChange={(e) => setRentalFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
+                    </label>
+                    <button type='button' onClick={(e) => handleImageUpload(featureRentalImageUpload, e)}>Upload File</button>
+                </div>
+
+
+                {featureRentalImageUpload != null && (
+                    <div>
+                        <label>
+                            <input type='file' onChange={(e) => setRentalSecondImageUpload(e.target.files[0])} />
+                        </label>
+                        <button type='button' onClick={(e) => handleImageUpload(secondRentalImageUpload, e)}>Upload File</button>
+                    </div>
+                )}
+
+                {secondRentalImageUpload != null && (
+
+                    <div>
+                        <label>
+                            <input type='file' onChange={(e) => setRentalThirdImageUpload(e.target.files[0])} />
+                        </label>
+                        <button type='button' onClick={(e) => handleImageUpload(thirdRentalImageUpload, e)}>Upload File</button>
+                    </div>
+                )}
+
+                <button type="button" onClick={() => setShowPreview(true)}>Preview</button>
+
+                {showPreview && (
+                    <Preview
+                        type={typeRental}
+                        pricePerDay={pricePerDay}
+                        pricePerWeek={pricePerWeek}
+                        pricePerMonth={pricePerMonth}
+                        location={locationRental}
+                        dropLocation={dropLocationRental}
+                        description={descriptionRental}
+                        contact={contactRental}
+                        model={modelRental}
+                        featureImage={featureRentalImageUpload}
+                        secondImage={secondRentalImageUpload}
+                        thirdImage={thirdRentalImageUpload}
+                        setShowPreview={setShowPreview}
+                    />
+                )}
+
+                <button type="submit">Post Bike</button>
             </section>
         </>
     );
