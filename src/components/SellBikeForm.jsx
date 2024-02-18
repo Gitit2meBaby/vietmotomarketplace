@@ -29,6 +29,7 @@ const SellBikeForm = () => {
     const [priceError, setPriceError] = useState(false)
     const [currencyError, setCurrencyError] = useState(false)
     const [modelError, setModelError] = useState(false)
+    const [imageError, setImageError] = useState(false)
 
     const handlePriceChange = (e) => {
         setPrice(e.target.value)
@@ -44,12 +45,36 @@ const SellBikeForm = () => {
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
-        checkPriceField()
-        checkModelField()
+        console.log('Type:', type);
+        console.log('Price:', price);
+        console.log('Location:', location);
+        console.log('Seller:', seller);
+        console.log('Description:', description);
+        console.log('Contact:', contact);
+        console.log('Model:', model);
+        console.log('priceerror', priceError);
+        console.log('imageerror', imageError);
+
+        checkPriceField();
+        checkModelField();
+        checkImageField();
+
+        if (!checkPriceField() || !checkModelField()) {
+            return;
+        }
+
+
+        if (!featureImageUpload) {
+            console.error('Feature image is not selected.');
+            return;
+        }
 
         const sellRef = collection(db, 'listings');
 
         try {
+            console.log('imageUrls', imageUrls);
+            const filteredImageUrls = imageUrls.filter(url => url);
+
             await addDoc(sellRef, {
                 type: type,
                 price: price,
@@ -59,12 +84,14 @@ const SellBikeForm = () => {
                 transaction: 'sell',
                 description: description,
                 contact: contact,
-                featureImage: imageUrls[0],
-                secondImage: imageUrls[1],
-                thirdImage: imageUrls[2],
+                featureImage: filteredImageUrls[0],
+                secondImage: filteredImageUrls[1],
+                thirdImage: filteredImageUrls[2],
                 userId: auth?.currentUser?.uid,
                 createdAt: serverTimestamp(),
             });
+
+            console.log('filteredImage Array', filteredImageUrls);
 
 
             // Clear form fields after successful submission
@@ -81,18 +108,31 @@ const SellBikeForm = () => {
     };
 
     const checkPriceField = () => {
-        if (price == '') {
-            setPriceError(true)
+        if (price === '') {
+            setPriceError(true);
+            return false;
         } else if (price > 1 && price < 100000) {
-            setCurrencyError(true)
+            setCurrencyError(true);
+            return false;
         }
-    }
+        return true;
+    };
 
     const checkModelField = () => {
-        if (model == '') {
-            setModelError(true)
+        if (model === '') {
+            setModelError(true);
+            return false;
         }
-    }
+        return true;
+    };
+
+    const checkImageField = () => {
+        if (featureImageUpload == undefined || featureImageUpload == null) {
+            setImageError(true);
+            return true;
+        }
+        return false;
+    };
 
     const handleImageUpload = async (image) => {
         try {
@@ -101,30 +141,31 @@ const SellBikeForm = () => {
                 return;
             }
 
-            console.log('featureImageUpload:', featureImageUpload);
-            console.log('secondImageUpload:', secondImageUpload);
-            console.log('thirdImageUpload:', thirdImageUpload);
-
             const imageName = image.name + v4();
-            const filesFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}/${imageName}`);
+            const userFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}`);
+            const response = await listAll(userFolderRef);
 
-            await uploadBytes(filesFolderRef, image);
+
+            // Log the upload result
+            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), image);
+            console.log('Upload result:', uploadResult);
 
             // Fetch the updated file list and update the state
+            // Fetch the updated file list and update the state
             try {
-                const response = await listAll(filesFolderRef);
+                const response = await listAll(userFolderRef);
 
-                if (response.items.length > 0) {
-                    const url = await getDownloadURL(response.items[0]);
+                console.log('Storage folder contents:', response.items);
 
-                    setImageUrls([...imageUrls, url]);
+                const urls = await Promise.all(
+                    response.items.map(async (itemRef) => getDownloadURL(itemRef))
+                );
 
-                    console.log('url:', url);
-                    console.log('imageName:', imageName);
-                    console.log('imageUrls:', imageUrls);
-                } else {
-                    console.error('No items found in the response.');
-                }
+                // Use the previous state to ensure correct updates
+                setImageUrls(prevUrls => [...prevUrls, ...urls]);
+
+                // Additional logic after updating state
+                console.log('Urls:', urls);
             } catch (error) {
                 console.error('Error listing files:', error);
             }
@@ -133,6 +174,7 @@ const SellBikeForm = () => {
             console.error('Error uploading image:', error);
         }
     };
+
 
     return (
         <>
@@ -226,7 +268,7 @@ const SellBikeForm = () => {
                         />Price
                     </label>
 
-                    {priceError || currencyError && (
+                    {(priceError || currencyError) && (
                         <div className="form-error">
                             <p>{priceError ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
                         </div>
@@ -265,13 +307,20 @@ const SellBikeForm = () => {
                         <input type='file' onChange={(e) => setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
                     </label>
                     <button onClick={() => handleImageUpload(featureImageUpload)}>Upload File</button>
+
+                    {imageError && (
+                        <div className="form-error">
+                            <p>Must include an Image</p>
+                        </div>
+                    )}
                 </div>
 
 
                 {featureImageUpload != null && (
                     <div>
                         <label>
-                            <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[1])} />
+                            <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[0])} />
+
                         </label>
                         <button onClick={() => handleImageUpload(secondImageUpload)}>Upload File</button>
                     </div>
@@ -281,12 +330,12 @@ const SellBikeForm = () => {
 
                     <div>
                         <label>
-                            <input type='file' onChange={(e) => setThirdImageUpload(e.target.files[2])} />
+                            <input type='file' onChange={(e) => setThirdImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
                         </label>
                         <button onClick={() => handleImageUpload(thirdImageUpload)}>Upload File</button>
                     </div>
                 )}
-                <button type="submit">Post</button>
+                <button type="submit" onClick={handleSaleSubmit}>Post</button>
 
 
                 <button type="button" onClick={() => setShowPreview(true)}>Preview</button>
