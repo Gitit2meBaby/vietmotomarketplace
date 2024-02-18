@@ -12,6 +12,7 @@ const Preview = ({ type, price, location, seller, description, contact, model, f
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
+        swipe: images.length > 1,
     };
 
     return (

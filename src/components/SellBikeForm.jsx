@@ -45,16 +45,6 @@ const SellBikeForm = () => {
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log('Type:', type);
-        console.log('Price:', price);
-        console.log('Location:', location);
-        console.log('Seller:', seller);
-        console.log('Description:', description);
-        console.log('Contact:', contact);
-        console.log('Model:', model);
-        console.log('priceerror', priceError);
-        console.log('imageerror', imageError);
-
         checkPriceField();
         checkModelField();
         checkImageField();
@@ -62,7 +52,6 @@ const SellBikeForm = () => {
         if (!checkPriceField() || !checkModelField()) {
             return;
         }
-
 
         if (!featureImageUpload) {
             console.error('Feature image is not selected.');
@@ -72,7 +61,6 @@ const SellBikeForm = () => {
         const sellRef = collection(db, 'listings');
 
         try {
-            console.log('imageUrls', imageUrls);
             const filteredImageUrls = imageUrls.filter(url => url);
 
             await addDoc(sellRef, {
@@ -85,14 +73,11 @@ const SellBikeForm = () => {
                 description: description,
                 contact: contact,
                 featureImage: filteredImageUrls[0],
-                secondImage: filteredImageUrls[1],
+                secondImage: filteredImageUrls[1] !== undefined ? filteredImageUrls[1] : null,
                 thirdImage: filteredImageUrls[2],
-                userId: auth?.currentUser?.uid,
+                userId: filteredImageUrls[2] !== undefined ? filteredImageUrls[2] : null,
                 createdAt: serverTimestamp(),
             });
-
-            console.log('filteredImage Array', filteredImageUrls);
-
 
             // Clear form fields after successful submission
             setType('automatic');
@@ -102,6 +87,7 @@ const SellBikeForm = () => {
             setModel('')
             setDescription('')
             setContact('')
+            setImageUrls([])
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -143,19 +129,14 @@ const SellBikeForm = () => {
 
             const imageName = image.name + v4();
             const userFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}`);
-            const response = await listAll(userFolderRef);
-
 
             // Log the upload result
             const uploadResult = await uploadBytes(ref(userFolderRef, imageName), image);
             console.log('Upload result:', uploadResult);
 
             // Fetch the updated file list and update the state
-            // Fetch the updated file list and update the state
             try {
                 const response = await listAll(userFolderRef);
-
-                console.log('Storage folder contents:', response.items);
 
                 const urls = await Promise.all(
                     response.items.map(async (itemRef) => getDownloadURL(itemRef))
@@ -163,18 +144,15 @@ const SellBikeForm = () => {
 
                 // Use the previous state to ensure correct updates
                 setImageUrls(prevUrls => [...prevUrls, ...urls]);
+                setImageError(false);
 
-                // Additional logic after updating state
-                console.log('Urls:', urls);
             } catch (error) {
                 console.error('Error listing files:', error);
             }
-
         } catch (error) {
             console.error('Error uploading image:', error);
         }
     };
-
 
     return (
         <>
@@ -303,10 +281,11 @@ const SellBikeForm = () => {
                 </form>
 
                 <div>
-                    <label>Feature Image
+                    <label>
                         <input type='file' onChange={(e) => setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
                     </label>
-                    <button onClick={() => handleImageUpload(featureImageUpload)}>Upload File</button>
+                    <button onClick={() => handleImageUpload(featureImageUpload)}>
+                        {imageUrls.length === 0 ? 'Upload File' : 'Change'}</button>
 
                     {imageError && (
                         <div className="form-error">
@@ -315,26 +294,26 @@ const SellBikeForm = () => {
                     )}
                 </div>
 
-
                 {featureImageUpload != null && (
                     <div>
                         <label>
                             <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[0])} />
-
                         </label>
-                        <button onClick={() => handleImageUpload(secondImageUpload)}>Upload File</button>
+                        <button onClick={() => handleImageUpload(secondImageUpload)}>
+                            {imageUrls.length > 0 ? 'Change' : 'Upload File'}</button>
                     </div>
                 )}
 
                 {secondImageUpload != null && (
-
                     <div>
                         <label>
                             <input type='file' onChange={(e) => setThirdImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)} />
                         </label>
-                        <button onClick={() => handleImageUpload(thirdImageUpload)}>Upload File</button>
+                        <button onClick={() => handleImageUpload(thirdImageUpload)}>
+                            {imageUrls.length > 1 ? 'Change' : 'Upload File'}</button>
                     </div>
                 )}
+
                 <button type="submit" onClick={handleSaleSubmit}>Post</button>
 
 
