@@ -191,6 +191,7 @@ const RentBikeForm = () => {
                 dropLocationRental: dropLocationRental,
                 descriptionRental: descriptionRental,
                 contactRental: contactRental,
+                transaction: 'rent',
                 featureRentalImageUpload: filteredImageUrls[0],
                 secondRentalImageUpload: filteredImageUrls[1] !== undefined ? filteredImageUrls[1] : null,
                 thirdRentalImageUpload: filteredImageUrls[2] !== undefined ? filteredImageUrls[2] : null,

@@ -88,6 +88,21 @@ const SellBikeForm = () => {
             setDescription('')
             setContact('')
             setImageUrls([])
+            setFeatureImageUpload(null);
+            setSecondImageUpload(null);
+            setThirdImageUpload(null);
+
+            console.log('Type:', type);
+            console.log('Price:', price);
+            console.log('Location:', location);
+            console.log('Seller:', seller);
+            console.log('Model:', model);
+            console.log('Description:', description);
+            console.log('Contact:', contact);
+            console.log('Image URLs:', imageUrls);
+            console.log('Feature Image Upload:', featureImageUpload);
+            console.log('Second Image Upload:', secondImageUpload);
+            console.log('Third Image Upload:', thirdImageUpload);
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -127,7 +142,7 @@ const SellBikeForm = () => {
                 return;
             }
 
-            const imageName = image.name + v4();
+            const imageName = `${image.name}_${v4()}`;
             const userFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}`);
 
             // Log the upload result
@@ -145,6 +160,7 @@ const SellBikeForm = () => {
                 // Use the previous state to ensure correct updates
                 setImageUrls(prevUrls => [...prevUrls, ...urls]);
                 setImageError(false);
+                console.log('Image URLs after listing files:', urls);
 
             } catch (error) {
                 console.error('Error listing files:', error);
@@ -300,7 +316,9 @@ const SellBikeForm = () => {
                             <input type='file' onChange={(e) => setSecondImageUpload(e.target.files[0])} />
                         </label>
                         <button onClick={() => handleImageUpload(secondImageUpload)}>
-                            {imageUrls.length > 0 ? 'Change' : 'Upload File'}</button>
+                            {imageUrls.length > 0 ? 'Change' : 'Upload File'}
+                        </button>
+
                     </div>
                 )}
 
