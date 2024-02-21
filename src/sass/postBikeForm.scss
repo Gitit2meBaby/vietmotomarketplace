@@ -1,0 +1,272 @@
+@font-face {
+    font-family: 'Caveat-Medium';
+    src: url('../assets/fonts/Caveat-Medium.ttf') format('truetype');
+}
+
+$dark: rgb(50, 50, 50);
+
+%glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.post-page {
+    background: url('../assets/mobFormBG.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 1rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    font-family: 'Caveat-Medium';
+    font-size: 2rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 0 .5rem;
+}
+
+.tab {
+    padding: 1rem;
+    border-radius: 30% 30% 0 0;
+
+    &:first-of-type {
+        margin-left: 1.5rem;
+    }
+
+    @extend %glass
+}
+
+.inactive-tab {
+    background: transparent;
+    backdrop-filter: blur(0px);
+    color: rgba(97, 89, 89, .7);
+}
+
+
+.form-container {
+    padding: 1rem;
+    margin: 0 .5rem .5rem .5rem;
+    border-radius: .8rem;
+    @extend %glass
+}
+
+// Form
+form {
+    label {
+        font-family: 'Caveat-medium';
+        color: black;
+        font-size: 1.2rem;
+        padding-bottom: 0.2rem;
+    }
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding-bottom: .8rem;
+
+    label,
+    input,
+    textarea {
+        display: block;
+        position: relative;
+    }
+
+    div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+
+        svg {
+            cursor: pointer;
+        }
+    }
+
+}
+
+input[type='text'],
+input[type='number'] {
+    border-radius: 0.2rem;
+    border: none;
+    padding: 0.3rem;
+    margin-top: 0.2rem;
+    width: 80%;
+    @extend %glass;
+}
+
+input[type='number'] {
+    width: 50%;
+}
+
+.tooltip {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.5rem;
+    background-color: black;
+    color: white;
+    font-size: .8rem;
+    display: flex;
+    flex-direction: column !important;
+    width: 150px;
+    gap: 0 !important;
+    border-radius: .5rem;
+
+    div {
+        flex-direction: row-reverse;
+    }
+
+    svg {
+        margin-left: auto;
+        margin-top: -.5rem;
+    }
+
+    p,
+    a {
+        margin: 0;
+    }
+
+    a {
+        color: rgb(250, 66, 66);
+        padding-top: 0.4rem;
+        font-family: 'Times New Roman', Times, serif;
+    }
+}
+
+.dropdown-wrapper {
+    display: flex;
+}
+
+.dropdown-wrapper label {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+
+    select {
+        padding: 0.3rem;
+        border-radius: 0.2rem;
+        border: none;
+        padding: 0.3rem;
+        width: 50%;
+        @extend %glass
+    }
+}
+
+.radio-wrapper {
+    margin-bottom: 1rem;
+}
+
+.main-label {
+    font-family: 'Caveat-Medium';
+    font-size: 1.6rem;
+}
+
+input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    outline: none;
+    margin-right: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="radio"]:checked {
+    background: #4ca6a8;
+    margin-right: 1.5rem;
+}
+
+textarea {
+    width: 100%;
+    border-radius: .5rem;
+    margin-top: 0.3rem;
+    padding: 0.5rem;
+    @extend %glass;
+}
+
+.file-btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+
+    div {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        label {
+            margin-left: 0.1rem;
+            font-size: 1.2rem;
+        }
+
+        input {
+            padding: 1rem 1rem 0 1rem;
+        }
+    }
+}
+
+.custom-file-button {
+    font-family: 'Caveat-Medium';
+    font-size: 1.4rem;
+    pointer-events: none;
+    border-radius: .3rem;
+    padding: 0.2rem .5rem;
+    cursor: pointer;
+    @extend %glass;
+}
+
+.upload-btn {
+    font-family: 'Caveat-Medium';
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 800;
+    padding: .2rem .5rem;
+    margin-top: .5rem;
+}
+
+input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+input[type='file'],
+button {
+    border: none;
+    border-radius: .3rem;
+    margin: 0.1rem;
+    @extend %glass;
+    cursor: pointer;
+}
+
+.final-form-btns {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    button {
+        font-family: 'Caveat-Medium';
+        text-transform: uppercase;
+        font-size: 1.2rem;
+        font-weight: 800;
+        padding: .5rem 1.5rem;
+        cursor: pointer;
+    }
+}
+
+.post-btn {
+    background: rgba(22, 205, 22, 0.527);
+}

@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+nav {
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  right: 6rem;
+  height: 100svh;
+  box-shadow: 0 0 3000px 3000px rgba(0, 0, 0, 0.7);
+  opacity: 1;
+  z-index: 10;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  transform: translateX(0);
+  transition: all 0.5s ease-in;
+}
+nav svg {
+  margin-left: auto;
+}
+nav a {
+  text-decoration: none;
+  font-size: 1.5rem;
+}/*# sourceMappingURL=header.css.map */

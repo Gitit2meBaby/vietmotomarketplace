@@ -3,9 +3,11 @@ import { auth, googleProvider } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAppContext } from '../context';
 
 
 const Authentication = () => {
+    const { isLoggedIn, setIsLoggedIn } = useAppContext();
     const [isOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,6 +21,7 @@ const Authentication = () => {
         if (storedUser) {
             const user = JSON.parse(storedUser);
             setCurrentUser(user);
+            setIsLoggedIn(true)
         }
     }, []);
 
@@ -50,6 +53,7 @@ const Authentication = () => {
             await setDoc(doc(db, 'users', user.uid), userData);
             setCurrentUser(user);
             storeUserInLocalStorage(user);
+            setIsLoggedIn(true)
         } catch (err) {
             console.error(err);
         }
@@ -72,6 +76,7 @@ const Authentication = () => {
             await setDoc(doc(db, 'users', user.uid), userData);
             setCurrentUser(user);
             storeUserInLocalStorage(user);
+            setIsLoggedIn(true)
         } catch (err) {
             console.error(err);
         }
@@ -83,6 +88,7 @@ const Authentication = () => {
             await signOut(auth);
             setCurrentUser(null);
             localStorage.removeItem('user');
+            setIsLoggedIn(false)
         } catch (err) {
             console.error(err);
         }
