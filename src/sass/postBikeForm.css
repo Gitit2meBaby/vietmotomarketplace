@@ -20,7 +20,7 @@ input[type=number], .form-container, .tab {
 
 .tabs {
   display: flex;
-  gap: 1rem;
+  gap: 0.2rem;
   font-family: "Caveat-Medium";
   font-size: 2rem;
   text-transform: uppercase;
@@ -33,7 +33,7 @@ input[type=number], .form-container, .tab {
   border-radius: 30% 30% 0 0;
 }
 .tab:first-of-type {
-  margin-left: 1.5rem;
+  margin-left: 0.5rem;
 }
 
 .inactive-tab {
@@ -56,11 +56,22 @@ form label {
   padding-bottom: 0.2rem;
 }
 
+.required-span {
+  color: rgb(203, 4, 4);
+}
+.required-span span {
+  font-size: 1.2rem;
+  font-weight: 800;
+  position: relative;
+  top: -10px;
+}
+
 .input-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding-bottom: 0.8rem;
+  position: relative;
 }
 .input-wrapper label,
 .input-wrapper input,
@@ -92,9 +103,10 @@ input[type=number] {
 }
 
 .tooltip {
+  font-family: "Times New Roman", Times, serif;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 4rem;
+  right: 1.4rem;
   padding: 0.5rem;
   background-color: black;
   color: white;
@@ -104,6 +116,7 @@ input[type=number] {
   width: 150px;
   gap: 0 !important;
   border-radius: 0.5rem;
+  z-index: 5;
 }
 .tooltip div {
   flex-direction: row-reverse;
@@ -120,6 +133,10 @@ input[type=number] {
   color: rgb(250, 66, 66);
   padding-top: 0.4rem;
   font-family: "Times New Roman", Times, serif;
+}
+
+.tooltip-pointer {
+  top: 3.3rem;
 }
 
 .dropdown-wrapper {
@@ -177,6 +194,7 @@ textarea {
 }
 
 .file-btn-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -204,6 +222,9 @@ textarea {
   border-radius: 0.3rem;
   padding: 0.2rem 0.5rem;
   cursor: pointer;
+}
+.custom-file-button:nth-of-type(1) {
+  margin-top: 0.1rem;
 }
 
 .upload-btn {
@@ -247,4 +268,62 @@ button {
 
 .post-btn {
   background: rgba(22, 205, 22, 0.527);
+}
+
+.form-error {
+  position: absolute !important;
+  bottom: -1.3rem;
+  right: 0.5rem;
+  background-color: black;
+  color: white;
+  border-radius: 0.3rem;
+  padding: 0.5rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  z-index: 5;
+}
+.form-error p {
+  margin: 0;
+}
+
+.pointer {
+  position: absolute !important;
+  bottom: 0.7rem;
+  right: 9rem;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 15px solid black;
+  z-index: 5;
+}
+
+.price-error {
+  right: 3rem;
+}
+
+.price-pointer {
+  right: 11rem;
+}
+
+.currency-pointer {
+  right: 15.5rem;
+}
+
+.image-error {
+  bottom: 0.6rem;
+  right: 4rem;
+}
+
+.image-pointer {
+  bottom: 2.55rem;
+  right: 12.8rem;
+}
+
+.file-error {
+  bottom: 0.6rem;
+  right: 4rem;
+}
+
+.file-pointer {
+  bottom: 2.5rem;
+  right: 12.3rem;
 }/*# sourceMappingURL=postBikeForm.css.map */

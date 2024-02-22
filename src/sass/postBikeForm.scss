@@ -20,7 +20,7 @@ $dark: rgb(50, 50, 50);
 
 .tabs {
     display: flex;
-    gap: 1rem;
+    gap: .2rem;
     font-family: 'Caveat-Medium';
     font-size: 2rem;
     text-transform: uppercase;
@@ -33,7 +33,7 @@ $dark: rgb(50, 50, 50);
     border-radius: 30% 30% 0 0;
 
     &:first-of-type {
-        margin-left: 1.5rem;
+        margin-left: .5rem;
     }
 
     @extend %glass
@@ -53,7 +53,6 @@ $dark: rgb(50, 50, 50);
     @extend %glass
 }
 
-// Form
 form {
     label {
         font-family: 'Caveat-medium';
@@ -63,11 +62,23 @@ form {
     }
 }
 
+.required-span {
+    color: rgb(203, 4, 4);
+
+    span {
+        font-size: 1.2rem;
+        font-weight: 800;
+        position: relative;
+        top: -10px;
+    }
+}
+
 .input-wrapper {
     display: flex;
     flex-direction: column;
     gap: .5rem;
     padding-bottom: .8rem;
+    position: relative;
 
     label,
     input,
@@ -104,9 +115,10 @@ input[type='number'] {
 }
 
 .tooltip {
+    font-family: 'Times New Roman', Times, serif;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 4rem;
+    right: 1.4rem;
     padding: 0.5rem;
     background-color: black;
     color: white;
@@ -116,6 +128,7 @@ input[type='number'] {
     width: 150px;
     gap: 0 !important;
     border-radius: .5rem;
+    z-index: 5;
 
     div {
         flex-direction: row-reverse;
@@ -136,6 +149,10 @@ input[type='number'] {
         padding-top: 0.4rem;
         font-family: 'Times New Roman', Times, serif;
     }
+}
+
+.tooltip-pointer {
+    top: 3.3rem;
 }
 
 .dropdown-wrapper {
@@ -193,6 +210,7 @@ textarea {
 }
 
 .file-btn-wrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: .5rem;
@@ -224,6 +242,10 @@ textarea {
     padding: 0.2rem .5rem;
     cursor: pointer;
     @extend %glass;
+
+    &:nth-of-type(1) {
+        margin-top: 0.1rem;
+    }
 }
 
 .upload-btn {
@@ -269,4 +291,62 @@ button {
 
 .post-btn {
     background: rgba(22, 205, 22, 0.527);
+}
+
+.form-error {
+    position: absolute !important;
+    bottom: -1.3rem;
+    right: .5rem;
+    background-color: black;
+    color: white;
+    border-radius: .3rem;
+    padding: 0.5rem;
+    width: fit-content;
+    z-index: 5;
+
+    p {
+        margin: 0;
+    }
+}
+
+.pointer {
+    position: absolute !important;
+    bottom: .7rem;
+    right: 9rem;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid black;
+    z-index: 5;
+}
+
+.price-error {
+    right: 3rem;
+}
+
+.price-pointer {
+    right: 11rem;
+}
+
+.currency-pointer {
+    right: 15.5rem;
+}
+
+.image-error {
+    bottom: .6rem;
+    right: 4rem;
+}
+
+.image-pointer {
+    bottom: 2.55rem;
+    right: 12.8rem;
+}
+
+.file-error {
+    bottom: .6rem;
+    right: 4rem;
+}
+
+.file-pointer {
+    bottom: 2.5rem;
+    right: 12.3rem;
 }
