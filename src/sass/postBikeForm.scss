@@ -31,6 +31,7 @@ $dark: rgb(50, 50, 50);
 .tab {
     padding: 1rem;
     border-radius: 30% 30% 0 0;
+    cursor: pointer;
 
     &:first-of-type {
         margin-left: .5rem;
@@ -97,7 +98,6 @@ form {
             cursor: pointer;
         }
     }
-
 }
 
 input[type='text'],
@@ -117,8 +117,6 @@ input[type='number'] {
 .tooltip {
     font-family: 'Times New Roman', Times, serif;
     position: absolute;
-    top: 4rem;
-    right: 1.4rem;
     padding: 0.5rem;
     background-color: black;
     color: white;
@@ -151,8 +149,27 @@ input[type='number'] {
     }
 }
 
+.pointer {
+    position: absolute !important;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid black;
+    z-index: 5;
+}
+
+.sell-tooltip {
+    top: 4rem;
+    right: 2.2rem;
+}
+
 .tooltip-pointer {
     top: 3.3rem;
+    right: 10rem;
+}
+
+.model-pointer {
+    top: 3.4rem;
+    right: 9rem;
 }
 
 .dropdown-wrapper {
@@ -183,6 +200,7 @@ input[type='number'] {
     font-size: 1.6rem;
 }
 
+input[type='checkbox'],
 input[type="radio"] {
     appearance: none;
     width: 20px;
@@ -196,6 +214,7 @@ input[type="radio"] {
     transition: all 0.3s ease-in-out;
 }
 
+input[type='checkbox']:checked,
 input[type="radio"]:checked {
     background: #4ca6a8;
     margin-right: 1.5rem;
@@ -309,25 +328,17 @@ button {
     }
 }
 
-.pointer {
-    position: absolute !important;
-    bottom: .7rem;
-    right: 9rem;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 15px solid black;
-    z-index: 5;
-}
-
 .price-error {
     right: 3rem;
 }
 
 .price-pointer {
+    bottom: .7rem;
     right: 11rem;
 }
 
 .currency-pointer {
+    bottom: .6rem;
     right: 15.5rem;
 }
 
@@ -349,4 +360,53 @@ button {
 .file-pointer {
     bottom: 2.5rem;
     right: 12.3rem;
+}
+
+// Rental Specific
+.rent-price-label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rent-tooltip {
+    right: 0rem;
+    top: 0rem;
+
+    div {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+}
+
+.rent-tooltip-pointer {
+    right: 9rem;
+    transform: rotate(270deg);
+}
+
+.rent-inputs {
+    display: flex;
+    padding-bottom: .8rem;
+    position: relative;
+
+    input {
+        width: 50%;
+        margin-right: .5rem;
+    }
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.drop-locations {
+    margin-top: 1rem;
+}
+
+.checkbox-options {
+    columns: 2;
+    margin: .5rem 0 1rem 0
 }

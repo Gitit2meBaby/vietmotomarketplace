@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { db, auth, storage } from '../firebase'
 import {
     collection,
@@ -43,6 +43,13 @@ const RentBikeForm = () => {
         week: false,
         month: false,
     });
+
+    const [showTooltip, setShowTootltip] = useState(false)
+
+    const locations = ["Hanoi", "HCMC", "Danang", "Hoi An", "Nha Trang", "Mui Ne", "Dalat"];
+
+    const modelInputRef = useRef(null);
+    const priceInputRef = useRef(null);
 
     const handlePriceChange = (value, type) => {
         setCurrencyError(false)
@@ -96,6 +103,11 @@ const RentBikeForm = () => {
         );
     };
 
+    const handleTooltip = () => {
+        setShowTootltip(!showTooltip)
+        setCurrencyError(false)
+        setPriceErrors(false)
+    }
 
     const handleModelChange = (e) => {
         setModelRental(e.target.value)
@@ -155,10 +167,17 @@ const RentBikeForm = () => {
     };
 
     const handleDropLocationChange = (e) => {
-        const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-        setDropLocationRental((prevSelected) => [...prevSelected, ...selectedOptions]);
-    };
+        const { value } = e.target;
 
+        setDropLocationRental((prevLocations) => {
+            if (prevLocations.includes(value)) {
+                return prevLocations.filter((location) => location !== value);
+            } else {
+                return [...prevLocations, value];
+            }
+        });
+        console.log(dropLocationRental);
+    };
 
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
@@ -221,8 +240,31 @@ const RentBikeForm = () => {
         <>
             <section className='rent-section'>
                 <form onSubmit={handleSaleSubmit}>
-                    <div>
-                        <label>Type:</label>
+
+                    <div className="input-wrapper">
+                        <label ref={modelInputRef} className='main-label'>Make and Model<span className='required-span'> *</span>                        <input
+                            name='model'
+                            type="text"
+                            placeholder="ie Honda Wave 2010"
+                            value={modelRental}
+                            aria-describedby="model-error"
+                            onChange={(e) => handleModelChange(e)}
+                            style={modelError ? { border: '1px solid red' } : {}}
+                        />
+                        </label>
+
+                        {modelError && (
+                            <>
+                                <div className="pointer"></div>
+                                <div id="model-error" className="form-error" role="alert">
+                                    <p>Must include a model!</p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    <div className='radio-wrapper'>
+                        <label className='main-label'>Transmission</label>
                         <div>
                             <label>
                                 <input
@@ -259,100 +301,87 @@ const RentBikeForm = () => {
                         </div>
                     </div>
 
-                    <label>
-                        <input
-                            name='model'
-                            type="text"
-                            placeholder="ie Honda Wave 2010"
-                            value={modelRental}
-                            onChange={(e) => handleModelChange(e)}
-                        />Make and Model
-                    </label>
+                    <div className="rent-price-label">
+                        <label ref={priceInputRef} htmlFor="price" className="main-label">Prices<span className='required-span'> *</span></label>
+                        <svg onClick={() => handleTooltip()} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"></path></svg>
 
-                    {modelError && (
-                        <div className="form-error">
-                            <p>Must include a model!</p>
-                        </div>
-                    )}
+                        {showTooltip && (
+                            <>
+                                <div className="pointer rent-tooltip-pointer"></div>
+                                <div className="tooltip rent-tooltip">
+                                    <div>
+                                        <svg onClick={() => setShowTootltip(false)} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="3em" width="3em" xmlns="http://www.w3.org/2000/svg"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 0 0-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg>
+                                        <p>Price must be in Vietnamese Dong.</p>
+                                    </div>
+                                    <a href='https://www.xe.com/currencyconverter/'>Need help converting?</a>
+                                </div>
+                            </>
+                        )}
+                    </div>
 
-                    <label>
-                        <input
-                            name='priceDay'
-                            type="number"
-                            placeholder="Price"
-                            value={pricePerDay}
-                            onChange={(e) => handlePriceChange(e.target.value, 'day')}
-                        />Price /Day
-                    </label>
+                    <div className="rent-inputs">
+                        <label>
+                            <input
+                                name='priceDay'
+                                type="number"
+                                placeholder="VND"
+                                value={pricePerDay}
+                                onChange={(e) => handlePriceChange(e.target.value, 'day')}
+                            />/Day
+                        </label>
 
-                    {(priceErrors.day || currencyErrors.day) && (
-                        <div className="form-error">
-                            <p>{priceErrors.day ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
-                        </div>
-                    )}
+                        {(priceErrors.day || currencyErrors.day) && (
+                            <div className="form-error">
+                                <p>{priceErrors.day ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
+                            </div>
+                        )}
+                    </div>
 
-                    <label>
-                        <input
-                            name='priceWeek'
-                            type="number"
-                            placeholder="Price"
-                            value={pricePerWeek}
-                            onChange={(e) => handlePriceChange(e.target.value, 'week')}
-                        />Price /Week
-                    </label>
+                    <div className="rent-inputs">
+                        <label>
+                            <input
+                                name='priceWeek'
+                                type="number"
+                                placeholder="VND"
+                                value={pricePerWeek}
+                                onChange={(e) => handlePriceChange(e.target.value, 'week')}
+                            />/Week
+                        </label>
 
-                    {(priceErrors.week || currencyErrors.week) && (
-                        <div className="form-error">
-                            <p>{priceErrors.week ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
-                        </div>
-                    )}
+                        {(priceErrors.week || currencyErrors.week) && (
+                            <div className="form-error">
+                                <p>{priceErrors.week ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
+                            </div>
+                        )}
+                    </div>
 
-                    <label>
-                        <input
-                            name='priceMonth'
-                            type="number"
-                            placeholder="Price"
-                            value={pricePerMonth}
-                            onChange={(e) => handlePriceChange(e.target.value, 'month')}
-                        />Price /Month
-                    </label>
+                    <div className="rent-inputs">
+                        <label>
+                            <input
+                                name='priceMonth'
+                                type="number"
+                                placeholder="VND"
+                                value={pricePerMonth}
+                                onChange={(e) => handlePriceChange(e.target.value, 'month')}
+                            />/Month
+                        </label>
 
-                    {(priceErrors.month || currencyErrors.month) && (
-                        <div className="form-error">
-                            <p>{priceErrors.month ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
-                        </div>
-                    )}
+                        {(priceErrors.month || currencyErrors.month) && (
+                            <div className="form-error">
+                                <p>{priceErrors.month ? 'Must include a price' : 'Seems too cheap.. are you using VND?'}</p>
+                            </div>
+                        )}
+                    </div>
 
-
-                    <label htmlFor="locationRental">Location</label>
-                    <select
-                        name="location"
-                        id="locationRental"
-                        onChange={(e) => setLocationRental(e.target.value)}
-                    >
-                        <option value="Hanoi">Hanoi</option>
-                        <option value="HCMC">HCMC</option>
-                        <option value="Danang">Danang</option>
-                        <option value="Hoi An">Hoi An</option>
-                        <option value="Nha Trang">Nha Trang</option>
-                        <option value="Mui Ne">Mui Ne</option>
-                        <option value="Dalat">Dalat</option>
-                    </select>
-
-
-                    <input type='checkbox' checked={isOneWay} onChange={(e) => setIsOneWay(e.target.checked)} />
-                    <label>One Way rental available</label>
-
-                    {isOneWay && (
-                        <>
-                            <label htmlFor="dropLocation">Drop off locations</label>
+                    <div className="input-wrapper dropdown-wrapper">
+                        <label className='main-label' htmlFor="locationRental"
+                            value={locationRental}
+                            onClick={() => setShowTootltip(false)}
+                            onChange={(e) => setLocationRental(e.target.value)}
+                        >Pick Up Location
                             <select
-                                name="dropLocation"
-                                id="dropLocation"
-                                multiple
-                                onChange={(e) => handleDropLocationChange(e)}
-                                value={dropLocationRental}
-                            >
+                                name="location"
+                                id="locationRental">
                                 <option value="Hanoi">Hanoi</option>
                                 <option value="HCMC">HCMC</option>
                                 <option value="Danang">Danang</option>
@@ -361,19 +390,50 @@ const RentBikeForm = () => {
                                 <option value="Mui Ne">Mui Ne</option>
                                 <option value="Dalat">Dalat</option>
                             </select>
-                        </>
+                        </label>
+                    </div>
+
+                    <div className="checkbox-wrapper">
+                        <input type='checkbox' checked={isOneWay} onChange={(e) => setIsOneWay(e.target.checked)} />
+                        <label className='main-label'>One Way rental available?</label>
+                    </div>
+
+                    {isOneWay && (
+                        <div className='drop-locations-wrapper'>
+                            <div className="drop-locations">
+                                <label className='main-label' htmlFor="dropLocation">Select drop off locations -</label>
+                            </div>
+                            <div className="checkbox-options">
+                                {locations.map((location) => (
+                                    <div key={location}>
+                                        <input
+                                            type="checkbox"
+                                            id={location}
+                                            value={location}
+                                            checked={dropLocationRental.includes(location)}
+                                            onChange={handleDropLocationChange}
+                                        />
+                                        <label htmlFor={location}>{location}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     )}
 
                     <label htmlFor='description'
                         onChange={(e) => setDescriptionRental(e.target.value)}>
                         Description
-                        <textarea name="description" id="descriptionRental" cols="30" rows="10"></textarea>
+                        <textarea name="description" id="descriptionRental" cols="30" rows="10"
+                            value={descriptionRental}
+                            placeholder='Information about the rental'></textarea>
                     </label>
 
                     <label htmlFor='contact'
                         onChange={(e) => setContactRental(e.target.value)}>
                         Contact
-                        <textarea name="contact" id="contactRental" cols="30" rows="10"></textarea>
+                        <textarea name="contact" id="contactRental" cols="30" rows="10"
+                            value={contactRental}
+                            placeholder='Preferred contact method...'></textarea>
                     </label>
                 </form>
 
@@ -434,7 +494,7 @@ const RentBikeForm = () => {
                 )}
 
                 <button type="submit" onClick={handleSaleSubmit}>Post</button>
-            </section>
+            </section >
         </>
     );
 };

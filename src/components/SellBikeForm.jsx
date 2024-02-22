@@ -8,7 +8,6 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
-import '../sass/postBikeForm.css'
 
 const SellBikeForm = () => {
     const [type, setType] = useState('automatic');
@@ -127,9 +126,11 @@ const SellBikeForm = () => {
     const checkPriceField = () => {
         if (price === '') {
             setPriceError(true);
+            priceInputRef.current.focus()
             return false;
         } else if (price > 1 && price < 100000) {
             setCurrencyError(true);
+            priceInputRef.current.focus()
             return false;
         }
 
@@ -142,13 +143,18 @@ const SellBikeForm = () => {
                 behavior: 'smooth',
                 block: 'start',
             });
-        } else {
+        } else if (priceError) {
+            priceInputRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        } else if (currencyError) {
             priceInputRef.current.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start',
             });
         }
-    }, [modelError]);
+    }, [modelError, priceError, currencyError]);
 
 
     const checkModelField = () => {
@@ -158,6 +164,7 @@ const SellBikeForm = () => {
                 behavior: 'smooth',
                 block: 'start',
             });
+            modelInputRef.current.focus()
             return false;
         }
         return true;
@@ -237,6 +244,7 @@ const SellBikeForm = () => {
     return (
         <section className='sale-section'>
             <form onSubmit={handleSaleSubmit}>
+
                 <div className="input-wrapper">
                     <label ref={modelInputRef} className='main-label'>Make and Model<span className='required-span'> *</span>
                         <input
@@ -244,6 +252,7 @@ const SellBikeForm = () => {
                             type="text"
                             placeholder="ie Honda Wave 2010"
                             value={model}
+                            aria-describedby="model-error"
                             onChange={(e) => handleModelChange(e)}
                             style={modelError ? { border: '1px solid red' } : {}}
                         />
@@ -251,8 +260,8 @@ const SellBikeForm = () => {
 
                     {modelError && (
                         <>
-                            <div className="pointer"></div>
-                            <div className="form-error">
+                            <div className="pointer model-pointer"></div>
+                            <div id="model-error" className="form-error" role="alert">
                                 <p>Must include a model!</p>
                             </div>
                         </>
@@ -268,6 +277,7 @@ const SellBikeForm = () => {
                                 placeholder="VND"
                                 value={price}
                                 autoComplete="off"
+                                aria-describedby="price-error"
                                 onChange={(e) => handlePriceChange(e)}
                                 style={(priceError || currencyError) ? { border: '1px solid red' } : {}}
                             />
@@ -276,7 +286,7 @@ const SellBikeForm = () => {
                             {showTooltip && (
                                 <>
                                     <div className="pointer tooltip-pointer"></div>
-                                    <div className="tooltip">
+                                    <div className="tooltip sell-tooltip">
                                         <div>
                                             <svg onClick={() => setShowTootltip(false)} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="3em" width="3em" xmlns="http://www.w3.org/2000/svg"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 0 0-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg>
                                             <p>Price must be in Vietnamese Dong.</p>
@@ -291,8 +301,7 @@ const SellBikeForm = () => {
                     {priceError && (
                         <>
                             <div className="pointer price-pointer"></div>
-                            <div className="form-error price-error">
-                                <p>Must include a price!</p>
+                            <div id="price-error" className="form-error price-error" role="alert">                                  <p>Must include a price!</p>
                             </div>
                         </>
                     )}
@@ -300,7 +309,7 @@ const SellBikeForm = () => {
                     {currencyError && (
                         <>
                             <div className="pointer currency-pointer"></div>
-                            <div className="form-error currency-error">
+                            <div className="form-error currency-error" role="alert">
                                 <p>Seems too cheap.. are you using VND?</p>
                             </div>
                         </>
