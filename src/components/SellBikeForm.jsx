@@ -36,15 +36,13 @@ const SellBikeForm = () => {
     const [selectedFileName, setSelectedFileName] = useState('No file chosen');
     const [secondFileName, setSecondFileName] = useState('No file chosen')
     const [thirdFileName, setThirdFileName] = useState('No file chosen')
-    const [noFileChosen, setNoFileChosen] = useState(false)
 
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
 
     useEffect(() => {
         setImageUrls([]);
-        console.log(imageError);
-    }, [imageError]);
+    }, []);
 
     const handlePriceChange = (e) => {
         setPrice(e.target.value)
@@ -175,7 +173,6 @@ const SellBikeForm = () => {
         setSelectedFileName(fileName);
         setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
         setImageError(false)
-        setNoFileChosen(false)
     };
 
     const handleSecondFileChange = (e) => {
@@ -193,7 +190,6 @@ const SellBikeForm = () => {
     const checkImageField = () => {
         if (featureImageUpload == undefined || featureImageUpload == null) {
             setImageError(true);
-            setNoFileChosen(false)
             return true;
         }
         return false;
@@ -207,7 +203,6 @@ const SellBikeForm = () => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
-                setNoFileChosen(true)
                 setImageError(false)
                 return;
             }
@@ -410,10 +405,11 @@ const SellBikeForm = () => {
 
                 <div className="input-wrapper">
                     <label className='main-label' htmlFor='contact'
-                        value={contact}
+
                         onChange={(e) => setContact(e.target.value)}>
                         Contact
                         <textarea name="contact" id="contact" cols="30" rows="5"
+                            value={contact}
                             placeholder='Preferred contact method...'></textarea>
                     </label>
                 </div>
@@ -442,21 +438,13 @@ const SellBikeForm = () => {
                     </>
                 )}
 
-                {noFileChosen && (
-                    <>
-                        <div className="pointer file-pointer"></div>
-                        <div className="form-error file-error">
-                            <p>Choose an image here</p>
-                        </div>
-                    </>
+                {featureImageUpload != null && (
+                    <button className='upload-btn' onClick={() => handleImageUpload(featureImageUpload)}>
+                        {imageUrls.length === 0 ? 'Upload' : 'Change'}</button>
                 )}
-
-                <button className='upload-btn' onClick={() => handleImageUpload(featureImageUpload)}>
-                    {imageUrls.length === 0 ? 'Upload' : 'Change'}</button>
-
             </div>
 
-            {featureImageUpload != null && (
+            {imageUrls.length == 1 && (
                 <div className='file-btn-wrapper'>
                     <div>
                         <input type='file'
@@ -466,14 +454,16 @@ const SellBikeForm = () => {
                         <span>{secondFileName}</span>
                     </div>
 
-                    <button className='upload-btn' onClick={() => handleImageUpload(secondImageUpload)}>
-                        {imageUrls.length <= 1 ? 'Upload' : 'Change'}
-                    </button>
+                    {secondImageUpload != null && (
+                        <button className='upload-btn' onClick={() => handleImageUpload(secondImageUpload)}>
+                            {imageUrls.length <= 1 ? 'Upload' : 'Change'}
+                        </button>
 
+                    )}
                 </div>
             )}
 
-            {secondImageUpload != null && (
+            {imageUrls.length >= 2 && (
                 <div className='file-btn-wrapper'>
                     <div>
                         <input type='file'
@@ -483,8 +473,10 @@ const SellBikeForm = () => {
                         <span>{thirdFileName}</span>
                     </div>
 
-                    <button className='upload-btn' onClick={() => handleImageUpload(thirdImageUpload)}>
-                        {imageUrls.length <= 2 ? 'Upload' : 'Change'}</button>
+                    {thirdImageUpload != null && (
+                        <button className='upload-btn' onClick={() => handleImageUpload(thirdImageUpload)}>
+                            {imageUrls.length <= 2 ? 'Upload' : 'Change'}</button>
+                    )}
                 </div>
             )}
 

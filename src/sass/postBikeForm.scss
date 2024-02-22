@@ -260,6 +260,7 @@ textarea {
     border-radius: .3rem;
     padding: 0.2rem .5rem;
     cursor: pointer;
+    margin-bottom: 0.1rem;
     @extend %glass;
 
     &:nth-of-type(1) {
@@ -394,6 +395,23 @@ button {
         width: 50%;
         margin-right: .5rem;
     }
+}
+
+.rent-price-error {
+    bottom: .7rem;
+    right: -.5rem;
+}
+
+.rent-price-pointer {
+    transform: rotate(270deg);
+    right: 8.3rem;
+    bottom: 1.3rem;
+}
+
+.rent-currency-pointer {
+    transform: rotate(270deg);
+    right: 15.8rem;
+    bottom: 1.3rem;
 }
 
 .checkbox-wrapper {
