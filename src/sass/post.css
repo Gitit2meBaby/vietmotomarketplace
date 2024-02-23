@@ -12,6 +12,7 @@
 
 .slider-wrapper {
   position: relative;
+  z-index: -5;
 }
 
 .timestamp,
@@ -24,9 +25,10 @@
 }
 .timestamp p,
 .price-wrapper p {
+  font-size: 1.2rem;
   font-family: "Mitr-Regular";
   margin: 0;
-  color: rgba(0, 0, 0, 0.603);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .timestamp {
@@ -35,12 +37,106 @@
 }
 
 .price-wrapper {
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: 2.5rem;
+  right: 2rem;
 }
 
 .post-image {
   max-width: 100%;
   max-height: 200px;
   margin: 0 auto;
+}
+
+.post-content {
+  display: flex;
+  flex-direction: column;
+  background-color: black;
+  border-radius: 1rem 0 0 1rem;
+  padding: 1rem;
+  margin: -1.5rem 0 1rem 1.5rem;
+  box-shadow: 10px 5px 5px 5px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+.post-content h1,
+.post-content p {
+  color: white;
+  margin: 0;
+  font-family: "Mitr-Regular";
+}
+
+.hide-btn,
+.show-btn {
+  font-family: "Mitr-Regular";
+  color: white;
+  background-color: transparent;
+  margin-left: auto;
+  margin-right: 1rem;
+  border-bottom: 1px solid white;
+}
+
+.show-btn {
+  border-radius: 0 0 0px 10px;
+  padding: 0 0.2rem 0.1rem 0.8rem;
+}
+
+.hide-btn {
+  border-radius: 0 0 10px 0px;
+  padding: 0 0.8rem 0.1rem 0.2rem;
+}
+
+.msg-btn {
+  font-family: "Mitr-Regular";
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  align-self: center;
+  margin-top: 1rem;
+  background-color: #DB261E;
+  padding: 0.3rem 1rem;
+  color: #FFFF05;
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.post-grid div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  margin-top: -1rem;
+}
+
+.seller,
+.type {
+  border-radius: 0.3rem;
+  padding: 0 0.2rem 0.1rem 0.2rem;
+  font-size: 0.8rem;
+}
+
+.automatic {
+  background-color: green;
+}
+
+.semi {
+  background-color: rgb(255, 204, 0);
+}
+
+.manual {
+  background-color: red;
+}
+
+.private {
+  background-color: rgb(117, 179, 199);
+}
+
+.business {
+  background-color: purple;
+}
+
+.contact-heading {
+  font-family: "Mitr-Regular";
+  color: #DB261E;
+  margin: 0;
+  padding-top: 1rem;
 }/*# sourceMappingURL=post.css.map */

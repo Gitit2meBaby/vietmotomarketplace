@@ -37,15 +37,31 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
     // console.log('Second Image URL:', secondImageSrc);
     // console.log('Third Image URL:', thirdImageSrc);
 
+    const trimDescription = (fullDescription, wordLimit) => {
+        const words = fullDescription.split(' ');
+        const truncatedDescription = words.slice(0, wordLimit).join(' ');
+        const descriptionRemainder = words.slice(wordLimit).join(' ');
+
+        return {
+            trimmedDescription: truncatedDescription,
+            descriptionRemainder: descriptionRemainder,
+            showMore: words.length > wordLimit,
+        };
+    };
+
+    // Example usage:
+    const { trimmedDescription, descriptionRemainder } = trimDescription(descriptionSrc, 15);
+
+
 
     // Get useable date format from timestamp from database
     const createdAtDate = new Date(createdAt.seconds * 1000);
     const options = { month: '2-digit', day: '2-digit' };
     let formattedDate;
-    isForSale ? formattedDate = createdAtDate.toLocaleDateString(undefined, options) : formattedDate = 'Rent Now'
+    isForSale ? formattedDate = createdAtDate.toLocaleDateString(undefined, options) : formattedDate = 'In Stock'
 
     return (
-        <section>
+        <section className='post'>
             <div className="slider-wrapper">
                 <div className="timestamp">
                     <p>{formattedDate}</p>
@@ -74,40 +90,51 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                     {pricePerMonth && (
                         <h2>{pricePerMonth}₫/month</h2>
                     )}
-                    <p>{locationSrc}</p>
-                </div>
-                <div>
-                    <p>{type}</p>
-                    <p>{seller}</p>
                 </div>
 
+                <div className="post-grid">
+                    <p>{locationSrc}</p>
+                    <div>
+                        <p className={`type ${type === 'automatic' ? 'automatic' : type === 'manual' ? 'manual' : 'semi'}`}>{type}</p>
+
+                        <p className={`seller ${seller === 'private' ? 'private' : 'business'}`}>{seller}</p>
+                    </div>
+                </div>
+
+
+                <div className="drop-locations">
+                    {dropLocation && (
+                        <>
+                            <p>Drop off Locations - </p>
+                            <ul>
+                                {dropLocation.map((location) => (
+                                    <li key={location}>{location}</li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </div>
+
+                <p>{showMore ? `${trimmedDescription} ${descriptionRemainder}` : `${trimmedDescription} ...`}</p>
+
                 {!showMore && (
-                    <button onClick={() => setShowMore(true)}>More...</button>
+                    <button className='show-btn' onClick={() => setShowMore(true)}>Show More...</button>
                 )}
 
                 {showMore && (
                     <>
-                        {dropLocation && (
-                            <>
-                                <p>Drop off Locations - </p>
-                                <ul>
-                                    {dropLocation.map((location) => (
-                                        <li key={location}>{location}</li>
-                                    ))}
-                                </ul>
-                            </>
-                        )}
-                        <p>{descriptionSrc}</p>
                         <div className='post-contact'
                             style={{ Backdropfilter: isLoggedIn ? 'none' : 'blur(5px)' }}>
+                            <h2 className='contact-heading'>Contact</h2>
                             <p>{contactSrc}</p>
-                            <button>Message</button>
                             {!isLoggedIn && (
                                 <button onClick={() => handleSignInClick()}>Sign In</button>
                             )}
                         </div>
 
-                        <button onClick={() => setShowMore(false)}>Hide</button>
+                        <button className='hide-btn' onClick={() => setShowMore(false)}>...Show Less</button>
+
+                        <button className='msg-btn'>Message</button>
                     </>
                 )}
             </div>
@@ -124,7 +151,7 @@ Post.propTypes = {
     contact: PropTypes.string,
     model: PropTypes.string,
     setShowPreview: PropTypes.func,
-    featureImage: PropTypes.string, // Add PropTypes for each image field
+    featureImage: PropTypes.string,
     secondImage: PropTypes.string,
     thirdImage: PropTypes.string,
     featureRentalImageUpload: PropTypes.string,
