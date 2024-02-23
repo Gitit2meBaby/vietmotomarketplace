@@ -2,6 +2,14 @@
   font-family: "Caveat-Medium";
   src: url("../assets/fonts/Caveat-Medium.ttf") format("truetype");
 }
+@font-face {
+  font-family: "Caveat-SemiBold";
+  src: url("../assets/fonts/Caveat-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Mitr-Regular";
+  src: url("../assets/fonts/Mitr-Regular.ttf");
+}
 input[type=file],
 button, .custom-file-button, textarea, .dropdown-wrapper label select, input[type=text],
 input[type=number], .form-container, .tab {
@@ -16,6 +24,36 @@ input[type=number], .form-container, .tab {
   background-repeat: no-repeat;
   background-size: cover;
   padding: 1rem;
+}
+
+h1 {
+  font-family: "Mitr-Regular";
+}
+
+.post-info {
+  font-family: "Caveat-Medium";
+  font-size: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.5rem 2rem 0.5rem;
+}
+.post-info p {
+  font-family: "Mitr-Regular";
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+.more-info-btn {
+  font-family: "Caveat-Medium";
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  align-self: flex-end;
+  margin-right: 2rem;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0px 0px 0px 5px;
+  border-bottom: 1px solid black;
+  padding: 0 0.8rem 0 0.5rem;
 }
 
 .tabs {

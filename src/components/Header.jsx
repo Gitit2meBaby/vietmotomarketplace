@@ -7,6 +7,7 @@ import "../sass/header.css"
 const Header = () => {
     const [navOpen, setNavOpen] = useState(false)
     const { isLoggedIn, setIsLoggedIn } = useAppContext();
+    const [activeLink, setActiveLink] = useState(null);
 
     const navStyles = {
         opacity: navOpen ? 1 : 0,
@@ -28,27 +29,40 @@ const Header = () => {
         transitionTimingFunction: 'ease-in',
     };
 
-
+    const handleLinkClick = (e) => {
+        setNavOpen(false)
+    }
 
     return (
         <header>
-            <svg onClick={() => setNavOpen(true)} stroke="currentColor" fill="currentColor" strokeWidth="0" version="1.2" baseProfile="tiny" viewBox="0 0 24 24" height="2em" width="2em" xmlns="http://www.w3.org/2000/svg"><path d="M19 17h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 10h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 3h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2z"></path></svg>
+            <div className="menu-toggle">
+                <svg onClick={() => setNavOpen(true)} stroke="currentColor" fill="currentColor" strokeWidth="0" version="1.2" baseProfile="tiny" viewBox="0 0 24 24" height="3em" width="3em" xmlns="http://www.w3.org/2000/svg"><path d="M19 17h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 10h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 3h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2z"></path></svg>
+            </div>
+
 
             <Authentication />
 
             <nav style={navStyles}>
-                <svg style={burgerMenuStyles} onClick={() => setNavOpen(false)} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="2.5em" width="2.5em" xmlns="http://www.w3.org/2000/svg"><path d="M354 671h58.9c4.7 0 9.2-2.1 12.3-5.7L512 561.8l86.8 103.5c3 3.6 7.5 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.4-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.7 0-9.2 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3-3.6-7.5-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z"></path><path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z"></path></svg>
+                <svg style={burgerMenuStyles} onClick={() => setNavOpen(false)} xmlns="http://www.w3.org/2000/svg" width="50" zoomAndPan="magnify" viewBox="0 0 60 60" height="50" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="08fb594ddf"><path d="M 0 1 L 60 1 L 60 59.699219 L 0 59.699219 Z M 0 1 " clipRule="nonzero" /></clipPath></defs><g clipPath="url(#08fb594ddf)"><path fill="#000000" d="M 3.460938 57.113281 C 5.183594 58.835938 7.4375 59.699219 9.695312 59.699219 C 11.949219 59.699219 14.203125 58.835938 15.921875 57.113281 L 30 43 L 44.078125 57.113281 C 45.796875 58.835938 48.050781 59.699219 50.304688 59.699219 C 52.5625 59.699219 54.816406 58.835938 56.539062 57.113281 C 59.976562 53.664062 59.976562 48.070312 56.539062 44.621094 L 42.460938 30.507812 L 56.539062 16.394531 C 59.976562 12.945312 59.976562 7.351562 56.539062 3.902344 C 53.097656 0.453125 47.515625 0.453125 44.078125 3.902344 L 30 18.015625 L 15.921875 3.902344 C 12.484375 0.453125 6.902344 0.453125 3.460938 3.902344 C 0.0234375 7.351562 0.0234375 12.945312 3.460938 16.394531 L 17.539062 30.507812 L 3.460938 44.621094 C 0.0234375 48.070312 0.0234375 53.664062 3.460938 57.113281 " fillOpacity="1" fillRule="nonzero" /></g></svg>
 
-                <Link onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '0.2s' }} to="/">Home</Link>
-                <Link onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '0.4s' }} to="/list">Buy</Link>
-                <Link onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '0.6s' }} to="/post">Sell</Link>
-                <Link onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '0.8s' }} to="/list">Rent</Link>
-                <Link onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '1s' }} to="/guides">Guides</Link>
+                <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '0.2s' }} to="/">Home</Link>
+                <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '0.4s' }} to="/list">Buy</Link>
+                <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '0.6s' }} to="/post">Sell</Link>
+                <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '0.8s' }} to="/list">Rent</Link>
+                <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1s' }} to="/guides">Guides</Link>
 
                 {isLoggedIn ? (
-                    <a onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} href="">Log Out</a>
+                    <>
+                        <div className="msg-nav-item"
+                            onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} >
+                            <a href="">Messages</a>
+                            <div className="msg-counter">3</div>
+                        </div>
+
+                        <a onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.4s' }} href="">Log Out</a>
+                    </>
                 ) : (
-                    <a onClick={() => setNavOpen(false)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} href="">Log In</a>
+                    <a onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} href="">Log In</a>
                 )}
             </nav>
         </header >

@@ -3,9 +3,15 @@ import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { db } from '../firebase'; // Update the path accordingly
+import { db } from '../firebase';
 import 'firebase/firestore';
+import { useAppContext } from '../context';
+import '../sass/post.css'
+
+
 const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, contact, contactRental, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
+
+    const { isLoggedIn, setIsLoggedIn } = useAppContext();
     const isForSale = transaction === 'sell';
 
     const featureImageSrc = isForSale ? featureImage : featureRentalImageUpload;
@@ -17,6 +23,8 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
     const locationSrc = isForSale ? location : locationRental
     const modelSrc = isForSale ? model : modelRental
 
+    const [showMore, setShowMore] = useState(false)
+
     const settings = {
         dots: true,
         infinite: true,
@@ -25,52 +33,85 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
         slidesToScroll: 1,
     };
 
-    console.log('Feature Image URL:', featureImageSrc);
-    console.log('Second Image URL:', secondImageSrc);
-    console.log('Third Image URL:', thirdImageSrc);
+    // console.log('Feature Image URL:', featureImageSrc);
+    // console.log('Second Image URL:', secondImageSrc);
+    // console.log('Third Image URL:', thirdImageSrc);
 
+
+    // Get useable date format from timestamp from database
+    const createdAtDate = new Date(createdAt.seconds * 1000);
+    const options = { month: '2-digit', day: '2-digit' };
+    let formattedDate;
+    isForSale ? formattedDate = createdAtDate.toLocaleDateString(undefined, options) : formattedDate = 'Rent Now'
 
     return (
         <section>
-            <Slider {...settings}>
-                <img src={featureImageSrc} alt="Motorbike" />
-                <img src={secondImageSrc} alt="Motorbike" />
-                <img src={thirdImageSrc} alt="Motorbike" />
-            </Slider>
+            <div className="slider-wrapper">
+                <div className="timestamp">
+                    <p>{formattedDate}</p>
+                </div>
+                <Slider {...settings}>
+                    <img className='post-img' src={featureImageSrc} alt="Motorbike" />
+                    <img className='post-img' src={secondImageSrc} alt="Motorbike" />
+                    <img className='post-img' src={thirdImageSrc} alt="Motorbike" />
+                </Slider>
+                <div className="price-wrapper">
+                    {price && (
+                        <p>{price}₫</p>
+                    )}
+                </div>
+            </div>
 
-            <h1>{modelSrc}</h1>
-            <div>
-                {price && (
-                    <h2>{price}₫</h2>
+            <div className="post-content">
+                <h1>{modelSrc}</h1>
+                <div className='rent-prices'>
+                    {pricePerDay && (
+                        <h2>{pricePerDay}₫/day</h2>
+                    )}
+                    {pricePerWeek && (
+                        <h2>{pricePerWeek}₫/week</h2>
+                    )}
+                    {pricePerMonth && (
+                        <h2>{pricePerMonth}₫/month</h2>
+                    )}
+                    <p>{locationSrc}</p>
+                </div>
+                <div>
+                    <p>{type}</p>
+                    <p>{seller}</p>
+                </div>
+
+                {!showMore && (
+                    <button onClick={() => setShowMore(true)}>More...</button>
                 )}
-                {pricePerDay && (
-                    <h2>{pricePerDay}₫/day</h2>
+
+                {showMore && (
+                    <>
+                        {dropLocation && (
+                            <>
+                                <p>Drop off Locations - </p>
+                                <ul>
+                                    {dropLocation.map((location) => (
+                                        <li key={location}>{location}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                        <p>{descriptionSrc}</p>
+                        <div className='post-contact'
+                            style={{ Backdropfilter: isLoggedIn ? 'none' : 'blur(5px)' }}>
+                            <p>{contactSrc}</p>
+                            <button>Message</button>
+                            {!isLoggedIn && (
+                                <button onClick={() => handleSignInClick()}>Sign In</button>
+                            )}
+                        </div>
+
+                        <button onClick={() => setShowMore(false)}>Hide</button>
+                    </>
                 )}
-                {pricePerWeek && (
-                    <h2>{pricePerWeek}₫/week</h2>
-                )}
-                {pricePerMonth && (
-                    <h2>{pricePerMonth}₫/month</h2>
-                )}
-                <p>{locationSrc}</p>
             </div>
-            <div>
-                <p>{type}</p>
-                <p>{seller}</p>
-            </div>
-            {dropLocation && (
-                <>
-                    <p>Drop off Locations - </p>
-                    <ul>
-                        {dropLocation.map((location) => (
-                            <li key={location}>{location}</li>
-                        ))}
-                    </ul>
-                </>
-            )}
-            <p>{descriptionSrc}</p>
-            <p>{contactSrc}</p>
-        </section>
+        </section >
     );
 };
 

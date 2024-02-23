@@ -96,17 +96,18 @@ const Authentication = () => {
     };
 
     return (
-        <div>
-            {currentUser && (
-                <div>
-                    <h4>{currentUser.displayName || currentUser.email}</h4>
-                    {currentUser.photoURL && <img src={currentUser.photoURL} alt={currentUser.email}></img>}
-                </div>
-            )}
+        <main>
+            <div className="header-auth">
+                {currentUser == null && (
+                    <button onClick={handleOpen}>Sign In</button>
+                )}
 
-            {currentUser == null && (
-                <button onClick={handleOpen}>Sign In</button>
-            )}
+                {currentUser && (
+                    <div>
+                        {currentUser.photoURL && <img src={currentUser.photoURL} alt={currentUser.email}></img>}
+                    </div>
+                )}
+            </div>
 
             {isOpen && (
                 <div className="modal">
@@ -142,10 +143,7 @@ const Authentication = () => {
                 </div>
             )}
 
-            {currentUser && (
-                <button onClick={() => logout()}>Log Out</button>
-            )}
-        </div>
+        </main>
     );
 };
 

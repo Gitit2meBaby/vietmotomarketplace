@@ -28,10 +28,6 @@ const BikeList = () => {
         fetchListings();
     }, []);
 
-    useEffect(() => {
-        console.log('listings:', listings);
-    }, [listings])
-
     return (
         <div>
             {listings.map(({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, contact, contactRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => (

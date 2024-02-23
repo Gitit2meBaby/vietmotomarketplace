@@ -3,7 +3,15 @@
     src: url('../assets/fonts/Caveat-Medium.ttf') format('truetype');
 }
 
-$dark: rgb(50, 50, 50);
+@font-face {
+    font-family: 'Caveat-SemiBold';
+    src: url('../assets/fonts/Caveat-SemiBold.ttf');
+}
+
+@font-face {
+    font-family: 'Mitr-Regular';
+    src: url('../assets/fonts/Mitr-Regular.ttf');
+}
 
 %glass {
     background: rgba(255, 255, 255, 0.2);
@@ -16,6 +24,38 @@ $dark: rgb(50, 50, 50);
     background-repeat: no-repeat;
     background-size: cover;
     padding: 1rem;
+}
+
+h1 {
+    font-family: 'Mitr-Regular';
+}
+
+.post-info {
+    font-family: 'Caveat-Medium';
+    font-size: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0 .5rem 2rem .5rem;
+
+    p {
+        font-family: 'Mitr-Regular';
+
+        margin: 0;
+        padding-bottom: 0.5rem;
+    }
+}
+
+.more-info-btn {
+    font-family: 'Caveat-Medium';
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    align-self: flex-end;
+    margin-right: 2rem;
+    box-shadow: none;
+    background: transparent;
+    border-radius: 0px 0px 0px 5px;
+    border-bottom: 1px solid black;
+    padding: 0 .8rem 0 .5rem;
 }
 
 .tabs {

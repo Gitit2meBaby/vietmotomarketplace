@@ -1,4 +1,16 @@
-$primary-color: white;
+@font-face {
+    font-family: 'Caveat-Medium';
+    src: url('../assets/fonts/Caveat-Medium.ttf') format('truetype');
+}
+
+$red: #DB261E;
+$yellow: #FFFF05;
+
+%glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+}
 
 * {
     box-sizing: border-box;
@@ -13,6 +25,40 @@ header {
     display: flex;
     justify-content: space-between;
     padding: .5rem 1rem;
+    height: 60px;
+    background-color: black;
+    background-image: url('../assets/mobHeadLogo.webp');
+    padding-top: 0.3rem;
+}
+
+.menu-toggle {
+    svg {
+        path {
+            color: $red;
+        }
+    }
+}
+
+header main,
+.header-auth div,
+.header-auth {
+    display: flex;
+    align-items: center;
+
+    img {
+        max-height: 40px;
+        max-width: 40px;
+        border-radius: 50%;
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, .3);
+    }
+}
+
+.header-auth {
+    gap: 1rem;
+
+    button {
+        @extend %glass;
+    }
 }
 
 nav {
@@ -24,13 +70,14 @@ nav {
     box-shadow: 0 0 3000px 3000px rgba(0, 0, 0, .7);
     opacity: 1;
     z-index: 10;
-    background-color: $primary-color;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 1rem;
+    padding: 2rem;
     transform: translateX(0);
     transition: all .5s ease-in;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
 
     svg {
         margin-left: auto;
@@ -38,7 +85,34 @@ nav {
 
     a {
         text-decoration: none;
-        font-size: 1.5rem;
+        text-transform: uppercase;
+        font-size: 2rem;
+        color: black;
+        font-weight: 800;
+        font-family: 'Caveat-Medium';
     }
+}
 
+.msg-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.msg-counter {
+    background-color: $red;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $yellow;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.active {
+    transform: scale(1.5);
+    transition: transform 0.3s ease-in-out;
 }
