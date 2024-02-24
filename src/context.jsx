@@ -5,9 +5,13 @@ const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true)
 
     return (
-        <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+        <AppContext.Provider value={{
+            isLoggedIn, setIsLoggedIn,
+            isLoading, setIsLoading,
+        }}>
             {children}
         </AppContext.Provider>
     );

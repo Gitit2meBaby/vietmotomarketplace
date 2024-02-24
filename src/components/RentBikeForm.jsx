@@ -10,10 +10,12 @@ import { v4 } from 'uuid'
 import Preview from './Preview'
 
 const RentBikeForm = () => {
+    // Local state storage of image file for preview
     const [featureRentalImageUpload, setRentalFeatureImageUpload] = useState(null)
     const [secondRentalImageUpload, setRentalSecondImageUpload] = useState(null)
     const [thirdRentalImageUpload, setRentalThirdImageUpload] = useState(null)
 
+    // states to be passed to firestore DB
     const [typeRental, setTypeRental] = useState('');
     const [pricePerDay, setPricePerDay] = useState('')
     const [pricePerWeek, setPricePerWeek] = useState('')
@@ -25,12 +27,13 @@ const RentBikeForm = () => {
     const [modelRental, setModelRental] = useState('')
     const [isOneWay, setIsOneWay] = useState(false)
 
+    // urls to store in array for firebase storage
     const [imageUrls, setImageUrls] = useState([]);
     const [prevImageUrls, setPrevImageUrls] = useState([]);
 
     const [showPreview, setShowPreview] = useState(false)
 
-    const [currencyError, setCurrencyError] = useState(false)
+    // Error states to show tooltips
     const [modelError, setModelError] = useState(false)
     const [imageError, setImageError] = useState(false)
     const [priceErrors, setPriceErrors] = useState({
@@ -44,121 +47,162 @@ const RentBikeForm = () => {
         month: false,
     });
 
+    // info tooltip
     const [showTooltip, setShowTootltip] = useState(false)
 
+    // array to store drop off locations for one way rentals
     const locations = ["Hanoi", "HCMC", "Danang", "Hoi An", "Nha Trang", "Mui Ne", "Dalat"];
 
+    // local states just to show file name on custom file input
     const [selectedFileName, setSelectedFileName] = useState('No file chosen');
     const [secondFileName, setSecondFileName] = useState('No file chosen')
     const [thirdFileName, setThirdFileName] = useState('No file chosen')
 
+    // refs used for scrollTo after errors
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
+    const dayInputRef = useRef(null)
+    const weekInputRef = useRef(null)
+    const monthInputRef = useRef(null)
 
+    // set a submitting state to stop unwanted scrolling on input changes
+    const [submitting, setSubmitting] = useState(false);
+
+    // clear the url array required if same user makes multiple posts
     useEffect(() => {
         setImageUrls([]);
     }, []);
 
+    // store prices in state and validate no input, scroll and focus on errors
     const handlePriceChange = (value, type) => {
-        setCurrencyError(false)
         switch (type) {
             case 'day':
                 setPricePerDay(value);
                 setPriceErrors((prevErrors) => ({ ...prevErrors, day: false }));
-                priceInputRef.current.focus()
+                setCurrencyErrors((prevErrors) => ({ ...prevErrors, day: false }));
                 break;
             case 'week':
                 setPricePerWeek(value);
                 setPriceErrors((prevErrors) => ({ ...prevErrors, week: false }));
-                priceInputRef.current.focus()
+                setCurrencyErrors((prevErrors) => ({ ...prevErrors, week: false }));
                 break;
             case 'month':
                 setPricePerMonth(value);
                 setPriceErrors((prevErrors) => ({ ...prevErrors, month: false }));
-                priceInputRef.current.focus()
+                setCurrencyErrors((prevErrors) => ({ ...prevErrors, month: false }));
                 break;
             default:
                 break;
         }
     };
 
+    // validation done on submission
     const checkPriceFields = () => {
         const errors = {};
         const currencyErrors = {};
 
-        if (pricePerDay === '') {
-            errors.day = true;
-        } else if (pricePerDay > 1 && pricePerDay < 10000) {
-            currencyErrors.day = true;
+        if (pricePerMonth === '') {
+            errors.month = true;
+            monthInputRef.current.focus()
+        } else if (pricePerMonth >= 1 && pricePerMonth < 10000) {
+            currencyErrors.month = true;
+            monthInputRef.current.focus()
         }
 
         if (pricePerWeek === '') {
             errors.week = true;
-        } else if (pricePerWeek > 1 && pricePerWeek < 10000) {
+            weekInputRef.current.focus()
+        } else if (pricePerWeek >= 1 && pricePerWeek < 10000) {
             currencyErrors.week = true;
+            weekInputRef.current.focus()
         }
 
-        if (pricePerMonth === '') {
-            errors.month = true;
-        } else if (pricePerMonth > 1 && pricePerMonth < 10000) {
-            currencyErrors.month = true;
+        if (pricePerDay === '') {
+            errors.day = true;
+            dayInputRef.current.focus()
+        } else if (pricePerDay >= 1 && pricePerDay < 10000) {
+            currencyErrors.day = true;
+            dayInputRef.current.focus()
         }
 
+        setSubmitting(true);
         setPriceErrors(errors);
         setCurrencyErrors(currencyErrors);
 
-        // Return true only if there are no errors in both price and currency
         return (
             Object.values(errors).every((error) => !error) &&
             Object.values(currencyErrors).every((error) => !error)
         );
     };
 
+    // scroll to errors
     useEffect(() => {
         if (modelError) {
-            modelInputRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-        } else if (priceErrors) {
-            priceInputRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-        } else if (currencyError) {
-            priceInputRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-        }
-    }, [modelError, priceErrors, currencyError]);
+            const modelOffsetTop = modelInputRef.current.getBoundingClientRect().top + window.scrollY;
 
+            window.scrollTo({
+                top: modelOffsetTop,
+                behavior: 'smooth',
+            });
+
+            modelInputRef.current.focus();
+
+        } else if (submitting && (priceErrors.day || priceErrors.week || priceErrors.month || currencyErrors.day || currencyErrors.week || currencyErrors.month)) {
+
+            const priceOffsetTop = priceInputRef.current.getBoundingClientRect().top + window.scrollY;
+
+            window.scrollTo({
+                top: priceOffsetTop,
+                behavior: 'smooth',
+            });
+
+            priceInputRef.current.focus();
+        }
+
+        // Reset submitting to false after the effect runs
+        setSubmitting(false);
+    }, [modelError, priceErrors, currencyErrors, submitting]);
+
+
+
+    // information regarding price input
     const handleTooltip = () => {
         setShowTootltip(!showTooltip)
-        setCurrencyError(false)
+        setCurrencyErrors(false)
         setPriceErrors(false)
     }
 
+    // clear errors and set state on model input change
     const handleModelChange = (e) => {
         setModelRental(e.target.value)
         setModelError(false)
     }
 
+    // model field validation
     const checkModelField = () => {
         if (modelRental === '') {
             setModelError(true);
-            modelInputRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-            modelInputRef.current.focus()
             return false;
         }
         return true;
     };
 
+    // Make the filenames short enough to not force a second line
+    const truncateFileName = (fileName, charLimit) => {
+        if (fileName.length <= charLimit) {
+            return fileName;
+        }
+
+        const truncatedName = fileName.slice(0, charLimit) + '...';
+        return truncatedName;
+    };
+
+    // setting images and names into local state (not URLS for firestore) 
     const handleFeatureFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
+        const truncatedFileName = truncateFileName(fileName, 10);
+
+        setSelectedFileName(truncatedFileName);
         setSelectedFileName(fileName);
         setRentalFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
         setImageError(false)
@@ -166,16 +210,22 @@ const RentBikeForm = () => {
 
     const handleSecondFileChange = (e) => {
         const secondFileName = e.target.files[0]?.name || 'No file chosen';
-        setSecondFileName(secondFileName);
+        const truncatedFileName = truncateFileName(secondFileName, 10);
+
+        setSecondFileName(truncatedFileName);
         setRentalSecondImageUpload(e.target.files[0])
     };
 
     const handleThirdFileChange = (e) => {
         const thirdFileName = e.target.files[0]?.name || 'No file chosen';
+        const truncatedFileName = truncateFileName(thirdFileName, 10);
+
+        setThirdFileName(truncatedFileName);
         setThirdFileName(thirdFileName);
         setRentalThirdImageUpload(e.target.files[0])
     };
 
+    // Validate atleast one image has been uploaded
     const checkImageField = () => {
         if (featureRentalImageUpload == undefined || featureRentalImageUpload == null) {
             setImageError(true);
@@ -184,6 +234,7 @@ const RentBikeForm = () => {
         return false;
     };
 
+    // push the image url into the array for firebase
     const handleImageUpload = async (image) => {
         try {
             if (!image) {
@@ -220,6 +271,7 @@ const RentBikeForm = () => {
         }
     };
 
+    // update drop location array
     const handleDropLocationChange = (e) => {
         const { value } = e.target;
 
@@ -233,19 +285,15 @@ const RentBikeForm = () => {
         console.log(dropLocationRental);
     };
 
+    // final submission, validations from previous functions and submit to DB
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
-        checkPriceFields();
-        checkModelField();
-        checkImageField();
+        const isPriceValid = checkPriceFields();
+        const isModelValid = checkModelField();
+        const isImageValid = checkImageField();
 
-        if (!checkPriceFields() || !checkModelField()) {
-            return;
-        }
-
-        if (!featureRentalImageUpload) {
-            console.error('Feature image is not selected.');
+        if (!isPriceValid || !isModelValid || !isImageValid) {
             return;
         }
 
@@ -289,6 +337,7 @@ const RentBikeForm = () => {
             console.error("Error adding document: ", error);
         }
     };
+
 
     return (
         <section className='rent-section'>
@@ -379,6 +428,7 @@ const RentBikeForm = () => {
                             type="number"
                             placeholder="VND"
                             value={pricePerDay}
+                            ref={dayInputRef}
                             style={{
                                 border: (priceErrors.day || currencyErrors.day) ? `1px solid red` : 'none'
                             }}
@@ -403,6 +453,7 @@ const RentBikeForm = () => {
                             type="number"
                             placeholder="VND"
                             value={pricePerWeek}
+                            ref={weekInputRef}
                             style={{
                                 border: (priceErrors.week || currencyErrors.week) ? `1px solid red` : 'none'
                             }}
@@ -428,6 +479,7 @@ const RentBikeForm = () => {
                             type="number"
                             placeholder="VND"
                             value={pricePerMonth}
+                            ref={monthInputRef}
                             style={{
                                 border: (priceErrors.month || currencyErrors.month) ? `1px solid red` : 'none'
                             }}

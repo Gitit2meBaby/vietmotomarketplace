@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getDocs, collection, query, orderBy, getDoc, doc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { getDocs, collection, query } from 'firebase/firestore';
+import { db } from '../firebase';
 import Post from './Post';
+import { useAppContext } from '../context';
+import loadingImg from '../assets/loadingImg.webp'
+import loadingImg2 from '../assets/loadingImg2.webp'
+import spinner from '../assets/spinner.gif'
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
+    const { isLoading, setIsLoading } = useAppContext()
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -21,12 +25,70 @@ const BikeList = () => {
                 }));
 
                 setListings(listingsData);
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, 1000);
             } catch (error) {
                 console.error('Error fetching listings:', error);
             }
         };
         fetchListings();
-    }, []);
+    }, [setIsLoading]);
+
+
+    if (isLoading) return (
+        <>
+            <section className='post blur'>
+                <div className="slider-wrapper">
+                    <div className="timestamp">
+                        <p>22/02</p>
+                    </div>
+                    <img src={loadingImg} alt="motorbike" />
+                    <div className="price-wrapper">
+                        <p>17,000,000₫</p>
+                    </div>
+                </div>
+                <div className="post-content">
+                    <h1>Honda CBR Hornet 150cc</h1>
+                    <div className="post-grid">
+                        <p>Hanoi</p>
+                        <div>
+                            <p className='type manual'>manual</p>
+                            <p className='seller private'>private</p>
+                        </div>
+                    </div>
+                    <p>Well serviced and maintained bike, selling due to moving to a different...</p>
+                    <button className='show-btn'>Show More...</button>
+                </div>
+            </section>
+
+            <img className='spinner' src={spinner} alt="loading spinner" />
+
+            <section className='post blur'>
+                <div className="slider-wrapper">
+                    <div className="timestamp">
+                        <p>22/02</p>
+                    </div>
+                    <img src={loadingImg2} alt="motorbike" />
+                    <div className="price-wrapper">
+                        <p>9,000,000₫</p>
+                    </div>
+                </div>
+                <div className="post-content">
+                    <h1>2019 Vespa 120cc</h1>
+                    <div className="post-grid">
+                        <p>Danang</p>
+                        <div>
+                            <p className='type automatic'>automatic</p>
+                            <p className='seller private'>private</p>
+                        </div>
+                    </div>
+                    <p>Beautiful bike that has given me no issues over the past 3 months of riding between...</p>
+                    <button className='show-btn'>Show More...</button>
+                </div>
+            </section >
+        </>
+    )
 
     return (
         <div>

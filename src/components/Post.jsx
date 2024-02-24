@@ -8,10 +8,10 @@ import 'firebase/firestore';
 import { useAppContext } from '../context';
 import '../sass/post.css'
 
-
 const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, contact, contactRental, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
 
     const { isLoggedIn, setIsLoggedIn } = useAppContext();
+
     const isForSale = transaction === 'sell';
 
     const featureImageSrc = isForSale ? featureImage : featureRentalImageUpload;
@@ -33,10 +33,6 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
         slidesToScroll: 1,
     };
 
-    // console.log('Feature Image URL:', featureImageSrc);
-    // console.log('Second Image URL:', secondImageSrc);
-    // console.log('Third Image URL:', thirdImageSrc);
-
     const trimDescription = (fullDescription, wordLimit) => {
         const words = fullDescription.split(' ');
         const truncatedDescription = words.slice(0, wordLimit).join(' ');
@@ -51,8 +47,6 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
 
     // Example usage:
     const { trimmedDescription, descriptionRemainder } = trimDescription(descriptionSrc, 15);
-
-
 
     // Get useable date format from timestamp from database
     const createdAtDate = new Date(createdAt.seconds * 1000);
