@@ -10,22 +10,27 @@ import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
 
 const SellBikeForm = () => {
-    const [type, setType] = useState('automatic');
+    // states to be passed to firestore DB
+    const [type, setType] = useState('');
     const [price, setPrice] = useState('');
-    const [location, setLocation] = useState('Hanoi');
-    const [seller, setSeller] = useState('Private');
+    const [location, setLocation] = useState('');
+    const [seller, setSeller] = useState('');
     const [description, setDescription] = useState('')
     const [contact, setContact] = useState('')
     const [model, setModel] = useState('')
 
+    // Local state storage of image file for preview
     const [featureImageUpload, setFeatureImageUpload] = useState(null)
     const [secondImageUpload, setSecondImageUpload] = useState(null)
     const [thirdImageUpload, setThirdImageUpload] = useState(null)
 
+    // urls to store in array for firebase storage
     const [imageUrls, setImageUrls] = useState([]);
+
 
     const [showPreview, setShowPreview] = useState(false)
 
+    // Error states to show tooltips
     const [priceError, setPriceError] = useState(false)
     const [currencyError, setCurrencyError] = useState(false)
     const [modelError, setModelError] = useState(false)
@@ -33,6 +38,7 @@ const SellBikeForm = () => {
 
     const [showTooltip, setShowTootltip] = useState(false)
 
+    // local states just to show file name on custom file input
     const [selectedFileName, setSelectedFileName] = useState('No file chosen');
     const [secondFileName, setSecondFileName] = useState('No file chosen')
     const [thirdFileName, setThirdFileName] = useState('No file chosen')
@@ -40,9 +46,18 @@ const SellBikeForm = () => {
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
 
+    //UI indication of image uploading
+    const [imageUploadStatus, setImageUploadStatus] = useState({
+        feature: false,
+        second: false,
+        third: false,
+    });
+
+    // refs used for scrollTo after errors
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
 
+    // clear the url array required if same user makes multiple posts
     useEffect(() => {
         setImageUrls([]);
     }, []);
@@ -123,7 +138,7 @@ const SellBikeForm = () => {
         }
     };
 
-
+    // validations done on submission
     const checkPriceField = () => {
         if (price === '') {
             setPriceError(true);
@@ -136,6 +151,19 @@ const SellBikeForm = () => {
         }
 
         setSubmitting(true);
+        return true;
+    };
+
+    const checkModelField = () => {
+        if (model === '') {
+            setModelError(true);
+            modelInputRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+            modelInputRef.current.focus()
+            return false;
+        }
         return true;
     };
 
@@ -174,20 +202,7 @@ const SellBikeForm = () => {
         setSubmitting(false);
     }, [modelError, priceError, currencyError, submitting]);
 
-
-    const checkModelField = () => {
-        if (model === '') {
-            setModelError(true);
-            modelInputRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-            modelInputRef.current.focus()
-            return false;
-        }
-        return true;
-    };
-
+    // Make the filenames short enough to not force a second line
     const truncateFileName = (fileName, charLimit) => {
         if (fileName.length <= charLimit) {
             return fileName;
@@ -197,9 +212,10 @@ const SellBikeForm = () => {
         return truncatedName;
     };
 
+    // setting images and names into local state (not URLS for firestore) 
     const handleFeatureFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(fileName, 10);
+        const truncatedFileName = truncateFileName(fileName, 15);
 
         setSelectedFileName(truncatedFileName);
         setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null);
@@ -208,7 +224,7 @@ const SellBikeForm = () => {
 
     const handleSecondFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(fileName, 10);
+        const truncatedFileName = truncateFileName(fileName, 15);
 
         setSecondFileName(truncatedFileName);
         setSecondImageUpload(e.target.files[0]);
@@ -216,13 +232,13 @@ const SellBikeForm = () => {
 
     const handleThirdFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(fileName, 10);
+        const truncatedFileName = truncateFileName(fileName, 15);
 
         setThirdFileName(truncatedFileName);
         setThirdImageUpload(e.target.files[0]);
     };
 
-
+    // Validate atleast one image has been uploaded
     const checkImageField = () => {
         if (featureImageUpload == undefined || featureImageUpload == null) {
             setImageError(true);
@@ -235,7 +251,8 @@ const SellBikeForm = () => {
         return uuidv4();
     };
 
-    const handleImageUpload = async (image) => {
+    // push the image url into the array for firebase
+    const handleImageUpload = async (imageKey, image) => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
@@ -243,8 +260,14 @@ const SellBikeForm = () => {
                 return;
             }
 
+            // Update the upload status for the specific image
+            setImageUploadStatus(prevStatus => ({
+                ...prevStatus,
+                [imageKey]: true,
+            }));
+
             const postID = generatePostID();
-            const imageName = `${postID}_${image.name}`; // Include post ID in the image name
+            const imageName = `${postID}_${image.name}`;
             const userFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}/${postID}`);
 
             // Log the upload result
@@ -261,12 +284,15 @@ const SellBikeForm = () => {
                 // Use the previous state to ensure correct updates
                 setImageUrls((prevUrls) => [...prevUrls, ...urls]);
                 setImageError(false);
-                console.log('Image URLs after listing files:', urls);
-                console.log('imageUrls', imageUrls);
             } catch (error) {
                 console.error('Error listing files:', error);
+            } finally {
+                // Update the upload status for the specific image to false
+                setImageUploadStatus(prevStatus => ({
+                    ...prevStatus,
+                    [imageKey]: false,
+                }));
             }
-
         } catch (error) {
             console.error('Error uploading image:', error);
         }
@@ -476,8 +502,9 @@ const SellBikeForm = () => {
                     )}
 
                     {featureImageUpload != null && (
-                        <button className='upload-btn' onClick={() => handleImageUpload(featureImageUpload)}>
-                            {imageUrls.length === 0 ? 'Upload' : 'Change'}</button>
+                        <button className='upload-btn' onClick={() => handleImageUpload('feature', featureImageUpload)}>
+                            {imageUploadStatus.feature ? 'Uploading now...' : (imageUrls.length === 0 ? 'Upload' : 'Change')}
+                        </button>
                     )}
                 </div>
 
@@ -492,8 +519,8 @@ const SellBikeForm = () => {
                         </div>
 
                         {secondImageUpload != null && (
-                            <button className='upload-btn' onClick={() => handleImageUpload(secondImageUpload)}>
-                                {imageUrls.length <= 1 ? 'Upload' : 'Change'}
+                            <button className='upload-btn' onClick={() => handleImageUpload('second', secondImageUpload)}>
+                                {imageUploadStatus.second ? 'Uploading now...' : (imageUrls.length <= 1 ? 'Upload' : 'Change')}
                             </button>
 
                         )}
@@ -511,8 +538,9 @@ const SellBikeForm = () => {
                         </div>
 
                         {thirdImageUpload != null && (
-                            <button className='upload-btn' onClick={() => handleImageUpload(thirdImageUpload)}>
-                                {imageUrls.length <= 2 ? 'Upload' : 'Change'}</button>
+                            <button className='upload-btn' onClick={() => handleImageUpload('third', thirdImageUpload)}>
+                                {imageUploadStatus.third ? 'Uploading now...' : (imageUrls.length <= 2 ? 'Upload' : 'Change')}
+                            </button>
                         )}
                     </div>
                 )}

@@ -8,6 +8,7 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
 import Preview from './Preview'
+import spinner from '../assets/spinner.gif'
 
 const RentBikeForm = () => {
     // Local state storage of image file for preview
@@ -68,6 +69,13 @@ const RentBikeForm = () => {
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
 
+    //UI indication of image uploading
+    const [imageUploadStatus, setImageUploadStatus] = useState({
+        feature: false,
+        second: false,
+        third: false,
+    });
+
     // clear the url array required if same user makes multiple posts
     useEffect(() => {
         setImageUrls([]);
@@ -96,7 +104,7 @@ const RentBikeForm = () => {
         }
     };
 
-    // validation done on submission
+    // validations done on submission
     const checkPriceFields = () => {
         const errors = {};
         const currencyErrors = {};
@@ -200,17 +208,16 @@ const RentBikeForm = () => {
     // setting images and names into local state (not URLS for firestore) 
     const handleFeatureFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(fileName, 10);
+        const truncatedFileName = truncateFileName(fileName, 15);
 
         setSelectedFileName(truncatedFileName);
-        setSelectedFileName(fileName);
         setRentalFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
         setImageError(false)
     };
 
     const handleSecondFileChange = (e) => {
         const secondFileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(secondFileName, 10);
+        const truncatedFileName = truncateFileName(secondFileName, 15);
 
         setSecondFileName(truncatedFileName);
         setRentalSecondImageUpload(e.target.files[0])
@@ -218,10 +225,9 @@ const RentBikeForm = () => {
 
     const handleThirdFileChange = (e) => {
         const thirdFileName = e.target.files[0]?.name || 'No file chosen';
-        const truncatedFileName = truncateFileName(thirdFileName, 10);
+        const truncatedFileName = truncateFileName(thirdFileName, 15);
 
         setThirdFileName(truncatedFileName);
-        setThirdFileName(thirdFileName);
         setRentalThirdImageUpload(e.target.files[0])
     };
 
@@ -235,12 +241,18 @@ const RentBikeForm = () => {
     };
 
     // push the image url into the array for firebase
-    const handleImageUpload = async (image) => {
+    const handleImageUpload = async (imageKey, image) => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
                 return;
             }
+
+            // Update the upload status for the specific image
+            setImageUploadStatus(prevStatus => ({
+                ...prevStatus,
+                [imageKey]: true,
+            }));
 
             const imageName = image.name + v4();
             const userFolderRef = ref(storage, `rentImages/${auth?.currentUser?.uid}`);
@@ -265,6 +277,12 @@ const RentBikeForm = () => {
                 setImageError(false);
             } catch (error) {
                 console.error('Error listing files:', error);
+            } finally {
+                // Update the upload status for the specific image to false
+                setImageUploadStatus(prevStatus => ({
+                    ...prevStatus,
+                    [imageKey]: false,
+                }));
             }
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -337,7 +355,6 @@ const RentBikeForm = () => {
             console.error("Error adding document: ", error);
         }
     };
-
 
     return (
         <section className='rent-section'>
@@ -548,7 +565,7 @@ const RentBikeForm = () => {
                     Description
                     <textarea name="description" id="descriptionRental" cols="30" rows="10"
                         value={descriptionRental}
-                        placeholder='Information about the rental'></textarea>
+                        placeholder='Information about the rental...'></textarea>
                 </label>
 
                 <label className='main-label' htmlFor='contact'
@@ -584,12 +601,13 @@ const RentBikeForm = () => {
                 )}
 
                 {featureRentalImageUpload != null && (
-                    <button className='upload-btn' onClick={() => handleImageUpload(featureRentalImageUpload)}>
-                        {imageUrls.length === 0 ? 'Upload' : 'Change'}</button>
+                    <button className='upload-btn' onClick={() => handleImageUpload('feature', featureRentalImageUpload)}>
+                        {imageUploadStatus.feature ? 'Uploading now...' : (imageUrls.length === 0 ? 'Upload' : 'Change')}
+                    </button>
                 )}
             </div>
 
-            {imageUrls.length == 1 && (
+            {imageUrls.length === 1 && (
                 <div className='file-btn-wrapper'>
                     <div>
                         <input type='file'
@@ -600,8 +618,8 @@ const RentBikeForm = () => {
                     </div>
 
                     {secondRentalImageUpload != null && (
-                        <button className='upload-btn' onClick={() => handleImageUpload(secondRentalImageUpload)}>
-                            {imageUrls.length <= 1 ? 'Upload' : 'Change'}
+                        <button className='upload-btn' onClick={() => handleImageUpload('second', secondRentalImageUpload)}>
+                            {imageUploadStatus.second ? 'Uploading now...' : (imageUrls.length <= 1 ? 'Upload' : 'Change')}
                         </button>
                     )}
                 </div>
@@ -618,11 +636,13 @@ const RentBikeForm = () => {
                     </div>
 
                     {thirdRentalImageUpload != null && (
-                        <button className='upload-btn' onClick={() => handleImageUpload(thirdRentalImageUpload)}>
-                            {imageUrls.length <= 2 ? 'Upload' : 'Change'}</button>
+                        <button className='upload-btn' onClick={() => handleImageUpload('third', thirdRentalImageUpload)}>
+                            {imageUploadStatus.third ? 'Uploading now...' : (imageUrls.length <= 2 ? 'Upload' : 'Change')}
+                        </button>
                     )}
                 </div>
             )}
+
 
             <div className="final-form-btns">
                 <button type="button" onClick={() => setShowPreview(!showPreview)}>Preview</button>
