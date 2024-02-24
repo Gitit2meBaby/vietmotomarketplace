@@ -35,6 +35,7 @@ const SellBikeForm = () => {
     const [currencyError, setCurrencyError] = useState(false)
     const [modelError, setModelError] = useState(false)
     const [imageError, setImageError] = useState(false)
+    const [noUpload, setNoUpload] = useState(false)
 
     const [showTooltip, setShowTootltip] = useState(false)
 
@@ -56,6 +57,7 @@ const SellBikeForm = () => {
     // refs used for scrollTo after errors
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
+    const previewRef = useRef(null)
 
     // clear the url array required if same user makes multiple posts
     useEffect(() => {
@@ -83,19 +85,12 @@ const SellBikeForm = () => {
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
 
-        checkPriceField();
-        checkModelField();
-        checkImageField();
+        const isPriceValid = checkPriceField();
+        const isModelValid = checkModelField();
+        const isImageValid = checkImageField();
+        const isUpload = checkNoUpload()
 
-        if (!checkPriceField() || !checkModelField()) {
-            return;
-        }
-
-        if (!featureImageUpload) {
-            console.log(imageError);
-            console.log(featureImageUpload);
-            setImageError(true)
-            console.error('Feature image is not selected.');
+        if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
             return;
         }
 
@@ -247,6 +242,17 @@ const SellBikeForm = () => {
         return false;
     };
 
+    // Make sure they actually pressed the upload button
+    const checkNoUpload = () => {
+        if (featureImageUpload != undefined || featureImageUpload != null) {
+            if (imageUrls.length === 0) {
+                setNoUpload(true);
+                return true;
+            }
+        }
+        return false;
+    };
+
     const generatePostID = () => {
         return uuidv4();
     };
@@ -284,6 +290,7 @@ const SellBikeForm = () => {
                 // Use the previous state to ensure correct updates
                 setImageUrls((prevUrls) => [...prevUrls, ...urls]);
                 setImageError(false);
+                setNoUpload(false)
             } catch (error) {
                 console.error('Error listing files:', error);
             } finally {
@@ -297,6 +304,21 @@ const SellBikeForm = () => {
             console.error('Error uploading image:', error);
         }
     };
+
+    const handlePreviewBtn = () => {
+        setShowPreview(!showPreview);
+
+        if (previewRef.current) {
+            const previewOffsetTop = previewRef.current.getBoundingClientRect().top + window.scrollY;
+
+            window.scrollTo({
+                top: previewOffsetTop,
+                behavior: 'smooth',
+            });
+        }
+    };
+
+
 
     return (
         <>
@@ -381,6 +403,7 @@ const SellBikeForm = () => {
                             onClick={() => setShowTootltip(false)}
                         >Location
                             <select name="location" id="location">
+                                <option disabled>Please select..</option>
                                 <option value="Hanoi">Hanoi</option>
                                 <option value="HCMC">HCMC</option>
                                 <option value="Danang">Danang</option>
@@ -508,7 +531,7 @@ const SellBikeForm = () => {
                     )}
                 </div>
 
-                {imageUrls.length == 1 && (
+                {imageUrls.length >= 1 && (
                     <div className='file-btn-wrapper'>
                         <div>
                             <input type='file'
@@ -546,25 +569,29 @@ const SellBikeForm = () => {
                 )}
 
                 <div className="final-form-btns">
-                    <button type="button" onClick={() => setShowPreview(!showPreview)}>Preview</button>
+                    <button type="button" onClick={() => handlePreviewBtn()}>Preview</button>
                     <button className='post-btn' type="submit" onClick={handleSaleSubmit}>Post</button>
                 </div>
             </section>
 
             {showPreview && (
-                <Preview
-                    type={type}
-                    price={price}
-                    location={location}
-                    seller={seller}
-                    description={description}
-                    contact={contact}
-                    model={model}
-                    featureImage={featureImageUpload}
-                    secondImage={secondImageUpload}
-                    thirdImage={thirdImageUpload}
-                    setShowPreview={setShowPreview}
-                />
+                <>
+                    <div className="preview-ref-div"
+                        ref={previewRef}></div>
+                    <Preview
+                        type={type}
+                        price={price}
+                        location={location}
+                        seller={seller}
+                        description={description}
+                        contact={contact}
+                        model={model}
+                        featureImage={featureImageUpload}
+                        secondImage={secondImageUpload}
+                        thirdImage={thirdImageUpload}
+                        setShowPreview={setShowPreview}
+                    />
+                </>
             )}
         </>
     );

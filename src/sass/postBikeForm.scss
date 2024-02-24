@@ -269,7 +269,6 @@ textarea {
 }
 
 .file-btn-wrapper {
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: .5rem;
@@ -294,6 +293,7 @@ textarea {
 }
 
 .custom-file-button {
+    position: relative;
     font-family: 'Caveat-Medium';
     font-size: 1.4rem;
     pointer-events: none;
@@ -384,12 +384,12 @@ button {
 }
 
 .image-error {
-    bottom: .6rem;
-    right: 4rem;
+    bottom: 2.5rem;
+    right: 4.2rem;
 }
 
 .image-pointer {
-    bottom: 2.55rem;
+    bottom: 4.45rem;
     right: 12.8rem;
 }
 
@@ -400,6 +400,15 @@ button {
 
 .file-pointer {
     bottom: 2.5rem;
+    right: 12.3rem;
+}
+
+.upload-error {
+    bottom: 2.4rem;
+}
+
+.upload-pointer {
+    bottom: 4.4rem;
     right: 12.3rem;
 }
 

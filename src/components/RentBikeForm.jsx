@@ -8,7 +8,6 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
 import Preview from './Preview'
-import spinner from '../assets/spinner.gif'
 
 const RentBikeForm = () => {
     // Local state storage of image file for preview
@@ -37,6 +36,7 @@ const RentBikeForm = () => {
     // Error states to show tooltips
     const [modelError, setModelError] = useState(false)
     const [imageError, setImageError] = useState(false)
+    const [noUpload, setNoUpload] = useState(false)
     const [priceErrors, setPriceErrors] = useState({
         day: false,
         week: false,
@@ -65,6 +65,7 @@ const RentBikeForm = () => {
     const dayInputRef = useRef(null)
     const weekInputRef = useRef(null)
     const monthInputRef = useRef(null)
+    const previewRef = useRef(null)
 
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
@@ -240,6 +241,21 @@ const RentBikeForm = () => {
         return false;
     };
 
+    // Make sure they actually pressed the upload button
+    const checkNoUpload = () => {
+        if (featureRentalImageUpload != undefined || featureRentalImageUpload != null) {
+            if (imageUrls.length === 0) {
+                setNoUpload(true);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    const generatePostID = () => {
+        return v4();
+    };
+
     // push the image url into the array for firebase
     const handleImageUpload = async (imageKey, image) => {
         try {
@@ -248,14 +264,20 @@ const RentBikeForm = () => {
                 return;
             }
 
+            // Generate a unique post ID for each post
+            const postID = generatePostID();
+
             // Update the upload status for the specific image
-            setImageUploadStatus(prevStatus => ({
+            setImageUploadStatus((prevStatus) => ({
                 ...prevStatus,
                 [imageKey]: true,
             }));
 
-            const imageName = image.name + v4();
-            const userFolderRef = ref(storage, `rentImages/${auth?.currentUser?.uid}`);
+            // Generate a unique image name with post ID
+            const imageName = `${postID}_${image.name}`;
+
+            // Create a reference to the user's folder in rentImages
+            const userFolderRef = ref(storage, `rentImages/${auth?.currentUser?.uid}/${postID}`);
 
             // Log the upload result
             const uploadResult = await uploadBytes(ref(userFolderRef, imageName), image);
@@ -269,17 +291,18 @@ const RentBikeForm = () => {
                 );
 
                 // Find the newly added URLs
-                const addedUrls = newUrls.filter(url => !prevImageUrls.includes(url));
+                const addedUrls = newUrls.filter((url) => !prevImageUrls.includes(url));
 
                 // Use the previous state and add only the new URLs
-                setImageUrls(prevUrls => [...prevUrls, ...addedUrls]);
+                setImageUrls((prevUrls) => [...prevUrls, ...addedUrls]);
                 setPrevImageUrls(newUrls);
                 setImageError(false);
+                setNoUpload(false)
             } catch (error) {
                 console.error('Error listing files:', error);
             } finally {
                 // Update the upload status for the specific image to false
-                setImageUploadStatus(prevStatus => ({
+                setImageUploadStatus((prevStatus) => ({
                     ...prevStatus,
                     [imageKey]: false,
                 }));
@@ -288,7 +311,6 @@ const RentBikeForm = () => {
             console.error('Error uploading image:', error);
         }
     };
-
     // update drop location array
     const handleDropLocationChange = (e) => {
         const { value } = e.target;
@@ -310,8 +332,9 @@ const RentBikeForm = () => {
         const isPriceValid = checkPriceFields();
         const isModelValid = checkModelField();
         const isImageValid = checkImageField();
+        const isUpload = checkNoUpload()
 
-        if (!isPriceValid || !isModelValid || !isImageValid) {
+        if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
             return;
         }
 
@@ -353,6 +376,19 @@ const RentBikeForm = () => {
             setPrevImageUrls([])
         } catch (error) {
             console.error("Error adding document: ", error);
+        }
+    };
+
+    const handlePreviewBtn = () => {
+        setShowPreview(!showPreview);
+
+        if (previewRef.current) {
+            const previewOffsetTop = previewRef.current.getBoundingClientRect().top + window.scrollY;
+
+            window.scrollTo({
+                top: previewOffsetTop,
+                behavior: 'smooth',
+            });
         }
     };
 
@@ -522,6 +558,7 @@ const RentBikeForm = () => {
                         <select
                             name="location"
                             id="locationRental">
+                            <option disabled>Please select..</option>
                             <option value="Hanoi">Hanoi</option>
                             <option value="HCMC">HCMC</option>
                             <option value="Danang">Danang</option>
@@ -600,6 +637,15 @@ const RentBikeForm = () => {
                     </>
                 )}
 
+                {noUpload && (
+                    <>
+                        <div className="pointer upload-pointer"></div>
+                        <div className="form-error upload-error">
+                            <p>Your need to upload the image!</p>
+                        </div>
+                    </>
+                )}
+
                 {featureRentalImageUpload != null && (
                     <button className='upload-btn' onClick={() => handleImageUpload('feature', featureRentalImageUpload)}>
                         {imageUploadStatus.feature ? 'Uploading now...' : (imageUrls.length === 0 ? 'Upload' : 'Change')}
@@ -607,7 +653,7 @@ const RentBikeForm = () => {
                 )}
             </div>
 
-            {imageUrls.length === 1 && (
+            {imageUrls.length >= 1 && (
                 <div className='file-btn-wrapper'>
                     <div>
                         <input type='file'
@@ -645,13 +691,14 @@ const RentBikeForm = () => {
 
 
             <div className="final-form-btns">
-                <button type="button" onClick={() => setShowPreview(!showPreview)}>Preview</button>
+                <button type="button" onClick={() => handlePreviewBtn()}>Preview</button>
                 <button className='post-btn' type="submit" onClick={handleSaleSubmit}>Post</button>
             </div>
 
 
             {showPreview && (
                 <Preview
+                    ref={previewRef}
                     type={typeRental}
                     pricePerDay={pricePerDay}
                     pricePerWeek={pricePerWeek}

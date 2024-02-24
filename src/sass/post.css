@@ -57,7 +57,7 @@ body {
 
 .loading-img {
   max-width: 100%;
-  max-height: 200px;
+  max-height: 300px;
 }
 .loading-img img {
   margin: 0 auto;
@@ -94,11 +94,11 @@ body {
   right: 2rem;
 }
 
-.post-image {
+.post-img {
   max-width: 100%;
-  max-height: 200px;
+  max-height: 300px;
 }
-.post-image img {
+.post-img img {
   margin: 0 auto;
 }
 
