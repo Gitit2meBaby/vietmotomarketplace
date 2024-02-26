@@ -1,0 +1,101 @@
+@font-face {
+    font-family: 'Mitr-Regular';
+    src: url('../assets/fonts/Mitr-Regular.ttf');
+}
+
+%glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+$blue: #4ca6a8;
+
+.cropper-wrapper {
+    position: fixed;
+    z-index: 50;
+    box-shadow: 0 0 1500px 1500px rgba(0, 0, 0, .85);
+    margin-top: 15dvh;
+    border-radius: .5rem;
+    @extend %glass;
+}
+
+.cropper-modal {
+    position: relative;
+    height: 65dvh;
+    width: 100vw;
+}
+
+.crop-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 80px;
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+    button {
+        font-family: 'Mitr-Regular';
+        font-size: 1rem;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        padding: .3rem 1rem;
+    }
+}
+
+.reactEasyCrop_Container img {
+    margin-right: 1.7rem;
+}
+
+.zoom-range {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 10px;
+    width: 100%;
+    border-radius: .5rem;
+    @extend %glass;
+}
+
+.zoom-range::-moz-range-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 1px solid $blue;
+    ;
+    background: $blue;
+    border-radius: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+    transition: box-shadow 150ms cubic-bezier(0.2, 0, 0.2, .5) 0ms;
+}
+
+.zoom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 1px solid $blue;
+    background: $blue;
+    border-radius: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+    transition: box-shadow 150ms cubic-bezier(0.2, 0, 0.2, .5) 0ms;
+}
+
+.controls:hover input[type='range']::-webkit-slider-thumb {
+    box-shadow: 0px 0px 5px 8px rgba(63, 81, 181, 0.16);
+    border-radius: 50%;
+}
+
+.controls:hover input[type='range']::-moz-range-thumb {
+    box-shadow: 0px 0px 5px 8px rgba(63, 81, 181, 0.16);
+}

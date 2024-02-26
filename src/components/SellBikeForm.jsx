@@ -8,8 +8,14 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
+import { useAppContext } from '../context';
 
 const SellBikeForm = () => {
+    const { storedImageUrl, setStoredImageUrl } = useAppContext()
+    const { cropper, setCropper } = useAppContext()
+    const { imageUrls, setImageUrls } = useAppContext()
+    const { storedImageBlob, setStoredImageBlob } = useAppContext()
+
     // states to be passed to firestore DB
     const [type, setType] = useState('');
     const [price, setPrice] = useState('');
@@ -23,10 +29,6 @@ const SellBikeForm = () => {
     const [featureImageUpload, setFeatureImageUpload] = useState(null)
     const [secondImageUpload, setSecondImageUpload] = useState(null)
     const [thirdImageUpload, setThirdImageUpload] = useState(null)
-
-    // urls to store in array for firebase storage
-    const [imageUrls, setImageUrls] = useState([]);
-
 
     const [showPreview, setShowPreview] = useState(false)
 
@@ -217,6 +219,14 @@ const SellBikeForm = () => {
         setImageError(false);
     };
 
+    useEffect(() => {
+        if (featureImageUpload) {
+            setStoredImageUrl(featureImageUpload)
+            setCropper(true);
+            console.log('featureImageUpload', featureImageUpload);
+        }
+    }, [featureImageUpload]);
+
     const handleSecondFileChange = (e) => {
         const fileName = e.target.files[0]?.name || 'No file chosen';
         const truncatedFileName = truncateFileName(fileName, 15);
@@ -317,8 +327,6 @@ const SellBikeForm = () => {
             });
         }
     };
-
-
 
     return (
         <>
@@ -524,6 +532,15 @@ const SellBikeForm = () => {
                         </>
                     )}
 
+                    {noUpload && (
+                        <>
+                            <div className="pointer upload-pointer"></div>
+                            <div className="form-error upload-error">
+                                <p>Your need to upload the image!</p>
+                            </div>
+                        </>
+                    )}
+
                     {featureImageUpload != null && (
                         <button className='upload-btn' onClick={() => handleImageUpload('feature', featureImageUpload)}>
                             {imageUploadStatus.feature ? 'Uploading now...' : (imageUrls.length === 0 ? 'Upload' : 'Change')}
@@ -586,7 +603,7 @@ const SellBikeForm = () => {
                         description={description}
                         contact={contact}
                         model={model}
-                        featureImage={featureImageUpload}
+                        featureImage={storedImageUrl}
                         secondImage={secondImageUpload}
                         thirdImage={thirdImageUpload}
                         setShowPreview={setShowPreview}

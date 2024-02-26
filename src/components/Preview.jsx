@@ -6,13 +6,33 @@ import 'slick-carousel/slick/slick-theme.css';
 
 const Preview = ({ type, price, location, seller, description, contact, model, featureImage, secondImage, thirdImage, setShowPreview, pricePerDay, pricePerWeek, pricePerMonth, dropLocation }) => {
 
-    console.log(featureImage);
+
+    console.log('Type of featureImage:', typeof featureImage);
+    console.log('Type of secondImage:', typeof secondImage);
+    console.log('Type of thirdImage:', typeof thirdImage);
+
+    console.log('Feature Image:', featureImage);
+    console.log('Second Image:', secondImage);
+    console.log('Third Image:', thirdImage);
+
 
     const [showMore, setShowMore] = useState(false)
+
+    // Move the definition of cleanImageUrl above its usage
+    const cleanImageUrl = (imageUrl) => {
+        if (typeof imageUrl === 'string') {
+            const cleanedUrl = imageUrl.replace(/^blob:/, '');
+            return `"${cleanedUrl}"`;
+        } else {
+            return null;
+        }
+    };
 
     const featureImageUrl = featureImage ? URL.createObjectURL(featureImage) : null;
     const secondImageUrl = secondImage ? URL.createObjectURL(secondImage) : null;
     const thirdImageUrl = thirdImage ? URL.createObjectURL(thirdImage) : null;
+
+    const cleanedUrl = cleanImageUrl(featureImageUrl?.toString());
 
     const trimDescription = (fullDescription, wordLimit) => {
         const words = fullDescription.split(' ');
@@ -26,7 +46,6 @@ const Preview = ({ type, price, location, seller, description, contact, model, f
         };
     };
 
-    // Example usage:
     const { trimmedDescription, descriptionRemainder } = trimDescription(description, 15);
 
     const settings = {
@@ -37,6 +56,8 @@ const Preview = ({ type, price, location, seller, description, contact, model, f
         slidesToScroll: 1,
     };
 
+    console.log('featureImageUrl', featureImageUrl);
+
     return (
         <main className="preview">
             <section className='post'>
@@ -45,7 +66,7 @@ const Preview = ({ type, price, location, seller, description, contact, model, f
                         <p>Now</p>
                     </div>
                     <Slider {...settings}>
-                        <img className='post-img' src={featureImageUrl} alt="Motorbike" />
+                        <img className='post-img' src={cleanedUrl} alt="Motorbike" />
                         <img className='post-img' src={secondImageUrl} alt="Motorbike" />
                         <img className='post-img' src={thirdImageUrl} alt="Motorbike" />
                     </Slider>

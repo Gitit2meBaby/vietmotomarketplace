@@ -5,12 +5,26 @@ const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true);
+    const [storedImageUrl, setStoredImageUrl] = useState('');
+    const [storedImageBlob, setStoredImageBlob] = useState(null);
+    const [cropper, setCropper] = useState(false);
+    const [imageUrls, setImageUrls] = useState([]);
 
     return (
         <AppContext.Provider value={{
-            isLoggedIn, setIsLoggedIn,
-            isLoading, setIsLoading,
+            isLoggedIn,
+            setIsLoggedIn,
+            isLoading,
+            setIsLoading,
+            storedImageUrl,
+            setStoredImageUrl,
+            storedImageBlob,
+            setStoredImageBlob,
+            cropper,
+            setCropper,
+            imageUrls,
+            setImageUrls
         }}>
             {children}
         </AppContext.Provider>
