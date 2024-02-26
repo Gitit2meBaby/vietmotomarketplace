@@ -6,8 +6,6 @@ const AppContext = createContext();
 const AppProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [storedImageUrl, setStoredImageUrl] = useState('');
-    const [storedImageBlob, setStoredImageBlob] = useState(null);
     const [cropper, setCropper] = useState(false);
     const [imageUrls, setImageUrls] = useState([]);
 
@@ -17,10 +15,6 @@ const AppProvider = ({ children }) => {
             setIsLoggedIn,
             isLoading,
             setIsLoading,
-            storedImageUrl,
-            setStoredImageUrl,
-            storedImageBlob,
-            setStoredImageBlob,
             cropper,
             setCropper,
             imageUrls,
