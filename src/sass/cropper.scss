@@ -1,6 +1,45 @@
 .cropper {
     margin-top: 14rem;
-    background-color: pink;
+
+    .Crop-Controls {
+        margin-bottom: 10px;
+    }
+
+    .Crop-Controls>* {
+        margin-bottom: 3px;
+    }
+
+    img {
+        max-width: 100%;
+    }
+}
+
+.react-crop {
+    position: relative;
+    display: inline-block;
+    cursor: crosshair;
+    max-width: 100%;
+}
+
+.ReactCrop__crop-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.ReactCrop__child-wrapper>img,
+.ReactCrop__child-wrapper>video {
+    display: block;
+    max-width: 100%;
+    max-height: inherit;
+}
+
+.ReactCrop__child-wrapper {
+    overflow: hidden;
+    max-height: inherit;
 }
 
 #file-input {

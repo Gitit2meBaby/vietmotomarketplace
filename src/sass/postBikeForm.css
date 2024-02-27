@@ -2,29 +2,20 @@
   font-family: "Caveat-Medium";
   src: url("../assets/fonts/Caveat-Medium.ttf") format("truetype");
 }
-
 @font-face {
   font-family: "Caveat-SemiBold";
   src: url("../assets/fonts/Caveat-SemiBold.ttf");
 }
-
 @font-face {
   font-family: "Mitr-Regular";
   src: url("../assets/fonts/Mitr-Regular.ttf");
 }
-
 input[type=file],
-button,
-.custom-file-button,
-textarea,
-.dropdown-wrapper label select,
-input[type=text],
-input[type=number],
-.form-container,
-.tab {
+button, .custom-file-button, textarea, .dropdown-wrapper label select, input[type=text],
+input[type=number], .form-container, .tab {
   background: rgba(255, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -46,7 +37,6 @@ h1 {
   flex-direction: column;
   padding: 0 0.5rem 2rem 0.5rem;
 }
-
 .post-info p {
   font-family: "Mitr-Regular";
   margin: 0;
@@ -81,7 +71,6 @@ h1 {
   border-radius: 30% 30% 0 0;
   cursor: pointer;
 }
-
 .tab:first-of-type {
   margin-left: 0.5rem;
 }
@@ -89,7 +78,7 @@ h1 {
 .inactive-tab {
   background: transparent;
   -webkit-backdrop-filter: blur(0px);
-  backdrop-filter: blur(0px);
+          backdrop-filter: blur(0px);
   color: rgba(97, 89, 89, 0.7);
 }
 
@@ -99,7 +88,7 @@ h1 {
   border-radius: 0.8rem;
 }
 
-form label {
+.post-bike-form label {
   font-family: "Caveat-medium";
   color: black;
   font-size: 1.2rem;
@@ -109,7 +98,6 @@ form label {
 .required-span {
   color: rgb(203, 4, 4);
 }
-
 .required-span span {
   font-size: 1.2rem;
   font-weight: 800;
@@ -124,21 +112,18 @@ form label {
   padding-bottom: 0.8rem;
   position: relative;
 }
-
 .input-wrapper label,
 .input-wrapper input,
 .input-wrapper textarea {
   display: block;
   position: relative;
 }
-
 .input-wrapper div {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
 }
-
 .input-wrapper div svg {
   cursor: pointer;
 }
@@ -170,21 +155,17 @@ input[type=number] {
   border-radius: 0.5rem;
   z-index: 5;
 }
-
 .tooltip div {
   flex-direction: row-reverse;
 }
-
 .tooltip svg {
   margin-left: auto;
   margin-top: -0.5rem;
 }
-
 .tooltip p,
 .tooltip a {
   margin: 0;
 }
-
 .tooltip a {
   color: rgb(250, 66, 66);
   padding-top: 0.4rem;
@@ -223,7 +204,6 @@ input[type=number] {
   flex-direction: column;
   gap: 0.3rem;
 }
-
 .dropdown-wrapper label select {
   padding: 0.3rem;
   border-radius: 0.2rem;
@@ -244,8 +224,8 @@ input[type=number] {
 input[type=checkbox],
 input[type=radio] {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   width: 20px;
   height: 20px;
   border: 2px solid rgba(0, 0, 0, 0.3);
@@ -254,7 +234,7 @@ input[type=radio] {
   margin-right: 0.5rem;
   background: rgba(255, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
   transition: all 0.3s ease-in-out;
 }
 
@@ -278,19 +258,16 @@ textarea {
   margin-bottom: 1rem;
   overflow: hidden;
 }
-
 .file-btn-wrapper div {
   position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
 .file-btn-wrapper div label {
   margin-left: 0.1rem;
   font-size: 1.2rem;
 }
-
 .file-btn-wrapper div input {
   padding: 1rem 1rem 0 1rem;
 }
@@ -305,7 +282,6 @@ textarea {
   cursor: pointer;
   margin-bottom: 0.1rem;
 }
-
 .custom-file-button:nth-of-type(1) {
   margin-top: 0.1rem;
 }
@@ -319,8 +295,7 @@ textarea {
   margin-top: 0.5rem;
 }
 
-
-.file-btn-wrapper input[type=file] {
+input[type=file] {
   position: absolute;
   top: 0;
   left: 0;
@@ -328,7 +303,7 @@ textarea {
   cursor: pointer;
 }
 
-.file-btn-wrapper input[type=file],
+input[type=file],
 button {
   border: none;
   border-radius: 0.3rem;
@@ -341,7 +316,6 @@ button {
   justify-content: space-around;
   align-items: center;
 }
-
 .final-form-btns button {
   font-family: "Caveat-Medium";
   text-transform: uppercase;
@@ -367,7 +341,6 @@ button {
   width: fit-content;
   z-index: 5;
 }
-
 .form-error p {
   margin: 0;
 }
@@ -426,7 +399,6 @@ button {
   right: 0rem;
   top: 0rem;
 }
-
 .rent-tooltip div {
   display: flex;
   flex-direction: row-reverse;
@@ -442,7 +414,6 @@ button {
   padding-bottom: 0.8rem;
   position: relative;
 }
-
 .rent-inputs input {
   width: 50%;
   margin-right: 0.5rem;
@@ -477,8 +448,6 @@ button {
 
 .checkbox-options {
   -moz-columns: 2;
-  columns: 2;
+       columns: 2;
   margin: 0.5rem 0 1rem 0;
-}
-
-/*# sourceMappingURL=postBikeForm.css.map */
+}/*# sourceMappingURL=postBikeForm.css.map */

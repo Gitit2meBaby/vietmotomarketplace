@@ -394,7 +394,9 @@ const RentBikeForm = () => {
 
     return (
         <section className='rent-section'>
-            <form onSubmit={handleSaleSubmit}>
+            <form
+                className='post-bike-form'
+                onSubmit={handleSaleSubmit}>
 
                 <div className="input-wrapper">
                     <label ref={modelInputRef} className='main-label'>Make and Model<span className='required-span'> *</span>                        <input

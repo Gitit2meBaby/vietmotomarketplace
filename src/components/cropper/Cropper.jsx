@@ -156,6 +156,7 @@ export default function Cropper() {
 
             {imgSrc && (
                 <ReactCrop
+                    className='react-crop'
                     crop={crop}
                     onChange={(_, percentCrop) => setCrop(percentCrop)}
                     onComplete={(c) => setCompletedCrop(c)}

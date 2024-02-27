@@ -20,7 +20,7 @@ body {
     margin: 0;
 }
 
-header {
+.header {
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -39,7 +39,7 @@ header {
     }
 }
 
-header main,
+.header main,
 .header-auth div,
 .header-auth {
     display: flex;
@@ -53,15 +53,26 @@ header main,
     }
 }
 
-.header-auth {
+.auth {
+    display: flex;
     gap: 1rem;
 
-    button {
+    .button {
         @extend %glass;
     }
 }
 
-nav {
+.header-auth-div {
+    display: flex;
+}
+
+.header-auth-div img {
+    align-self: center;
+    justify-self: center;
+    margin: 0 auto;
+}
+
+.header nav {
     position: absolute;
     top: 0rem;
     left: 0rem;

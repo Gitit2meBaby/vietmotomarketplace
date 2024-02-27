@@ -9,6 +9,7 @@ import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
 import { useAppContext } from '../context';
+import Cropper from './cropper/Cropper';
 
 const SellBikeForm = () => {
     const { imageUrls, setImageUrls } = useAppContext()
@@ -326,7 +327,9 @@ const SellBikeForm = () => {
     return (
         <>
             <section className='sale-section'>
-                <form onSubmit={handleSaleSubmit}>
+                <form
+                    className='post-bike-form'
+                    onSubmit={handleSaleSubmit}>
 
                     <div className="input-wrapper">
                         <label ref={modelInputRef} className='main-label'>Make and Model<span className='required-span'> *</span>
@@ -605,6 +608,8 @@ const SellBikeForm = () => {
                     />
                 </>
             )}
+
+            <Cropper />
         </>
     );
 };

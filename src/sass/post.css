@@ -76,12 +76,24 @@ body {
   padding: 0.3rem;
   z-index: 5;
 }
+.timestamp h4,
 .timestamp p,
+.price-wrapper h4,
 .price-wrapper p {
-  font-size: 1.2rem;
   font-family: "Mitr-Regular";
   margin: 0;
   color: rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05rem;
+}
+.timestamp h4 span,
+.timestamp p span,
+.price-wrapper h4 span,
+.price-wrapper p span {
+  font-size: 1.2rem;
+}
+.timestamp h4,
+.price-wrapper h4 {
+  font-size: 1.6rem;
 }
 
 .timestamp {
@@ -138,6 +150,33 @@ body {
   padding: 0 0.8rem 0.1rem 0.2rem;
 }
 
+.post-contact {
+  position: relative;
+}
+
+.sign-for-more-btn {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+  font-family: "Mitr-Regular";
+  font-size: 1.4rem;
+  padding: 0.3rem 1rem 0.5rem 1.3rem;
+  color: white;
+  background-color: transparent;
+  transition: all 2s ease;
+}
+.sign-for-more-btn:hover {
+  background-color: #000;
+}
+.sign-for-more-btn:hover svg {
+  transform: rotate(0deg) translateY(0px) translateX(5px);
+}
+.sign-for-more-btn svg {
+  transform: rotate(25deg) translateY(6px) translateX(10px);
+  transition: all 1s ease;
+}
+
 .msg-btn {
   font-family: "Mitr-Regular";
   text-transform: uppercase;
@@ -147,6 +186,11 @@ body {
   background-color: #DB261E;
   padding: 0.3rem 1rem;
   color: #FFFF05;
+}
+.msg-btn:disabled {
+  color: rgba(83, 83, 83, 0.5);
+  background-color: rgba(248, 248, 248, 0.655);
+  cursor: not-allowed;
 }
 
 .post-grid {
