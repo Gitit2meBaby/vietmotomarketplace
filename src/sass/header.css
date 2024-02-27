@@ -61,6 +61,12 @@ body {
   margin: 0 auto;
 }
 
+.header-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .header nav {
   position: absolute;
   top: 0rem;
