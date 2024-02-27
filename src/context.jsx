@@ -6,7 +6,6 @@ const AppContext = createContext();
 const AppProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [cropper, setCropper] = useState(false);
     const [imageUrls, setImageUrls] = useState([]);
 
     return (
@@ -15,10 +14,8 @@ const AppProvider = ({ children }) => {
             setIsLoggedIn,
             isLoading,
             setIsLoading,
-            cropper,
-            setCropper,
             imageUrls,
-            setImageUrls
+            setImageUrls,
         }}>
             {children}
         </AppContext.Provider>

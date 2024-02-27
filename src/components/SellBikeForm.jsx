@@ -11,10 +11,7 @@ import Preview from './Preview'
 import { useAppContext } from '../context';
 
 const SellBikeForm = () => {
-    const { storedImageUrl, setStoredImageUrl } = useAppContext()
-    const { cropper, setCropper } = useAppContext()
     const { imageUrls, setImageUrls } = useAppContext()
-    const { storedImageBlob, setStoredImageBlob } = useAppContext()
 
     // states to be passed to firestore DB
     const [type, setType] = useState('');
@@ -221,8 +218,6 @@ const SellBikeForm = () => {
 
     useEffect(() => {
         if (featureImageUpload) {
-            setStoredImageUrl(featureImageUpload)
-            setCropper(true);
             console.log('featureImageUpload', featureImageUpload);
         }
     }, [featureImageUpload]);
@@ -603,7 +598,7 @@ const SellBikeForm = () => {
                         description={description}
                         contact={contact}
                         model={model}
-                        featureImage={storedImageUrl}
+                        featureImage={featureImageUpload}
                         secondImage={secondImageUpload}
                         thirdImage={thirdImageUpload}
                         setShowPreview={setShowPreview}
