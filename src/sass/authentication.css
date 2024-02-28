@@ -1,9 +1,29 @@
+@font-face {
+  font-family: "Mitr-Regular";
+  src: url("../assets/fonts/Mitr-Regular.ttf");
+}
+.auth {
+  position: relative;
+}
+
+.header-signin-btn {
+  font-family: "Mitr-Regular";
+  text-transform: uppercase;
+  letter-spacing: 0.02rem;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 0.2rem 0.5rem 0.25rem 0.5rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+
 .sign-in-modal {
+  font-family: "Mitr-Regular";
   position: fixed;
   top: 50%;
   left: 50%;
   width: 80vw;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -60%);
   z-index: 50;
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.2);
@@ -12,10 +32,59 @@
   box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  padding: 1rem;
+  border: 1px solid #000;
 }
 .sign-in-modal h2 {
   text-align: center;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  color: #3d3d3d;
+}
+.sign-in-modal button {
+  cursor: pointer;
+  font-family: "Mitr-Regular";
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.input-wrapper-signup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.signup-btn {
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  width: 100%;
+  padding-block: 0.3rem;
+  box-shadow: none;
+  border: 1px solid #000;
+}
+
+.have-account-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.have-account-wrapper p {
+  font-size: 0.8rem;
+}
+.have-account-wrapper .have-account-btn {
+  border: none;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  box-shadow: none;
+  margin: 0;
+  color: rgb(1, 1, 203);
 }
 
 .signup-dividers {
@@ -34,4 +103,54 @@
   width: 100%;
   background-color: #353535;
   height: 1px;
+}
+
+.login-social-btns {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  border: 1px solid #000;
+  width: 100%;
+  padding-block: 0.3rem;
+  box-shadow: none;
+  border: 1px solid #000;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05rem;
+  background-color: rgba(255, 255, 255, 0.8352941176);
+}
+.login-social-btns svg {
+  position: absolute;
+  top: 0.33rem;
+  left: 0.8rem;
+  justify-self: flex-start;
+}
+
+.facebook-btn {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.fine-print {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 0.3rem;
+}
+.fine-print a {
+  margin: 0;
+  font-size: 0.6rem;
+  color: #000;
+  text-underline-offset: 0.15rem;
+}
+
+.forgot-pass-btn {
+  border: none;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  box-shadow: none;
+  margin: 0;
+  color: rgb(1, 1, 203);
 }/*# sourceMappingURL=authentication.css.map */

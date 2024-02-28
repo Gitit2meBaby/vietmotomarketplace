@@ -39,7 +39,7 @@ const Header = () => {
                 <svg onClick={() => setNavOpen(true)} stroke="currentColor" fill="currentColor" strokeWidth="0" version="1.2" baseProfile="tiny" viewBox="0 0 24 24" height="3em" width="3em" xmlns="http://www.w3.org/2000/svg"><path d="M19 17h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 10h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2zM19 3h-14c-1.103 0-2 .897-2 2s.897 2 2 2h14c1.103 0 2-.897 2-2s-.897-2-2-2z"></path></svg>
             </div>
 
-            <div className={isLoggedIn ? "header-auth-div" : "header-signin-btn"}>
+            <div className={isLoggedIn ? "header-auth-div" : "header-signin-wrapper"}>
                 <Authentication />
             </div>
 
