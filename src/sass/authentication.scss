@@ -20,6 +20,8 @@ $white: #fff;
     cursor: pointer;
 }
 
+.password-reset-modal,
+.signup-success-modal,
 .sign-in-modal {
     font-family: "Mitr-Regular";
     position: fixed;
@@ -31,7 +33,7 @@ $white: #fff;
     border-radius: .5rem;
     background: #ffffff33;
     backdrop-filter: blur(5px);
-    box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -47,6 +49,12 @@ $white: #fff;
     button {
         cursor: pointer;
         font-family: "Mitr-Regular";
+    }
+
+    h4 {
+        text-align: center;
+        margin: 0;
+        letter-spacing: .1rem;
     }
 
 }
@@ -161,5 +169,97 @@ $white: #fff;
     box-shadow: none;
     margin: 0;
     color: rgb(1, 1, 203);
+}
 
+// error tooltips
+.error-state {
+    border: 1px solid #d10505 !important;
+    outline: 1px solid #d10505;
+}
+
+.auth-password-error,
+.auth-pass-reset-error,
+.auth-email-error {
+    bottom: -2.8rem;
+    right: 1rem;
+}
+
+.auth-email-exists-error {
+    bottom: -4.4rem;
+    right: 1rem;
+}
+
+.auth-email-exists-pointer {
+    bottom: -.6rem;
+    right: 10.3rem;
+}
+
+.auth-email-pointer {
+    bottom: -.6rem;
+    right: 6.5rem;
+}
+
+.auth-password-pointer {
+    bottom: -.6rem;
+    right: 9.5rem;
+}
+
+.auth-password-format-pointer {
+    bottom: -.6rem;
+    right: 14.5rem;
+}
+
+.email-login-error,
+.auth-display-name-error {
+    bottom: -2.8rem;
+    right: 1rem;
+}
+
+.auth-display-name-pointer {
+    bottom: -.6rem;
+    right: 13.5rem;
+}
+
+.email-login-pointer {
+    bottom: -.6rem;
+    right: 10.5rem;
+}
+
+.auth-pass-reset-pointer {
+    bottom: -.6rem;
+    right: 12rem;
+}
+
+.incorrect-password-error {
+    bottom: -4.4rem;
+    right: 1rem;
+}
+
+.incorrect-password-pointer {
+    bottom: -.6rem;
+    right: 9.8rem;
+}
+
+
+// extra modals
+.approval-wrapper {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 1rem;
+    border-radius: 50%;
+    margin-top: 1rem;
+}
+
+.success-text {
+    text-align: center;
+    font-size: 1.4rem;
+    margin: 1rem 0 -1rem 0;
+}
+
+.logout-btn {
+    font-size: 1rem;
+    letter-spacing: .05rem;
 }

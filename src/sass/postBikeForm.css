@@ -335,8 +335,6 @@ button {
 
 .form-error {
   position: absolute !important;
-  bottom: -1.3rem;
-  right: 0.5rem;
   background-color: black;
   color: white;
   border-radius: 0.3rem;
@@ -349,7 +347,13 @@ button {
   margin: 0;
 }
 
+.model-error {
+  bottom: -1.3rem;
+  right: 0.5rem;
+}
+
 .price-error {
+  bottom: -1.3rem;
   right: 3rem;
 }
 
@@ -385,6 +389,7 @@ button {
 
 .upload-error {
   bottom: 2.4rem;
+  right: 0.5rem;
 }
 
 .upload-pointer {

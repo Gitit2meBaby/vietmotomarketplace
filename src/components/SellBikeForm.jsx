@@ -347,7 +347,7 @@ const SellBikeForm = () => {
                         {modelError && (
                             <>
                                 <div className="pointer model-pointer"></div>
-                                <div id="model-error" className="form-error" role="alert">
+                                <div id="model-error" className="form-error model error" role="alert">
                                     <p>Must include a model!</p>
                                 </div>
                             </>
