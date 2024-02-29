@@ -9,7 +9,6 @@ import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
 import { useAppContext } from '../context';
-import Cropper from './cropper/Cropper';
 // icon imports
 import whatsAppLogo from '../assets/socials/whatsApp.svg'
 import faceBookLogo from '../assets/socials/facebook.svg'
@@ -77,6 +76,7 @@ const SellBikeForm = () => {
         setImageUrls([]);
     }, []);
 
+    // price input
     const handlePriceChange = (e) => {
         setPrice(e.target.value)
         setPriceError(false)
@@ -84,16 +84,19 @@ const SellBikeForm = () => {
         setShowTootltip(false)
     }
 
+    // price info tooltip
     const handleTooltip = () => {
         setShowTootltip(!showTooltip)
         setCurrencyError(false)
         setPriceError(false)
     }
 
+    // contact info tooltip
     const handleContactTooltip = () => {
         setShowContactTootltip(!showContactTooltip)
     }
 
+    // model input
     const handleModelChange = (e) => {
         setModel(e.target.value)
         setModelError(false)
@@ -102,13 +105,18 @@ const SellBikeForm = () => {
     // Final submission function
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
-
+        console.log("clicked post");
         const isPriceValid = checkPriceField();
         const isModelValid = checkModelField();
         const isImageValid = checkImageField();
         const isUpload = checkNoUpload()
 
         if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
+            console.log((isPriceValid));
+            console.log((isModelValid));
+            console.log((isImageValid));
+            console.log((isUpload));
+            console.log('submitting', submitting);
             return;
         }
 
@@ -155,6 +163,7 @@ const SellBikeForm = () => {
             setFeatureImageUpload(null);
             setSecondImageUpload(null);
             setThirdImageUpload(null);
+            console.log('post sucesss');
 
         } catch (error) {
             console.error("Error adding document: ", error);

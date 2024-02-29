@@ -3,6 +3,7 @@ import ReactCrop, {
     centerCrop,
     makeAspectCrop,
 } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css';
 import { canvasPreview } from './canvasPreview';
 import { useDebounceEffect } from './useDebounceEffect';
 import '../../sass/cropper.css'
@@ -34,6 +35,8 @@ export default function Cropper() {
     const [scale, setScale] = useState(1);
     const [rotate, setRotate] = useState(0);
     const [aspect, setAspect] = useState(16 / 9);
+
+    const [why, setWhy] = useState(false)
 
     function onSelectFile(e) {
         if (e.target.files && e.target.files.length > 0) {
@@ -126,13 +129,15 @@ export default function Cropper() {
         <div className="cropper">
             <div className="Crop-Controls">
                 <input id='file-input' type="file" accept="image/*" onChange={onSelectFile} />
+
+                <h2>Edit Image <span onClick={() => setWhy(true)}>why?</span></h2>
                 <div>
-                    <label htmlFor="scale-input">Scale: </label>
+                    <label htmlFor="scale-input">Scale</label>
                     <input
                         id="scale-input"
                         type="range"
-                        min="-4"
-                        max="4"
+                        min="-1"
+                        max="1"
                         step="0.1"
                         value={Math.log10(scale)}
                         disabled={!imgSrc}
@@ -140,8 +145,9 @@ export default function Cropper() {
                     />
                 </div>
 
+
                 <div>
-                    <label htmlFor="rotate-input">Rotate: </label>
+                    <label htmlFor="rotate-input">Rotate</label>
                     <input
                         id="rotate-input"
                         type="range"
@@ -152,6 +158,19 @@ export default function Cropper() {
                         }
                     />
                 </div>
+
+                {why && (
+                    <>
+                        <div className="pointer img-edit-pointer"></div>
+                        <div className="tooltip img edit-tooltip">
+
+                            <svg onClick={() => setWhy(false)} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="2em" width="2em" xmlns="http://www.w3.org/2000/svg"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 0 0-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg>
+                            <p>In order to provide</p>
+                            <p> a clean interface for all users each image must be stored with a uniform height, width & aspect ratio...</p>
+                            <a href="https://www.calm.com/" target="_blank" rel="noopener noreferrer">Complain here</a>
+                        </div>
+                    </>
+                )}
             </div>
 
             {imgSrc && (
@@ -185,7 +204,7 @@ export default function Cropper() {
                         />
                     </div>
                     <div>
-                        <button onClick={onDownloadCropClick}>Download Crop</button>
+                        <button onClick={onDownloadCropClick}>Save</button>
                         <a
                             href="#hidden"
                             ref={hiddenAnchorRef}

@@ -12,7 +12,7 @@ import whatsAppLogo from '../assets/socials/whatsApp.svg'
 import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
 
-const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, contact, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
+const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
 
     const { isLoggedIn, setIsLoggedIn } = useAppContext();
 
