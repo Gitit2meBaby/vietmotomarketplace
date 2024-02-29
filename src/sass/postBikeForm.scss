@@ -94,13 +94,11 @@ h1 {
     @extend %glass
 }
 
-.post-bike-form {
-    label {
-        font-family: 'Caveat-medium';
-        color: black;
-        font-size: 1.2rem;
-        padding-bottom: 0.2rem;
-    }
+.small-label {
+    font-family: 'Caveat-medium';
+    color: black;
+    font-size: 1.2rem;
+    padding-bottom: 0.2rem;
 }
 
 .required-span {
@@ -140,6 +138,7 @@ h1 {
     }
 }
 
+textarea,
 input[type='email'],
 input[type='password'],
 input[type='text'],
@@ -150,6 +149,11 @@ input[type='number'] {
     margin-top: 0.2rem;
     width: 80%;
     @extend %glass;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 0.5rem;
 }
 
 input[type='number'] {
@@ -209,11 +213,6 @@ input[type='number'] {
     right: 10rem;
 }
 
-.model-pointer {
-    top: 3.4rem;
-    right: 9rem;
-}
-
 .dropdown-wrapper {
     display: flex;
 }
@@ -240,6 +239,7 @@ input[type='number'] {
 .main-label {
     font-family: 'Caveat-Medium';
     font-size: 1.6rem;
+    // margin-bottom: 0.5rem;
 }
 
 input[type='checkbox'],
@@ -262,12 +262,64 @@ input[type="radio"]:checked {
     margin-right: 1.5rem;
 }
 
-textarea {
-    width: 100%;
-    border-radius: .5rem;
-    margin-top: 0.3rem;
-    padding: 0.5rem;
-    @extend %glass;
+.contact-heading-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0 .5rem 0;
+
+    svg {
+        cursor: pointer;
+    }
+}
+
+.contact-wrapper {
+    label {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .svg-wrapper {
+        height: 48px;
+        width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &:last-of-type {
+        margin-bottom: 1rem;
+    }
+}
+
+.contact-tooltip {
+    top: 2.2rem;
+    right: 0rem;
+    width: 200px;
+
+    div {
+        display: flex;
+        gap: 1rem;
+    }
+
+    svg {
+        margin-top: -1rem;
+    }
+}
+
+.contact-pointer {
+    top: 2.6rem;
+    right: 12.1rem;
+    transform: rotate(270deg);
+}
+
+.contact-bottom-pointer {
+    top: 7.15rem;
+    right: 1.4rem;
+    transform: rotate(180deg);
 }
 
 .file-btn-wrapper {
@@ -276,6 +328,10 @@ textarea {
     gap: .5rem;
     margin-bottom: 1rem;
     overflow: hidden;
+
+    &:first-of-type {
+        margin-top: 1.5rem;
+    }
 
     div {
         position: relative;
@@ -355,6 +411,7 @@ button {
     background: rgba(22, 205, 22, 0.527);
 }
 
+// errors
 .form-error {
     position: absolute !important;
     background-color: black;
@@ -374,6 +431,11 @@ button {
     right: .5rem;
 }
 
+.model-pointer {
+    top: 3.4rem;
+    right: 9rem;
+}
+
 .price-error {
     bottom: -1.3rem;
     right: 3rem;
@@ -391,12 +453,12 @@ button {
 
 .image-error {
     bottom: 2.5rem;
-    right: 4.2rem;
+    right: 5.5rem;
 }
 
 .image-pointer {
     bottom: 4.45rem;
-    right: 12.8rem;
+    right: 14.4rem;
 }
 
 .file-error {
@@ -482,5 +544,21 @@ button {
 
 .checkbox-options {
     columns: 2;
-    margin: .5rem 0 1rem 0
+    margin: .5rem 0 1rem 0;
+
+    div {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
