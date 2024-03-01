@@ -10,9 +10,12 @@ import zaloLogo from '../assets/socials/zalo.svg'
 
 const Preview = ({ type, price, location, seller, description, contact, model, featureImage, secondImage, thirdImage, setShowPreview, pricePerDay, pricePerWeek, pricePerMonth, dropLocation, phone, whatsapp, facebook, zalo, website, address, }) => {
 
-    const featureImageUrl = featureImage ? URL.createObjectURL(featureImage) : null;
-    const secondImageUrl = secondImage ? URL.createObjectURL(secondImage) : null;
-    const thirdImageUrl = thirdImage ? URL.createObjectURL(thirdImage) : null;
+    const featureImageUrl = featureImage
+    // ? URL.createObjectURL(featureImage) : null;
+    const secondImageUrl = secondImage
+    // ? URL.createObjectURL(secondImage) : null;
+    const thirdImageUrl = thirdImage
+    // ? URL.createObjectURL(thirdImage) : null;
 
     const [showMore, setShowMore] = useState(false)
 
@@ -174,9 +177,6 @@ Preview.propTypes = {
     description: PropTypes.string,
     contact: PropTypes.string,
     model: PropTypes.string,
-    // featureImage: PropTypes.string,
-    // secondImage: PropTypes.string,
-    // thirdImage: PropTypes.string,
     setShowPreview: PropTypes.func
 };
 

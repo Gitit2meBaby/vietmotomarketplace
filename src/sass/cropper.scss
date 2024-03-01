@@ -6,7 +6,7 @@
 %glassModal {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);
-    box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
 }
 
 .cropper {
@@ -16,6 +16,8 @@
     transform: translate(-50%, -50%);
     border-radius: .3rem;
     padding: 1rem;
+    min-width: 80vw;
+    max-height: 98dvh;
     @extend %glassModal;
 
     .Crop-Controls {
@@ -79,6 +81,14 @@
             font-size: .9rem;
             margin-left: auto;
         }
+    }
+
+    .ReactCrop__crop-mask,
+    .ReactCrop,
+    .react-crop,
+    .ReactCrop--fixed-aspect,
+    .ReactCrop__child-wrapper {
+        max-height: 45dvh;
     }
 
     .pointer {

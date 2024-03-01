@@ -11,6 +11,7 @@ import '../sass/post.css'
 import whatsAppLogo from '../assets/socials/whatsApp.svg'
 import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
+import star from '../assets/star.svg'
 
 const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
 
@@ -90,12 +91,15 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                     {price && (
                         <h4><span>₫</span>{formatPrice(price)}</h4>
                     )}
+                    {pricePerDay && (
+                        <h4><span>₫</span>{formatPrice(pricePerDay)}<span>/day</span></h4>
+                    )}
                 </div>
             </div>
 
             <div className="post-content">
                 <h1>{modelSrc}</h1>
-                <div className='rent-prices'>
+                {/* <div className='rent-prices'>
                     {pricePerDay && (
                         <h2>{pricePerDay}₫/day</h2>
                     )}
@@ -105,7 +109,7 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                     {pricePerMonth && (
                         <h2>{pricePerMonth}₫/month</h2>
                     )}
-                </div>
+                </div> */}
 
                 <div className="post-grid">
                     <p>{locationSrc}</p>
@@ -116,20 +120,6 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                     </div>
                 </div>
 
-
-                <div className="drop-locations">
-                    {dropLocation && (
-                        <>
-                            <p>Drop off Locations - </p>
-                            <ul>
-                                {dropLocation.map((location) => (
-                                    <li key={location}>{location}</li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
-                </div>
-
                 <p>{showMore ? `${trimmedDescription} ${descriptionRemainder}` : `${trimmedDescription} ...`}</p>
 
                 {!showMore && (
@@ -138,6 +128,32 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
 
                 {showMore && (
                     <>
+                        <div className="drop-locations">
+                            {dropLocation && (
+                                <>
+                                    <p>Drop off Locations - </p>
+                                    <ul>
+                                        {dropLocation.map((location) => (
+                                            <li key={location}>{location}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+
+                        <div className='rent-prices'>
+                            <h2 className="rental-rates-heading">Rental Rates</h2>
+                            {pricePerDay && (
+                                <h2>{pricePerDay}₫/day</h2>
+                            )}
+                            {pricePerWeek && (
+                                <h2>{pricePerWeek}₫/week</h2>
+                            )}
+                            {pricePerMonth && (
+                                <h2>{pricePerMonth}₫/month</h2>
+                            )}
+                        </div>
+
                         <button className='hide-btn'
                             onClick={() => setShowMore(false)}>...Show Less</button>
 
@@ -199,7 +215,8 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                             )}
                         </div>
                         <button disabled={!isLoggedIn} className='msg-btn'>
-                            Message</button>
+                            Message
+                            {star}</button>
                     </>
                 )}
             </div>

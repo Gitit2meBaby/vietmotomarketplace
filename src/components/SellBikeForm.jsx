@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { db, auth, storage } from '../firebase'
 import {
     collection,
@@ -15,7 +16,10 @@ import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
 
 const SellBikeForm = () => {
-    const { imageUrls, setImageUrls } = useAppContext()
+    const { imageUrls, setImageUrls, featureImageUpload, setFeatureImageUpload,
+        secondImageUpload, setSecondImageUpload,
+        thirdImageUpload, setThirdImageUpload, cropper,
+        setCropper, setChosenImage, chosenImage } = useAppContext()
 
     // states to be passed to firestore DB
     const [type, setType] = useState('');
@@ -32,11 +36,6 @@ const SellBikeForm = () => {
     const [zalo, setZalo] = useState('');
     const [website, setWebsite] = useState('');
     const [address, setAddress] = useState('');
-
-    // Local state storage of image file for preview
-    const [featureImageUpload, setFeatureImageUpload] = useState(null)
-    const [secondImageUpload, setSecondImageUpload] = useState(null)
-    const [thirdImageUpload, setThirdImageUpload] = useState(null)
 
     // Error states to show error tooltips
     const [priceError, setPriceError] = useState(false)
@@ -56,6 +55,7 @@ const SellBikeForm = () => {
 
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false)
 
     //UI indication of image uploading
     const [imageUploadStatus, setImageUploadStatus] = useState({
@@ -71,9 +71,10 @@ const SellBikeForm = () => {
     const priceInputRef = useRef(null);
     const previewRef = useRef(null)
 
-    // clear the url array required if same user makes multiple posts
+    // clear the url array required if same user makes multiple posts & reset submission state
     useEffect(() => {
         setImageUrls([]);
+        setSubmitSuccess(false)
     }, []);
 
     // price input
@@ -108,8 +109,8 @@ const SellBikeForm = () => {
         console.log("clicked post");
         const isPriceValid = checkPriceField();
         const isModelValid = checkModelField();
-        const isImageValid = checkImageField();
         const isUpload = checkNoUpload()
+        const isImageValid = checkImageField();
 
         if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
             console.log((isPriceValid));
@@ -163,6 +164,11 @@ const SellBikeForm = () => {
             setFeatureImageUpload(null);
             setSecondImageUpload(null);
             setThirdImageUpload(null);
+            setSelectedFileName('')
+            setSecondFileName('')
+            setThirdFileName('')
+
+            setSubmitSuccess(true)
             console.log('post sucesss');
 
         } catch (error) {
@@ -250,8 +256,10 @@ const SellBikeForm = () => {
         const truncatedFileName = truncateFileName(fileName, 15);
 
         setSelectedFileName(truncatedFileName);
-        setFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null);
+        setFeatureImageUpload('current');
         setImageError(false);
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     const handleSecondFileChange = (e) => {
@@ -259,7 +267,9 @@ const SellBikeForm = () => {
         const truncatedFileName = truncateFileName(fileName, 15);
 
         setSecondFileName(truncatedFileName);
-        setSecondImageUpload(e.target.files[0]);
+        setSecondImageUpload('current');
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     const handleThirdFileChange = (e) => {
@@ -267,28 +277,28 @@ const SellBikeForm = () => {
         const truncatedFileName = truncateFileName(fileName, 15);
 
         setThirdFileName(truncatedFileName);
-        setThirdImageUpload(e.target.files[0]);
+        setThirdImageUpload('current');
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     // Validate atleast one image has been uploaded
     const checkImageField = () => {
-        if (featureImageUpload == undefined || featureImageUpload == null) {
+        if (imageUrls.length === 0) {
             setImageError(true);
-            return true;
+            return false;
         }
-        return false;
+        return true;
     };
 
-    // Make sure they actually pressed the upload button
     const checkNoUpload = () => {
-        if (featureImageUpload != undefined || featureImageUpload != null) {
-            if (imageUrls.length === 0) {
-                setNoUpload(true);
-                return true;
-            }
+        if (featureImageUpload && imageUrls.length === 0) {
+            setNoUpload(true);
+            return false;
         }
-        return false;
+        return true;
     };
+
 
     const generatePostID = () => {
         return uuidv4();
@@ -299,7 +309,7 @@ const SellBikeForm = () => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
-                setImageError(false)
+                setImageError(true)
                 return;
             }
 
@@ -348,14 +358,10 @@ const SellBikeForm = () => {
         const length = priceStr.length;
 
         if (length >= 7 && price % 1000000 === 0) {
-            // Remove the last 6 digits and replace with ' mil'
             return priceStr.slice(0, length - 6) + 'mil';
         } else if (length >= 7 && price % 100000 === 0 && priceStr[length - 6] !== '0') {
-            // Insert a decimal between digit 7 and 6 and replace the remaining 5 digits with ' mil'
             return priceStr.slice(0, length - 6) + '.' + priceStr.slice(length - 6, length - 5) + 'mil';
         }
-
-        // Default case: return the original number
         return price;
     }
 
@@ -372,6 +378,12 @@ const SellBikeForm = () => {
             });
         }
     };
+
+    // Exit successfull post modal
+    const handlePostAgain = () => {
+        setSubmitSuccess(false)
+        setImageUrls([])
+    }
 
     return (
         <>
@@ -674,7 +686,7 @@ const SellBikeForm = () => {
                         <span>{selectedFileName}</span>
                     </div>
 
-                    {imageError && (
+                    {(imageError && !noUpload) && (
                         <>
                             <div className="pointer image-pointer"></div>
                             <div className="form-error image-error">
@@ -693,7 +705,8 @@ const SellBikeForm = () => {
                     )}
 
                     {featureImageUpload != null && (
-                        <button className='upload-btn' onClick={() => handleImageUpload('feature', featureImageUpload)}>
+                        <button className='upload-btn' onClick={() => handleImageUpload('feature', featureImageUpload)}
+                        >
                             {imageUploadStatus.feature ? 'Uploading now...' : (imageUrls.length === 0 ? 'Upload' : 'Change')}
                         </button>
                     )}
@@ -765,6 +778,15 @@ const SellBikeForm = () => {
                         setShowPreview={setShowPreview}
                     />
                 </>
+            )}
+
+            {submitSuccess && (
+                <div className="submit-success-modal">
+                    <h2>Success!</h2>
+                    <p>Your {model} has been posted</p>
+                    <button onClick={() => handlePostAgain()} className="post-again-btn">Make Another Post</button>
+                    <Link to="/list" className="go-to-list-btn">See it Live</Link>
+                </div>
             )}
         </>
     );

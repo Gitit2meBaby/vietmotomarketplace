@@ -8,6 +8,15 @@ const AppProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [imageUrls, setImageUrls] = useState([]);
 
+    // image cropper, store files to edit before sending to firebase
+    const [cropper, setCropper] = useState(false)
+    const [chosenImage, setChosenImage] = useState(null)
+    const [featureImageUpload, setFeatureImageUpload] = useState(null)
+    const [secondImageUpload, setSecondImageUpload] = useState(null)
+    const [thirdImageUpload, setThirdImageUpload] = useState(null)
+    const [featureRentalImageUpload, setFeatureRentalImageUpload] = useState(null)
+    const [secondRentalImageUpload, setSecondRentalImageUpload] = useState(null)
+    const [thirdRentalImageUpload, setThirdRentalImageUpload] = useState(null)
     return (
         <AppContext.Provider value={{
             isLoggedIn,
@@ -16,6 +25,15 @@ const AppProvider = ({ children }) => {
             setIsLoading,
             imageUrls,
             setImageUrls,
+            cropper,
+            setCropper,
+            setChosenImage, chosenImage,
+            featureImageUpload, setFeatureImageUpload,
+            secondImageUpload, setSecondImageUpload,
+            thirdImageUpload, setThirdImageUpload,
+            featureRentalImageUpload, setFeatureRentalImageUpload,
+            secondRentalImageUpload, setSecondRentalImageUpload,
+            thirdRentalImageUpload, setThirdRentalImageUpload,
         }}>
             {children}
         </AppContext.Provider>

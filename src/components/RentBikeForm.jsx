@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { db, auth, storage } from '../firebase'
 import {
     collection,
@@ -8,16 +9,17 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
 import Preview from './Preview'
+import { useAppContext } from '../context';
 // icon imports
 import whatsAppLogo from '../assets/socials/whatsApp.svg'
 import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
 
 const RentBikeForm = () => {
-    // Local state storage of image file for preview
-    const [featureRentalImageUpload, setRentalFeatureImageUpload] = useState(null)
-    const [secondRentalImageUpload, setRentalSecondImageUpload] = useState(null)
-    const [thirdRentalImageUpload, setRentalThirdImageUpload] = useState(null)
+    const { imageUrls, setImageUrls, featureRentalImageUpload, setFeatureRentalImageUpload,
+        secondRentalImageUpload, setSecondRentalImageUpload,
+        thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
+        setCropper, setChosenImage, chosenImage } = useAppContext()
 
     // states to be passed to firestore DB
     const [typeRental, setTypeRental] = useState('');
@@ -39,7 +41,6 @@ const RentBikeForm = () => {
     const [address, setAddress] = useState('');
 
     // urls to store in array for firebase storage
-    const [imageUrls, setImageUrls] = useState([]);
     const [prevImageUrls, setPrevImageUrls] = useState([]);
 
     const [showPreview, setShowPreview] = useState(false)
@@ -81,6 +82,7 @@ const RentBikeForm = () => {
 
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false)
 
     //UI indication of image uploading
     const [imageUploadStatus, setImageUploadStatus] = useState({
@@ -92,6 +94,7 @@ const RentBikeForm = () => {
     // clear the url array required if same user makes multiple posts
     useEffect(() => {
         setImageUrls([]);
+        setSubmitSuccess(false)
     }, []);
 
     // store prices in state and validate no input, scroll and focus on errors
@@ -229,7 +232,7 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(fileName, 15);
 
         setSelectedFileName(truncatedFileName);
-        setRentalFeatureImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
+        setFeatureRentalImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
         setImageError(false)
     };
 
@@ -238,7 +241,7 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(secondFileName, 15);
 
         setSecondFileName(truncatedFileName);
-        setRentalSecondImageUpload(e.target.files[0])
+        setSecondRentalImageUpload(e.target.files[0])
     };
 
     const handleThirdFileChange = (e) => {
@@ -246,27 +249,25 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(thirdFileName, 15);
 
         setThirdFileName(truncatedFileName);
-        setRentalThirdImageUpload(e.target.files[0])
+        setThirdRentalImageUpload(e.target.files[0])
     };
 
     // Validate atleast one image has been uploaded
     const checkImageField = () => {
-        if (featureRentalImageUpload == undefined || featureRentalImageUpload == null) {
+        if (imageUrls.length === 0) {
             setImageError(true);
-            return true;
+            return false;
         }
-        return false;
+        return true;
     };
 
     // Make sure they actually pressed the upload button
     const checkNoUpload = () => {
-        if (featureRentalImageUpload != undefined || featureRentalImageUpload != null) {
-            if (imageUrls.length === 0) {
-                setNoUpload(true);
-                return true;
-            }
+        if (featureRentalImageUpload && imageUrls.length === 0) {
+            setNoUpload(true);
+            return false;
         }
-        return false;
+        return true;
     };
 
     const generatePostID = () => {
@@ -400,6 +401,8 @@ const RentBikeForm = () => {
             setZalo('')
             setWebsite('')
             setAddress('')
+
+            setSubmitSuccess(true)
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -435,6 +438,12 @@ const RentBikeForm = () => {
             });
         }
     };
+
+    // Exit successfull post modal
+    const handlePostAgain = () => {
+        setSubmitSuccess(false)
+        setImageUrls([])
+    }
 
     return (
         <section className='rent-section'>
@@ -871,6 +880,15 @@ const RentBikeForm = () => {
                     thirdImage={thirdRentalImageUpload}
                     setShowPreview={setShowPreview}
                 />
+            )}
+
+            {submitSuccess && (
+                <div className="submit-success-modal">
+                    <h2>Success!</h2>
+                    <p>Your {model} has been posted</p>
+                    <button onClick={() => handlePostAgain()} className="post-again-btn">Make Another Post</button>
+                    <Link to="/list" className="go-to-list-btn">See it Live</Link>
+                </div>
             )}
         </section>
 

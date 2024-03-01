@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ReactCrop, {
     centerCrop,
     makeAspectCrop,
@@ -6,6 +6,7 @@ import ReactCrop, {
 import 'react-image-crop/dist/ReactCrop.css';
 import { canvasPreview } from './canvasPreview';
 import { useDebounceEffect } from './useDebounceEffect';
+import { useAppContext } from '../../context';
 import '../../sass/cropper.css'
 
 function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
@@ -36,16 +37,34 @@ export default function Cropper() {
     const [rotate, setRotate] = useState(0);
     const [aspect, setAspect] = useState(16 / 9);
 
+    const { featureImageUpload, setFeatureImageUpload,
+        secondImageUpload, setSecondImageUpload,
+        thirdImageUpload, setThirdImageUpload, featureRentalImageUpload, setFeatureRentalImageUpload,
+        secondRentalImageUpload, setSecondRentalImageUpload,
+        thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
+        setCropper, chosenImage, setChosenImage } = useAppContext()
+
     const [why, setWhy] = useState(false)
 
-    function onSelectFile(e) {
-        if (e.target.files && e.target.files.length > 0) {
-            setCrop(undefined);
+    useEffect(() => {
+        if (chosenImage instanceof File) {
             const reader = new FileReader();
             reader.addEventListener('load', () => setImgSrc(reader.result || ''));
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(chosenImage);
+        } else {
+            setImgSrc(chosenImage);
         }
-    }
+    }, [chosenImage]);
+
+    // function onSelectFile(e) {
+    //     if (e.target.files && e.target.files.length > 0) {
+    //         setCrop(undefined);
+    //         const reader = new FileReader();
+    //         reader.addEventListener('load', () => setImgSrc(reader.result || ''));
+    //         reader.readAsDataURL(e.target.files[0]);
+    //         console.log('imgSrc', imgSrc);
+    //     }
+    // }
 
     function onImageLoad(e) {
         if (aspect) {
@@ -99,10 +118,28 @@ export default function Cropper() {
 
         if (hiddenAnchorRef.current) {
             hiddenAnchorRef.current.href = blobUrlRef.current;
-            hiddenAnchorRef.current.click();
+
+            // Instead of triggering download, set the cropped image to the global state
+            chooseStateUpload(blobUrlRef.current)
         }
     }
 
+    function chooseStateUpload(blobUrl) {
+        if (featureImageUpload === 'current') {
+            setFeatureImageUpload(blobUrl);
+        } else if (secondImageUpload === 'current') {
+            setSecondImageUpload(blobUrl);
+        } else if (thirdImageUpload === 'current') {
+            setThirdImageUpload(blobUrl);
+        } else if (featureRentalImageUpload === 'current') {
+            setFeatureRentalImageUpload(blobUrl);
+        } else if (secondRentalImageUpload === 'current') {
+            setSecondRentalImageUpload(blobUrl);
+        } else if (thirdRentalImageUpload === 'current') {
+            setThirdRentalImageUpload(blobUrl);
+        }
+        setCropper(false);
+    }
 
     useDebounceEffect(
         async () => {
@@ -128,7 +165,7 @@ export default function Cropper() {
     return (
         <div className="cropper">
             <div className="Crop-Controls">
-                <input id='file-input' type="file" accept="image/*" onChange={onSelectFile} />
+                {/* <input id='file-input' type="file" accept="image/*" onChange={onSelectFile} /> */}
 
                 <h2>Edit Image <span onClick={() => setWhy(true)}>why?</span></h2>
                 <div>

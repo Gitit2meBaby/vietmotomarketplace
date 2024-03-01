@@ -54,6 +54,7 @@
         box-shadow: none;
         background: transparent;
         border-radius: 0px 0px 0px 5px;
+        border: none;
         border-bottom: 1px solid black;
         padding: 0 .8rem 0 .5rem;
     }
@@ -239,7 +240,6 @@
     .main-label {
         font-family: 'Caveat-Medium';
         font-size: 1.6rem;
-        // margin-bottom: 0.5rem;
     }
 
     input[type='checkbox'],
@@ -373,6 +373,11 @@
         font-weight: 800;
         padding: .2rem .5rem;
         margin-top: .5rem;
+        border: none;
+        border-radius: .3rem;
+        margin: 0.1rem;
+        @extend %glass;
+        cursor: pointer;
     }
 
     input[type="file"] {
@@ -383,14 +388,14 @@
         cursor: pointer;
     }
 
-    input[type='file'],
-    button {
-        border: none;
-        border-radius: .3rem;
-        margin: 0.1rem;
-        @extend %glass;
-        cursor: pointer;
-    }
+    // input[type='file'],
+    // button {
+    //     border: none;
+    //     border-radius: .3rem;
+    //     margin: 0.1rem;
+    //     @extend %glass;
+    //     cursor: pointer;
+    // }
 
     .final-form-btns {
         display: flex;
@@ -403,6 +408,10 @@
             font-size: 1.2rem;
             font-weight: 800;
             padding: .5rem 1.5rem;
+            border: none;
+            border-radius: .3rem;
+            margin: 0.1rem;
+            @extend %glass;
             cursor: pointer;
         }
     }
@@ -562,4 +571,18 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
     }
+
+}
+
+.submit-success-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: .3rem;
+    padding: 1rem;
+    min-width: 80vw;
+    max-height: 98dvh;
+    @extend %glass;
+    box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
 }

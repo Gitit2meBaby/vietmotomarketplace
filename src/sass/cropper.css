@@ -6,7 +6,7 @@
   background: rgba(255, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(5px);
           backdrop-filter: blur(5px);
-  box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
 }
 
 .cropper {
@@ -16,6 +16,8 @@
   transform: translate(-50%, -50%);
   border-radius: 0.3rem;
   padding: 1rem;
+  min-width: 80vw;
+  max-height: 98dvh;
 }
 .cropper .Crop-Controls {
   margin-bottom: 1.5rem;
@@ -70,6 +72,13 @@
 .cropper .tooltip a {
   font-size: 0.9rem;
   margin-left: auto;
+}
+.cropper .ReactCrop__crop-mask,
+.cropper .ReactCrop,
+.cropper .react-crop,
+.cropper .ReactCrop--fixed-aspect,
+.cropper .ReactCrop__child-wrapper {
+  max-height: 45dvh;
 }
 .cropper .pointer {
   position: absolute !important;

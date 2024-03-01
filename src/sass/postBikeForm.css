@@ -10,8 +10,7 @@
   font-family: "Mitr-Regular";
   src: url("../assets/fonts/Mitr-Regular.ttf");
 }
-.post-page input[type=file],
-.post-page button, .post-page .custom-file-button, .post-page .dropdown-wrapper label select, .post-page textarea,
+.submit-success-modal, .post-page .final-form-btns button, .post-page .upload-btn, .post-page .custom-file-button, .post-page .dropdown-wrapper label select, .post-page textarea,
 .post-page input[type=email],
 .post-page input[type=password],
 .post-page input[type=text],
@@ -52,6 +51,7 @@
   box-shadow: none;
   background: transparent;
   border-radius: 0px 0px 0px 5px;
+  border: none;
   border-bottom: 1px solid black;
   padding: 0 0.8rem 0 0.5rem;
 }
@@ -317,19 +317,16 @@
   font-weight: 800;
   padding: 0.2rem 0.5rem;
   margin-top: 0.5rem;
+  border: none;
+  border-radius: 0.3rem;
+  margin: 0.1rem;
+  cursor: pointer;
 }
 .post-page input[type=file] {
   position: absolute;
   top: 0;
   left: 0;
   opacity: 0;
-  cursor: pointer;
-}
-.post-page input[type=file],
-.post-page button {
-  border: none;
-  border-radius: 0.3rem;
-  margin: 0.1rem;
   cursor: pointer;
 }
 .post-page .final-form-btns {
@@ -343,6 +340,9 @@
   font-size: 1.2rem;
   font-weight: 800;
   padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 0.3rem;
+  margin: 0.1rem;
   cursor: pointer;
 }
 .post-page .post-btn {
@@ -472,4 +472,16 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.submit-success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 0.3rem;
+  padding: 1rem;
+  min-width: 80vw;
+  max-height: 98dvh;
+  box-shadow: 0 0 2000px 2000px rgba(0, 0, 0, 0.7);
 }/*# sourceMappingURL=postBikeForm.css.map */

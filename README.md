@@ -1,4 +1,18 @@
-## Firebase Backend
+## Immediate todos
+- make another todo app like everybody else..
+- sort UI fo rental posts
+- consolidate how data is stored after submission of posts
+- approach some color pallete Ui changes
+- Create user to user messaging
+- create Delete button for users with posts with auth == auth
+- create home page with BS about why this app is the best
+- continue making more blog posts, buyers guides, routes etc
+- create an income stream through advertising
+- implement fetch only 20 queries and a load more button for scrolling
+- create the sort and filter component
+
+
+# Firebase Backend
 - Create user authentication
 - Create rules to allow only users to upload and view contact details
 - Have form to push to the database, create automatic deletion when the time is up/ after user pressed sold or make an automatic deletion time to clean up storage
