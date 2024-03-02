@@ -73,11 +73,6 @@ body {
   margin: 0 auto;
 }
 
-.slider-wrapper {
-  position: relative;
-  z-index: -5;
-}
-
 .slick-arrow {
   box-shadow: none;
   -webkit-backdrop-filter: blur(0px);
@@ -112,7 +107,6 @@ body {
   color: white;
   border-radius: 0.3rem;
   padding: 0.3rem;
-  z-index: 5;
 }
 .timestamp h4,
 .timestamp p,
@@ -142,11 +136,6 @@ body {
 .price-wrapper {
   bottom: 2.5rem;
   right: 2rem;
-}
-
-.post-img {
-  max-width: 100%;
-  margin: 0 auto;
 }
 
 .post-content {

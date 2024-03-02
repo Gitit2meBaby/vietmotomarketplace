@@ -215,8 +215,9 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                             )}
                         </div>
                         <button disabled={!isLoggedIn} className='msg-btn'>
-                            Message
-                            {star}</button>
+                            Message {star}
+
+                        </button>
                     </>
                 )}
             </div>
