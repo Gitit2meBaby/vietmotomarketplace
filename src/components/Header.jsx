@@ -6,7 +6,7 @@ import "../sass/header.css"
 
 const Header = () => {
     const [navOpen, setNavOpen] = useState(false)
-    const { isLoggedIn, setIsLoggedIn } = useAppContext();
+    const { isLoggedIn, setIsAuthOpen } = useAppContext();
     const [activeLink, setActiveLink] = useState(null);
 
     const navStyles = {
@@ -32,6 +32,10 @@ const Header = () => {
     const handleLinkClick = (e) => {
         setNavOpen(false)
     }
+    const handleLoginClick = (e) => {
+        setNavOpen(false)
+        setIsAuthOpen(true)
+    }
 
     return (
         <header className='header'>
@@ -52,18 +56,18 @@ const Header = () => {
                 <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '0.8s' }} to="/list">Rent</Link>
                 <Link onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1s' }} to="/guides">Guides</Link>
 
+                <div className="msg-nav-item"
+                    onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} >
+                    <p>Messages</p>
+                    <div className="msg-counter">3</div>
+                </div>
+
                 {isLoggedIn ? (
                     <>
-                        <div className="msg-nav-item"
-                            onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} >
-                            <a href="">Messages</a>
-                            <div className="msg-counter">3</div>
-                        </div>
-
-                        <a onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.4s' }} href="">Log Out</a>
+                        <p onClick={(e) => handleLoginClick(e)} style={{ ...navItemStyles, transitionDelay: '1.4s' }}>Log Out</p>
                     </>
                 ) : (
-                    <a onClick={(e) => handleLinkClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }} href="">Log In</a>
+                    <p onClick={(e) => handleLoginClick(e)} style={{ ...navItemStyles, transitionDelay: '1.2s' }}>Log In</p>
                 )}
             </nav>
         </header >

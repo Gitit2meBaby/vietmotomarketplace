@@ -83,11 +83,7 @@ body {
     }
 }
 
-// react slick & image absolutes
-// .slider-wrapper {
-//     position: relative;
-//     // z-index: -5;
-// }
+
 
 .slick-arrow {
     box-shadow: none;
@@ -95,10 +91,18 @@ body {
     z-index: 10;
 }
 
-.slick-slider button {
-    backdrop-filter: blur(0px);
-    cursor: pointer;
-    pointer-events: initial;
+.slick-slider {
+    button {
+        backdrop-filter: blur(0px);
+        cursor: pointer;
+        pointer-events: initial;
+    }
+}
+
+.slick-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .slick-prev {
@@ -123,6 +127,7 @@ body {
     color: white;
     border-radius: .3rem;
     padding: 0.3rem;
+    z-index: 5;
     @extend %glass;
 
     h4,
@@ -138,27 +143,24 @@ body {
     }
 
     h4 {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
     }
 }
 
 .timestamp {
-    top: 1.5rem;
-    left: 1.5rem;
+    top: .5rem;
+    left: .5rem;
 }
 
 .price-wrapper {
-    bottom: 2.5rem;
-    right: 2rem;
+    top: 9rem;
+    right: .5rem;
+
 }
 
-// .post-img {
-//     max-width: 100%;
-//     margin: 0 auto;
-// }
-
-// .slider-wrapper 
-// post content
+.post {
+    position: relative;
+}
 
 .post-content {
     display: flex;
@@ -166,9 +168,9 @@ body {
     background-color: black;
     border-radius: 1rem 0 0 1rem;
     padding: 1rem;
-    margin: -1.5rem 0 1rem 1.5rem;
+    margin: -1rem 0 1rem 1.5rem;
     box-shadow: 10px 5px 5px 5px rgba(0, 0, 0, 0.3);
-    z-index: 5;
+    z-index: 50;
 
     h1,
     p {

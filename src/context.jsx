@@ -8,6 +8,8 @@ const AppProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [imageUrls, setImageUrls] = useState([]);
 
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+
     // image cropper, store files to edit before sending to firebase
     const [cropper, setCropper] = useState(false)
     const [chosenImage, setChosenImage] = useState(null)
@@ -17,16 +19,13 @@ const AppProvider = ({ children }) => {
     const [featureRentalImageUpload, setFeatureRentalImageUpload] = useState(null)
     const [secondRentalImageUpload, setSecondRentalImageUpload] = useState(null)
     const [thirdRentalImageUpload, setThirdRentalImageUpload] = useState(null)
+
     return (
         <AppContext.Provider value={{
-            isLoggedIn,
-            setIsLoggedIn,
-            isLoading,
-            setIsLoading,
-            imageUrls,
-            setImageUrls,
-            cropper,
-            setCropper,
+            isLoggedIn, setIsLoggedIn,
+            isLoading, setIsLoading,
+            imageUrls, setImageUrls,
+            cropper, setCropper,
             setChosenImage, chosenImage,
             featureImageUpload, setFeatureImageUpload,
             secondImageUpload, setSecondImageUpload,
@@ -34,6 +33,7 @@ const AppProvider = ({ children }) => {
             featureRentalImageUpload, setFeatureRentalImageUpload,
             secondRentalImageUpload, setSecondRentalImageUpload,
             thirdRentalImageUpload, setThirdRentalImageUpload,
+            isAuthOpen, setIsAuthOpen
         }}>
             {children}
         </AppContext.Provider>

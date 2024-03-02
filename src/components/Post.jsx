@@ -82,7 +82,7 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                 <div className="timestamp">
                     <p>{formattedDate}</p>
                 </div>
-                <Slider {...settings}>
+                <Slider {...settings} style={{ zIndex: '-1' }}>
                     <img className='post-img' src={featureImageSrc} alt="Motorbike" />
                     <img className='post-img' src={secondImageSrc} alt="Motorbike" />
                     <img className='post-img' src={thirdImageSrc} alt="Motorbike" />

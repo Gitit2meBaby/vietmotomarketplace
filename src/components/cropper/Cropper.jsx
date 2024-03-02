@@ -56,16 +56,6 @@ export default function Cropper() {
         }
     }, [chosenImage]);
 
-    // function onSelectFile(e) {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setCrop(undefined);
-    //         const reader = new FileReader();
-    //         reader.addEventListener('load', () => setImgSrc(reader.result || ''));
-    //         reader.readAsDataURL(e.target.files[0]);
-    //         console.log('imgSrc', imgSrc);
-    //     }
-    // }
-
     function onImageLoad(e) {
         if (aspect) {
             const { width, height } = e.currentTarget;
@@ -124,22 +114,23 @@ export default function Cropper() {
         }
     }
 
-    function chooseStateUpload(blobUrl) {
+    function chooseStateUpload(blob) {
         if (featureImageUpload === 'current') {
-            setFeatureImageUpload(blobUrl);
+            setFeatureImageUpload(blob);
         } else if (secondImageUpload === 'current') {
-            setSecondImageUpload(blobUrl);
+            setSecondImageUpload(blob);
         } else if (thirdImageUpload === 'current') {
-            setThirdImageUpload(blobUrl);
+            setThirdImageUpload(blob);
         } else if (featureRentalImageUpload === 'current') {
-            setFeatureRentalImageUpload(blobUrl);
+            setFeatureRentalImageUpload(blob);
         } else if (secondRentalImageUpload === 'current') {
-            setSecondRentalImageUpload(blobUrl);
+            setSecondRentalImageUpload(blob);
         } else if (thirdRentalImageUpload === 'current') {
-            setThirdRentalImageUpload(blobUrl);
+            setThirdRentalImageUpload(blob);
         }
         setCropper(false);
     }
+
 
     useDebounceEffect(
         async () => {
@@ -165,7 +156,6 @@ export default function Cropper() {
     return (
         <div className="cropper">
             <div className="Crop-Controls">
-                {/* <input id='file-input' type="file" accept="image/*" onChange={onSelectFile} /> */}
 
                 <h2>Edit Image <span onClick={() => setWhy(true)}>why?</span></h2>
                 <div>

@@ -102,17 +102,6 @@
         padding-bottom: 0.2rem;
     }
 
-    .required-span {
-        color: rgb(203, 4, 4);
-
-        span {
-            font-size: 1.2rem;
-            font-weight: 800;
-            position: relative;
-            top: -10px;
-        }
-    }
-
     .input-wrapper {
         display: flex;
         flex-direction: column;
@@ -571,7 +560,17 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
     }
+}
 
+.required-span {
+    color: rgb(203, 4, 4);
+
+    span {
+        font-size: 1.2rem;
+        font-weight: 800;
+        position: relative;
+        top: -10px;
+    }
 }
 
 .submit-success-modal {

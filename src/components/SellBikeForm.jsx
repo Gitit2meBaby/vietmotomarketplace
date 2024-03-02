@@ -19,7 +19,9 @@ const SellBikeForm = () => {
     const { imageUrls, setImageUrls, featureImageUpload, setFeatureImageUpload,
         secondImageUpload, setSecondImageUpload,
         thirdImageUpload, setThirdImageUpload, cropper,
-        setCropper, setChosenImage, chosenImage } = useAppContext()
+        setCropper, setChosenImage, chosenImage, isLoggedIn } = useAppContext()
+
+    const [postId, setPostId] = useState(null)
 
     // states to be passed to firestore DB
     const [type, setType] = useState('');
@@ -71,11 +73,17 @@ const SellBikeForm = () => {
     const priceInputRef = useRef(null);
     const previewRef = useRef(null)
 
-    // clear the url array required if same user makes multiple posts & reset submission state
+    // clear the url array required if same user makes multiple posts, reset submission state, create a new postId
     useEffect(() => {
         setImageUrls([]);
         setSubmitSuccess(false)
+        setPostId(generatePostID())
     }, []);
+
+    // Generate a Post ID
+    const generatePostID = () => {
+        return uuidv4();
+    };
 
     // price input
     const handlePriceChange = (e) => {
@@ -113,11 +121,6 @@ const SellBikeForm = () => {
         const isImageValid = checkImageField();
 
         if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
-            console.log((isPriceValid));
-            console.log((isModelValid));
-            console.log((isImageValid));
-            console.log((isUpload));
-            console.log('submitting', submitting);
             return;
         }
 
@@ -127,6 +130,7 @@ const SellBikeForm = () => {
             const filteredImageUrls = imageUrls.filter(url => url);
 
             await addDoc(sellRef, {
+                postID: postId,
                 type: type,
                 price: price,
                 model: model,
@@ -147,8 +151,11 @@ const SellBikeForm = () => {
                 createdAt: serverTimestamp(),
             });
 
+            console.log('imageUrls', imageUrls);
+            console.log('filteredImageUrls', filteredImageUrls);
+
             // Clear form fields after successful submission
-            setType('automatic');
+            setType('');
             setPrice('');
             setLocation('');
             setSeller('');
@@ -299,19 +306,17 @@ const SellBikeForm = () => {
         return true;
     };
 
-
-    const generatePostID = () => {
-        return uuidv4();
-    };
-
     // push the image url into the array for firebase
     const handleImageUpload = async (imageKey, image) => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
-                setImageError(true)
+                setImageError(true);
                 return;
             }
+
+            // Convert Blob URL to Blob object
+            const blob = await fetch(image).then((response) => response.blob());
 
             // Update the upload status for the specific image
             setImageUploadStatus(prevStatus => ({
@@ -319,12 +324,13 @@ const SellBikeForm = () => {
                 [imageKey]: true,
             }));
 
-            const postID = generatePostID();
-            const imageName = `${postID}_${image.name}`;
-            const userFolderRef = ref(storage, `sellImages/${auth?.currentUser?.uid}/${postID}`);
+            const imageName = imageKey;
+            const userFolderRef = ref(storage, `sellImages/${postId}`);
 
             // Log the upload result
-            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), image);
+            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), blob, {
+                contentType: image.type,
+            });
             console.log('Upload result:', uploadResult);
 
             // Fetch the updated file list and update the state
@@ -335,9 +341,10 @@ const SellBikeForm = () => {
                 const urls = await Promise.all(urlPromises);
 
                 // Use the previous state to ensure correct updates
-                setImageUrls((prevUrls) => [...prevUrls, ...urls]);
+                setImageUrls(urls);
+                console.log('imageUrls', imageUrls);
                 setImageError(false);
-                setNoUpload(false)
+                setNoUpload(false);
             } catch (error) {
                 console.error('Error listing files:', error);
             } finally {
@@ -351,6 +358,7 @@ const SellBikeForm = () => {
             console.error('Error uploading image:', error);
         }
     };
+
 
     // format the price to use 'mil' and remove excessive zeros
     function formatPrice(price) {
@@ -383,6 +391,7 @@ const SellBikeForm = () => {
     const handlePostAgain = () => {
         setSubmitSuccess(false)
         setImageUrls([])
+        setPostId(generatePostID())
     }
 
     return (
@@ -751,8 +760,16 @@ const SellBikeForm = () => {
 
                 <div className="final-form-btns">
                     <button type="button" onClick={() => handlePreviewBtn()}>Preview</button>
-                    <button className='post-btn' type="submit" onClick={handleSaleSubmit}>Post</button>
+                    <button
+                        className='post-btn'
+                        type="submit"
+                        onClick={(e) => handleSaleSubmit(e)}
+                        disabled={!isLoggedIn}
+                    >
+                        Post
+                    </button>
                 </div>
+
             </section>
 
             {showPreview && (
