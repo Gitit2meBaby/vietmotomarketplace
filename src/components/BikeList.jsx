@@ -92,7 +92,7 @@ const BikeList = () => {
 
     return (
         <div>
-            {listings.map(({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, contact, contactRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => (
+            {listings.map(({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, contact, contactRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}
                     id={id}
@@ -104,8 +104,12 @@ const BikeList = () => {
                     seller={seller}
                     description={description}
                     descriptionRental={descriptionRental}
-                    contact={contact}
-                    contactRental={contactRental}
+                    phone={phone}
+                    whatsapp={whatsapp}
+                    facebook={facebook}
+                    zalo={zalo}
+                    website={website}
+                    address={address}
                     model={model}
                     modelRental={modelRental}
                     featureImage={featureImage}

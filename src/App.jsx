@@ -4,9 +4,12 @@ import PostBikeForm from './components/PostBikeForm'
 import BikeList from './components/BikeList'
 import { Routes, Route } from 'react-router-dom'
 import Footer from './components/Footer'
+import Cropper from './components/cropper/Cropper'
+import { useAppContext } from './context';
+
 
 function App() {
-
+  const { cropper } = useAppContext()
   return (
     <>
       <Header />
@@ -16,6 +19,9 @@ function App() {
         <Route path="/list" element={<BikeList />} />
       </Routes>
       <Footer />
+      {cropper && (
+        <Cropper />
+      )}
     </>
   )
 }

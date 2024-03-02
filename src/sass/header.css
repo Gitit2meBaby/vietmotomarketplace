@@ -2,7 +2,7 @@
   font-family: "Caveat-Medium";
   src: url("../assets/fonts/Caveat-Medium.ttf") format("truetype");
 }
-.header-auth button {
+.auth .button {
   background: rgba(255, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(5px);
           backdrop-filter: blur(5px);
@@ -17,7 +17,7 @@ body {
   margin: 0;
 }
 
-header {
+.header {
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -32,13 +32,13 @@ header {
   color: #DB261E;
 }
 
-header main,
+.header main,
 .header-auth div,
 .header-auth {
   display: flex;
   align-items: center;
 }
-header main img,
+.header main img,
 .header-auth div img,
 .header-auth img {
   max-height: 40px;
@@ -47,10 +47,25 @@ header main img,
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
 }
 
-.header-auth {
+.auth {
+  display: flex;
   gap: 1rem;
 }
-nav {
+.header-auth-div {
+  display: flex;
+}
+
+.header-auth-div img {
+  align-self: center;
+}
+
+.header-signin-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header nav {
   position: absolute;
   top: 0rem;
   left: 0rem;
@@ -69,10 +84,10 @@ nav {
   -webkit-backdrop-filter: blur(5px);
           backdrop-filter: blur(5px);
 }
-nav svg {
+.header nav svg {
   margin-left: auto;
 }
-nav a {
+.header nav a {
   text-decoration: none;
   text-transform: uppercase;
   font-size: 2rem;
