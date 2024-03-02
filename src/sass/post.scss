@@ -83,8 +83,6 @@ body {
     }
 }
 
-
-
 .slick-arrow {
     box-shadow: none;
     backdrop-filter: blur(0px);
@@ -97,12 +95,6 @@ body {
         cursor: pointer;
         pointer-events: initial;
     }
-}
-
-.slick-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
 }
 
 .slick-prev {
@@ -121,6 +113,7 @@ body {
     }
 }
 
+.messages-on-post,
 .timestamp,
 .price-wrapper {
     position: absolute;
@@ -130,6 +123,7 @@ body {
     z-index: 5;
     @extend %glass;
 
+    h2,
     h4,
     p {
         font-family: 'Mitr-Regular';
@@ -145,6 +139,20 @@ body {
     h4 {
         font-size: 1.4rem;
     }
+
+    a {
+        font-size: 1.2rem;
+        color: #750175;
+    }
+}
+
+.messages-on-post {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: .5rem;
+    right: .5rem;
+    background-color: rgba(255, 0, 0, 0.595);
 }
 
 .timestamp {
@@ -155,7 +163,6 @@ body {
 .price-wrapper {
     top: 9rem;
     right: .5rem;
-
 }
 
 .post {
@@ -275,6 +282,7 @@ body {
 }
 
 .msg-btn {
+    position: relative;
     font-family: 'Mitr-Regular';
     text-transform: uppercase;
     letter-spacing: .1rem;
@@ -283,12 +291,37 @@ body {
     background-color: $red;
     padding: .3rem 1rem;
     color: $yellow;
+    display: flex;
+    padding-left: 1.5rem;
+    border-radius: .3rem;
+    border: none;
+    margin-bottom: 1rem;
+    cursor: pointer;
+
+    svg {
+        position: absolute;
+        top: -1.2rem;
+        left: -1rem;
+    }
 
     &:disabled {
         color: rgba(83, 83, 83, 0.5);
         background-color: rgba(248, 248, 248, 0.655);
         cursor: not-allowed;
+        pointer-events: none;
     }
+}
+
+.delete-post-btn {
+    font-family: 'Mitr-Regular';
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: .1rem;
+    border-radius: .3rem;
+    border: none;
+    margin: 0 1rem 1rem 1rem;
+    cursor: pointer;
+    background-color: $red;
 }
 
 .post-grid {

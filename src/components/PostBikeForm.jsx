@@ -6,8 +6,9 @@ import { useAppContext } from '../context';
 import { Link } from 'react-router-dom';
 
 const PostBikeForm = () => {
-    const [offerType, setOfferType] = useState('sell')
     const [showInfo, setShowInfo] = useState(false)
+    const [offerType, setOfferType] = useState('sell')
+
     const { isLoggedIn } = useAppContext()
 
     return (

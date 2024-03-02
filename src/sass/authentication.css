@@ -15,6 +15,7 @@
 }
 .auth {
   position: relative;
+  z-index: 100;
 }
 .auth textarea,
 .auth input[type=email],

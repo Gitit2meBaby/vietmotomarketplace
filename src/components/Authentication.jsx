@@ -10,14 +10,13 @@ import '../sass/authentication.css'
 
 const Authentication = () => {
     // global state for recognised user
-    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen } = useAppContext();
+    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser } = useAppContext();
 
     const [emailLogIn, setEmailLogIn] = useState(false)
 
     // stored input values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [currentUser, setCurrentUser] = useState(null);
     const [displayName, setDisplayName] = useState('')
 
     // error states
@@ -55,6 +54,7 @@ const Authentication = () => {
             const user = JSON.parse(storedUser);
             setCurrentUser(user);
             setIsLoggedIn(true)
+            console.log('user', user);
         }
     }, []);
 

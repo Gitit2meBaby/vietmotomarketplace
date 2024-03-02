@@ -1,25 +1,37 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { db } from '../firebase';
-import 'firebase/firestore';
 import { useAppContext } from '../context';
 import '../sass/post.css'
 // icon imports
 import whatsAppLogo from '../assets/socials/whatsApp.svg'
 import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
-import star from '../assets/star.svg'
 
-const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
+import { doc, deleteDoc } from "firebase/firestore";
+import { getStorage, ref, deleteObject } from "firebase/storage";
 
-    const { isLoggedIn, setIsLoggedIn } = useAppContext();
 
-    const isForSale = transaction === 'sell';
+const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
+
+    const { isLoggedIn, currentUser, setIsAuthOpen } = useAppContext();
+    const [showMore, setShowMore] = useState(false)
+    const [sameUser, setSameUser] = useState(false)
+
+    // match user with their own posts
+    useEffect(() => {
+        if (currentUser && currentUser.uid === userId) {
+            setSameUser(true);
+            console.log('postId', postId)
+        }
+    }, [currentUser, userId]);
 
     // culminate the rent and sell data into one variable
+    const isForSale = transaction === 'sell';
     const featureImageSrc = isForSale ? featureImage : featureRentalImageUpload;
     const secondImageSrc = isForSale ? secondImage : secondRentalImageUpload;
     const thirdImageSrc = isForSale ? thirdImage : thirdRentalImageUpload;
@@ -27,8 +39,6 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
     const descriptionSrc = isForSale ? description : descriptionRental
     const locationSrc = isForSale ? location : locationRental
     const modelSrc = isForSale ? model : modelRental
-
-    const [showMore, setShowMore] = useState(false)
 
     const settings = {
         dots: true,
@@ -76,9 +86,67 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
         return price;
     }
 
+    const handleSignInClick = () => {
+        setIsAuthOpen(true)
+    }
+
+    async function handleDelete() {
+        try {
+            // Initialize storage reference
+            const storage = getStorage();
+
+            // Construct image references based on your storage structure
+            let imageRefs;
+            if (transaction === 'sell') {
+                imageRefs = [
+                    ref(storage, `sellImages/${postId}/feature.jpg`),
+                    ref(storage, `sellImages/${postId}/second.jpg`),
+                    ref(storage, `sellImages/${postId}/third.jpg`),
+                ];
+            } else {
+                imageRefs = [
+                    ref(storage, `rentImages/${postId}/feature.jpg`),
+                    ref(storage, `rentImages/${postId}/second.jpg`),
+                    ref(storage, `rentImages/${postId}/third.jpg`),
+                ];
+            }
+
+            const deletionPromises = imageRefs.map(async (imageRef) => {
+                const fullPath = imageRef.fullPath;
+                console.log(`Deleting image: ${fullPath}`);
+
+                try {
+                    await deleteObject(imageRef); // Attempt deletion within the async loop
+                    console.log(`Image deleted successfully: ${fullPath}`); // Log success message
+                } catch (error) {
+                    console.error(`Error deleting image: ${fullPath}`, error); // Log specific error messages
+                }
+            });
+
+            // Wait for all deletion promises to resolve or reject
+            await Promise.all(deletionPromises);
+
+            // Delete document from Firestore after successful image deletions
+            const docRef = doc(db, "listings", postId);
+            console.log('docRef', docRef);
+            await deleteDoc(docRef);
+
+            console.log("Post deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting post:", error.message);
+        }
+    }
+
+
     return (
         <section className='post'>
             <div className="slider-wrapper">
+                {sameUser && (
+                    <div className="messages-on-post">
+                        <h2>3 messages</h2>
+                        <Link to='message'>Read</Link>
+                    </div>
+                )}
                 <div className="timestamp">
                     <p>{formattedDate}</p>
                 </div>
@@ -105,13 +173,16 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                 <div className="post-grid">
                     <p>{locationSrc}</p>
                     <div>
-                        <p className={`type ${type === 'automatic' ? 'automatic' : type === 'manual' ? 'manual' : 'semi'}`}>{type}</p>
-
-                        <p className={`seller ${seller === 'private' ? 'private' : 'business'}`}>{seller}</p>
+                        {(type != '') && (
+                            <p className={`type ${type === 'automatic' ? 'automatic' : type === 'manual' ? 'manual' : 'semi'}`}>{type}</p>
+                        )}
+                        {(seller != '') && (
+                            <p className={`seller ${seller === 'private' ? 'private' : 'business'}`}>{seller}</p>
+                        )}
                     </div>
                 </div>
 
-                <p>{showMore ? `${trimmedDescription} ${descriptionRemainder}` : `${trimmedDescription} ...`}</p>
+                <p>{showMore ? `${trimmedDescription} ${descriptionRemainder}` : `${trimmedDescription}...`}</p>
 
                 {!showMore && (
                     <button className='show-btn' onClick={() => setShowMore(true)}>Show More...</button>
@@ -132,18 +203,22 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                             )}
                         </div>
 
-                        <div className='rent-prices'>
-                            <h2 className="rental-rates-heading">Rental Rates</h2>
-                            {pricePerDay && (
-                                <h2>{pricePerDay}₫/day</h2>
-                            )}
-                            {pricePerWeek && (
-                                <h2>{pricePerWeek}₫/week</h2>
-                            )}
-                            {pricePerMonth && (
-                                <h2>{pricePerMonth}₫/month</h2>
-                            )}
-                        </div>
+                        {pricePerDay && (
+                            <>
+                                <div className='rent-prices'>
+                                    <h2 className="rental-rates-heading">Rental Rates</h2>
+                                    {pricePerDay && (
+                                        <h2>{pricePerDay}₫/day</h2>
+                                    )}
+                                    {pricePerWeek && (
+                                        <h2>{pricePerWeek}₫/week</h2>
+                                    )}
+                                    {pricePerMonth && (
+                                        <h2>{pricePerMonth}₫/month</h2>
+                                    )}
+                                </div>
+                            </>
+                        )}
 
                         <button className='hide-btn'
                             onClick={() => setShowMore(false)}>...Show Less</button>
@@ -205,10 +280,23 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                                 </button>
                             )}
                         </div>
-                        <button disabled={!isLoggedIn} className='msg-btn'>
-                            Message {star}
 
-                        </button>
+                        {!sameUser && (
+                            <button disabled={!isLoggedIn} className='msg-btn'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 240 240" height="3em" width="3em">
+                                    <path
+                                        fillRule="evenodd"
+                                        fill="#FFFF05"
+                                        d="m117.41 130.18-56.225-28.75-46.504 42.72 9.974-62.356-55.008-31.023 62.391-9.785 12.506-61.903 28.586 56.314 62.74-7.235-44.726 44.589 26.266 57.429z"
+                                    /></svg>
+                                Message
+                            </button>
+                        )}
+
+                        {sameUser && (
+                            <button onClick={() => handleDelete()}
+                                className='delete-post-btn'>Delete Post</button>
+                        )}
                     </>
                 )}
             </div>

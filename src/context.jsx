@@ -4,11 +4,14 @@ import PropTypes from 'prop-types';
 const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
+    const [currentUser, setCurrentUser] = useState(null)
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [imageUrls, setImageUrls] = useState([]);
 
     const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+    const [buyOrRent, setBuyOrRent] = useState('sell')
 
     // image cropper, store files to edit before sending to firebase
     const [cropper, setCropper] = useState(false)
@@ -22,6 +25,7 @@ const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
+            currentUser, setCurrentUser,
             isLoggedIn, setIsLoggedIn,
             isLoading, setIsLoading,
             imageUrls, setImageUrls,
@@ -33,7 +37,8 @@ const AppProvider = ({ children }) => {
             featureRentalImageUpload, setFeatureRentalImageUpload,
             secondRentalImageUpload, setSecondRentalImageUpload,
             thirdRentalImageUpload, setThirdRentalImageUpload,
-            isAuthOpen, setIsAuthOpen
+            isAuthOpen, setIsAuthOpen,
+            buyOrRent, setBuyOrRent
         }}>
             {children}
         </AppContext.Provider>

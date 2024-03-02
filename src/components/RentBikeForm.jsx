@@ -7,7 +7,7 @@ import {
     serverTimestamp,
 } from 'firebase/firestore'
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 import Preview from './Preview'
 import { useAppContext } from '../context';
 // icon imports
@@ -19,7 +19,9 @@ const RentBikeForm = () => {
     const { imageUrls, setImageUrls, featureRentalImageUpload, setFeatureRentalImageUpload,
         secondRentalImageUpload, setSecondRentalImageUpload,
         thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
-        setCropper, setChosenImage, chosenImage } = useAppContext()
+        setCropper, setChosenImage, chosenImage, isLoggedIn } = useAppContext()
+
+    const [postId, setPostId] = useState(null)
 
     // states to be passed to firestore DB
     const [typeRental, setTypeRental] = useState('');
@@ -78,7 +80,6 @@ const RentBikeForm = () => {
     const dayInputRef = useRef(null)
     const weekInputRef = useRef(null)
     const monthInputRef = useRef(null)
-    const previewRef = useRef(null)
 
     // set a submitting state to stop unwanted scrolling on input changes
     const [submitting, setSubmitting] = useState(false);
@@ -91,11 +92,17 @@ const RentBikeForm = () => {
         third: false,
     });
 
-    // clear the url array required if same user makes multiple posts
+    // clear the url array required if same user makes multiple posts, reset submission state, create a new postId
     useEffect(() => {
         setImageUrls([]);
         setSubmitSuccess(false)
+        setPostId(generatePostID())
     }, []);
+
+    // Generate a Post ID
+    const generatePostID = () => {
+        return uuidv4();
+    };
 
     // store prices in state and validate no input, scroll and focus on errors
     const handlePriceChange = (value, type) => {
@@ -187,8 +194,6 @@ const RentBikeForm = () => {
         setSubmitting(false);
     }, [modelError, priceErrors, currencyErrors, submitting]);
 
-
-
     // information regarding price input
     const handleTooltip = () => {
         setShowTootltip(!showTooltip)
@@ -232,8 +237,10 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(fileName, 15);
 
         setSelectedFileName(truncatedFileName);
-        setFeatureRentalImageUpload(e.target.files.length > 0 ? e.target.files[0] : null)
-        setImageError(false)
+        setFeatureRentalImageUpload('current')
+        setImageError(false);
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     const handleSecondFileChange = (e) => {
@@ -241,7 +248,9 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(secondFileName, 15);
 
         setSecondFileName(truncatedFileName);
-        setSecondRentalImageUpload(e.target.files[0])
+        setSecondRentalImageUpload('current')
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     const handleThirdFileChange = (e) => {
@@ -249,7 +258,9 @@ const RentBikeForm = () => {
         const truncatedFileName = truncateFileName(thirdFileName, 15);
 
         setThirdFileName(truncatedFileName);
-        setThirdRentalImageUpload(e.target.files[0])
+        setThirdRentalImageUpload('current');
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
     };
 
     // Validate atleast one image has been uploaded
@@ -270,20 +281,17 @@ const RentBikeForm = () => {
         return true;
     };
 
-    const generatePostID = () => {
-        return v4();
-    };
-
     // push the image url into the array for firebase
     const handleImageUpload = async (imageKey, image) => {
         try {
             if (!image) {
                 console.error('No file selected for upload.');
+                setImageError(true);
                 return;
             }
 
-            // Generate a unique post ID for each post
-            const postID = generatePostID();
+            // Convert Blob URL to Blob object
+            const blob = await fetch(image).then((response) => response.blob());
 
             // Update the upload status for the specific image
             setImageUploadStatus((prevStatus) => ({
@@ -291,31 +299,26 @@ const RentBikeForm = () => {
                 [imageKey]: true,
             }));
 
-            // Generate a unique image name with post ID
-            const imageName = `${postID}_${image.name}`;
-
-            // Create a reference to the user's folder in rentImages
-            const userFolderRef = ref(storage, `rentImages/${auth?.currentUser?.uid}/${postID}`);
+            const imageName = imageKey;
+            const userFolderRef = ref(storage, `rentImages/${postId}`);
 
             // Log the upload result
-            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), image);
+            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), blob, {
+                contentType: image.type,
+            });
             console.log('Upload result:', uploadResult);
 
             // Fetch the updated file list
             try {
-                const newResponse = await listAll(userFolderRef);
-                const newUrls = await Promise.all(
-                    newResponse.items.map(async (itemRef) => getDownloadURL(itemRef))
-                );
+                const response = await listAll(userFolderRef);
 
-                // Find the newly added URLs
-                const addedUrls = newUrls.filter((url) => !prevImageUrls.includes(url));
+                const urlPromises = response.items.map(async (itemRef) => getDownloadURL(itemRef));
+                const urls = await Promise.all(urlPromises);
 
-                // Use the previous state and add only the new URLs
-                setImageUrls((prevUrls) => [...prevUrls, ...addedUrls]);
-                setPrevImageUrls(newUrls);
+                // Use the previous state to ensure correct updates
+                setImageUrls(urls);
                 setImageError(false);
-                setNoUpload(false)
+                setNoUpload(false);
             } catch (error) {
                 console.error('Error listing files:', error);
             } finally {
@@ -329,6 +332,7 @@ const RentBikeForm = () => {
             console.error('Error uploading image:', error);
         }
     };
+
     // update drop location array
     const handleDropLocationChange = (e) => {
         const { value } = e.target;
@@ -361,6 +365,7 @@ const RentBikeForm = () => {
             const filteredImageUrls = imageUrls.filter(url => url);
 
             await addDoc(rentRef, {
+                postID: postId,
                 type: typeRental,
                 pricePerDay: pricePerDay,
                 pricePerWeek: pricePerWeek,
@@ -384,7 +389,7 @@ const RentBikeForm = () => {
             });
 
             // Clear form fields after successful submission
-            setTypeRental('automatic');
+            setTypeRental('');
             setPricePerDay('');
             setPricePerWeek('');
             setPricePerMonth('');
@@ -428,21 +433,13 @@ const RentBikeForm = () => {
     //show preview modal
     const handlePreviewBtn = () => {
         setShowPreview(!showPreview);
-
-        if (previewRef.current) {
-            const previewOffsetTop = previewRef.current.getBoundingClientRect().top + window.scrollY;
-
-            window.scrollTo({
-                top: previewOffsetTop,
-                behavior: 'smooth',
-            });
-        }
     };
 
     // Exit successfull post modal
     const handlePostAgain = () => {
         setSubmitSuccess(false)
         setImageUrls([])
+        setPostId(generatePostID())
     }
 
     return (
@@ -790,7 +787,7 @@ const RentBikeForm = () => {
                     <span>{selectedFileName}</span>
                 </div>
 
-                {imageError && (
+                {(imageError && !noUpload) && (
                     <>
                         <div className="pointer image-pointer"></div>
                         <div className="form-error image-error">
@@ -854,13 +851,15 @@ const RentBikeForm = () => {
 
             <div className="final-form-btns">
                 <button type="button" onClick={() => handlePreviewBtn()}>Preview</button>
-                <button className='post-btn' type="submit" onClick={handleSaleSubmit}>Post</button>
+                <button className='post-btn' type="submit"
+                    onClick={(e) => handleSaleSubmit(e)}
+                    disabled={!isLoggedIn}
+                >Post</button>
             </div>
 
 
             {showPreview && (
                 <Preview
-                    ref={previewRef}
                     type={typeRental}
                     pricePerDay={formatPrice(pricePerDay)}
                     pricePerWeek={formatPrice(pricePerWeek)}
@@ -885,7 +884,7 @@ const RentBikeForm = () => {
             {submitSuccess && (
                 <div className="submit-success-modal">
                     <h2>Success!</h2>
-                    <p>Your {model} has been posted</p>
+                    <p>Your {modelRental} has been posted</p>
                     <button onClick={() => handlePostAgain()} className="post-again-btn">Make Another Post</button>
                     <Link to="/list" className="go-to-list-btn">See it Live</Link>
                 </div>

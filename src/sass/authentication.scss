@@ -13,6 +13,7 @@ $white: #fff;
 
 .auth {
     position: relative;
+    z-index: 100;
 
     textarea,
     input[type='email'],

@@ -6,6 +6,7 @@
   font-family: "Caveat-SemiBold";
   src: url("../assets/fonts/Caveat-SemiBold.ttf");
 }
+.messages-on-post,
 .timestamp,
 .price-wrapper, .preview .preview-btn {
   background: rgba(255, 255, 255, 0.2);
@@ -87,13 +88,6 @@ body {
   pointer-events: initial;
 }
 
-.slick-slide img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
-}
-
 .slick-prev {
   left: 0.2rem;
 }
@@ -108,6 +102,7 @@ body {
   font-size: 30px;
 }
 
+.messages-on-post,
 .timestamp,
 .price-wrapper {
   position: absolute;
@@ -116,8 +111,13 @@ body {
   padding: 0.3rem;
   z-index: 5;
 }
+.messages-on-post h2,
+.messages-on-post h4,
+.messages-on-post p,
+.timestamp h2,
 .timestamp h4,
 .timestamp p,
+.price-wrapper h2,
 .price-wrapper h4,
 .price-wrapper p {
   font-family: "Mitr-Regular";
@@ -125,15 +125,36 @@ body {
   color: rgba(0, 0, 0, 0.8);
   letter-spacing: 0.05rem;
 }
+.messages-on-post h2 span,
+.messages-on-post h4 span,
+.messages-on-post p span,
+.timestamp h2 span,
 .timestamp h4 span,
 .timestamp p span,
+.price-wrapper h2 span,
 .price-wrapper h4 span,
 .price-wrapper p span {
   font-size: 1.2rem;
 }
+.messages-on-post h4,
 .timestamp h4,
 .price-wrapper h4 {
   font-size: 1.4rem;
+}
+.messages-on-post a,
+.timestamp a,
+.price-wrapper a {
+  font-size: 1.2rem;
+  color: #750175;
+}
+
+.messages-on-post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(255, 0, 0, 0.595);
 }
 
 .timestamp {
@@ -254,6 +275,7 @@ body {
 }
 
 .msg-btn {
+  position: relative;
   font-family: "Mitr-Regular";
   text-transform: uppercase;
   letter-spacing: 0.1rem;
@@ -262,11 +284,35 @@ body {
   background-color: #DB261E;
   padding: 0.3rem 1rem;
   color: #FFFF05;
+  display: flex;
+  padding-left: 1.5rem;
+  border-radius: 0.3rem;
+  border: none;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.msg-btn svg {
+  position: absolute;
+  top: -1.2rem;
+  left: -1rem;
 }
 .msg-btn:disabled {
   color: rgba(83, 83, 83, 0.5);
   background-color: rgba(248, 248, 248, 0.655);
   cursor: not-allowed;
+  pointer-events: none;
+}
+
+.delete-post-btn {
+  font-family: "Mitr-Regular";
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  border-radius: 0.3rem;
+  border: none;
+  margin: 0 1rem 1rem 1rem;
+  cursor: pointer;
+  background-color: #DB261E;
 }
 
 .post-grid {

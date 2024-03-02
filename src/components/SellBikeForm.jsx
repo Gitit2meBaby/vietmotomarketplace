@@ -71,7 +71,6 @@ const SellBikeForm = () => {
     // refs used for scrollTo after errors
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
-    const previewRef = useRef(null)
 
     // clear the url array required if same user makes multiple posts, reset submission state, create a new postId
     useEffect(() => {
@@ -114,7 +113,6 @@ const SellBikeForm = () => {
     // Final submission function
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
-        console.log("clicked post");
         const isPriceValid = checkPriceField();
         const isModelValid = checkModelField();
         const isUpload = checkNoUpload()
@@ -151,9 +149,6 @@ const SellBikeForm = () => {
                 createdAt: serverTimestamp(),
             });
 
-            console.log('imageUrls', imageUrls);
-            console.log('filteredImageUrls', filteredImageUrls);
-
             // Clear form fields after successful submission
             setType('');
             setPrice('');
@@ -176,7 +171,6 @@ const SellBikeForm = () => {
             setThirdFileName('')
 
             setSubmitSuccess(true)
-            console.log('post sucesss');
 
         } catch (error) {
             console.error("Error adding document: ", error);
@@ -342,7 +336,6 @@ const SellBikeForm = () => {
 
                 // Use the previous state to ensure correct updates
                 setImageUrls(urls);
-                console.log('imageUrls', imageUrls);
                 setImageError(false);
                 setNoUpload(false);
             } catch (error) {
@@ -376,15 +369,6 @@ const SellBikeForm = () => {
     // show preview popup
     const handlePreviewBtn = () => {
         setShowPreview(!showPreview);
-
-        if (previewRef.current) {
-            const previewOffsetTop = previewRef.current.getBoundingClientRect().top + window.scrollY;
-
-            window.scrollTo({
-                top: previewOffsetTop,
-                behavior: 'smooth',
-            });
-        }
     };
 
     // Exit successfull post modal
@@ -774,8 +758,6 @@ const SellBikeForm = () => {
 
             {showPreview && (
                 <>
-                    <div className="preview-ref-div"
-                        ref={previewRef}></div>
                     <Preview
                         type={type}
                         price={formatPrice(price)}
