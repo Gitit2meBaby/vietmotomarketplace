@@ -82,7 +82,7 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                 <div className="timestamp">
                     <p>{formattedDate}</p>
                 </div>
-                <Slider {...settings} style={{ zIndex: '-1' }}>
+                <Slider {...settings} style={{ zIndex: '0' }}>
                     <img className='post-img' src={featureImageSrc} alt="Motorbike" />
                     <img className='post-img' src={secondImageSrc} alt="Motorbike" />
                     <img className='post-img' src={thirdImageSrc} alt="Motorbike" />
@@ -97,19 +97,10 @@ const Post = ({ id, transaction, type, price, pricePerDay, pricePerWeek, pricePe
                 </div>
             </div>
 
+
             <div className="post-content">
+                <div className="cover"></div>
                 <h1>{modelSrc}</h1>
-                {/* <div className='rent-prices'>
-                    {pricePerDay && (
-                        <h2>{pricePerDay}₫/day</h2>
-                    )}
-                    {pricePerWeek && (
-                        <h2>{pricePerWeek}₫/week</h2>
-                    )}
-                    {pricePerMonth && (
-                        <h2>{pricePerMonth}₫/month</h2>
-                    )}
-                </div> */}
 
                 <div className="post-grid">
                     <p>{locationSrc}</p>

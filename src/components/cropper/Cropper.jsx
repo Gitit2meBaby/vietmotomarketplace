@@ -63,6 +63,7 @@ export default function Cropper() {
         }
     }
 
+    // 5th attempt
     async function onDownloadCropClick() {
         const image = imgRef.current;
         const previewCanvas = previewCanvasRef.current;
@@ -86,7 +87,7 @@ export default function Cropper() {
         }
 
         ctx.drawImage(
-            previewCanvas,
+            image,
             completedCrop.x * scaleX,
             completedCrop.y * scaleY,
             completedCrop.width * scaleX,
@@ -97,22 +98,14 @@ export default function Cropper() {
             targetHeight
         );
 
-        const blob = await new Promise((resolve) => {
-            tempCanvas.toBlob((b) => resolve(b), 'image/png');
-        });
+        // Use URL.createObjectURL to create an object URL
+        const objectURL = tempCanvas.toDataURL('image/png');
 
-        if (blobUrlRef.current) {
-            URL.revokeObjectURL(blobUrlRef.current);
-        }
-        blobUrlRef.current = URL.createObjectURL(blob);
-
-        if (hiddenAnchorRef.current) {
-            hiddenAnchorRef.current.href = blobUrlRef.current;
-
-            // Instead of triggering download, set the cropped image to the global state
-            chooseStateUpload(blobUrlRef.current)
-        }
+        // Pass the object URL to the state-setting functions
+        chooseStateUpload(objectURL);
     }
+
+
 
     function chooseStateUpload(blob) {
         if (featureImageUpload === 'current') {
