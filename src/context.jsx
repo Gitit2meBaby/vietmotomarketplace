@@ -10,6 +10,9 @@ const AppProvider = ({ children }) => {
     const [imageUrls, setImageUrls] = useState([]);
 
     const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [showMessenger, setShowMessenger] = useState(false)
+    const [showChatBox, setShowChatBox] = useState(false)
+    const [roomChosen, setRoomChosen] = useState(null)
 
     const [buyOrRent, setBuyOrRent] = useState('sell')
 
@@ -38,7 +41,10 @@ const AppProvider = ({ children }) => {
             secondRentalImageUpload, setSecondRentalImageUpload,
             thirdRentalImageUpload, setThirdRentalImageUpload,
             isAuthOpen, setIsAuthOpen,
-            buyOrRent, setBuyOrRent
+            buyOrRent, setBuyOrRent,
+            showMessenger, setShowMessenger,
+            showChatBox, setShowChatBox,
+            roomChosen, setRoomChosen,
         }}>
             {children}
         </AppContext.Provider>

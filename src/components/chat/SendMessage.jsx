@@ -2,8 +2,10 @@ import { useState } from "react";
 import { auth, db } from "../../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import avatar from '../../assets/anonAvatar.webp'
+import { useAppContext } from "../../context";
 
 const SendMessage = ({ scroll }) => {
+    const { roomChosen, setRoomChosen } = useAppContext()
     const [message, setMessage] = useState("");
 
     const sendMessage = async (event) => {
@@ -15,7 +17,10 @@ const SendMessage = ({ scroll }) => {
 
         const { uid, displayName, photoURL } = auth.currentUser;
 
-        await addDoc(collection(db, "messages"), {
+        // Construct the correct path in the database
+        const messagePath = `users/${roomChosen}/rooms/${uid}/messages`;
+
+        await addDoc(collection(db, messagePath), {
             text: message,
             name: displayName,
             avatar: photoURL ? photoURL : avatar,

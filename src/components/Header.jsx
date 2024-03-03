@@ -7,7 +7,7 @@ import "../sass/header.css"
 
 const Header = () => {
     const [navOpen, setNavOpen] = useState(false)
-    const { isLoggedIn, setIsAuthOpen, buyOrRent, setBuyOrRent } = useAppContext();
+    const { isLoggedIn, setIsAuthOpen, buyOrRent, setBuyOrRent, setShowMessenger } = useAppContext();
     const [activeLink, setActiveLink] = useState(null);
 
     const navStyles = {
@@ -47,6 +47,12 @@ const Header = () => {
         console.log('activeLink:', activeLink);
         console.log('sellOrRent:', buyOrRent);
     };
+
+    const handleMessageClick = (link) => {
+        setNavOpen(false)
+        setActiveLink(link)
+        setShowMessenger(true)
+    }
 
     useEffect(() => {
         console.log('activeLink:', activeLink);
@@ -92,7 +98,7 @@ const Header = () => {
                     to="/guides">Guides</Link>
 
                 <div className="msg-nav-item"
-                    onClick={() => handleLinkClick('/message')}
+                    onClick={() => handleMessageClick('/message')}
                     style={{ ...navItemStyles, transitionDelay: '1.2s' }} >
                     <p className={activeLink === '/message' ? 'active-link' : ''}
                     >Messages</p>

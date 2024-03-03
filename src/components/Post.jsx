@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -16,9 +16,9 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject, getMetadata } from "firebase/storage";
 
 
-const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
+const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, showMessenger, setShowMessenger }) => {
 
-    const { isLoggedIn, currentUser, setIsAuthOpen } = useAppContext();
+    const { isLoggedIn, currentUser, setIsAuthOpen, roomChosen, setRoomChosen, showChatBox, setShowChatBox } = useAppContext();
     const [showMore, setShowMore] = useState(false)
     const [sameUser, setSameUser] = useState(false)
 
@@ -89,6 +89,16 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
     const handleSignInClick = () => {
         setIsAuthOpen(true)
     }
+
+    const handleChatBoxOpen = useCallback(() => {
+        setRoomChosen(userId);
+        setShowChatBox(true);
+    }, [setRoomChosen, setShowChatBox, userId]);
+
+    useEffect(() => {
+        console.log('showChatBox', showChatBox);
+        console.log('roomChosen', roomChosen);
+    }, [showChatBox, roomChosen]);
 
     async function handleDelete() {
         try {
@@ -297,7 +307,8 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
                         </div>
 
                         {!sameUser && (
-                            <button disabled={!isLoggedIn} className='msg-btn'>
+                            <button disabled={!isLoggedIn} className='msg-btn'
+                                onClick={() => handleChatBoxOpen()}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 240 240" height="3em" width="3em">
                                     <path
                                         fillRule="evenodd"

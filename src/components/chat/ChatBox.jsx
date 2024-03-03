@@ -9,17 +9,22 @@ import {
 import { db } from "../../firebase";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
+import { useAppContext } from "../../context";
 
 const ChatBox = () => {
+    const { roomChosen, setShowChatBox, currentUser } = useAppContext()
     const [messages, setMessages] = useState([]);
     const scroll = useRef();
 
     useEffect(() => {
         const q = query(
-            collection(db, "messages"),
+            collection(db, `/users/${roomChosen}/rooms/${currentUser.uid}/messages`),  // Adjust this line
             orderBy("createdAt", "desc"),
-            limit(50)
+            limit(25)
         );
+
+        console.log('currentUser.uid', currentUser.uid);
+        console.log('roomChosen', roomChosen);
 
         const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
             const fetchedMessages = [];
@@ -30,18 +35,27 @@ const ChatBox = () => {
                 (a, b) => a.createdAt - b.createdAt
             );
             setMessages(sortedMessages);
+            console.log('messages', messages);
         });
         return () => unsubscribe;
     }, []);
 
+    const handleExitChatBox = () => {
+        setShowChatBox(false)
+    }
+
     return (
         <main className="chat-box">
+            <div className="chat-box-header">
+                <img src={roomChosen.avatar} alt={roomChosen.name} />
+                <h2>{roomChosen.name}</h2>
+            </div>
+            <button onClick={() => handleExitChatBox()}>Back</button>
             <div className="messages-wrapper">
                 {messages?.map((message) => (
                     <Message key={message.id} message={message} />
                 ))}
             </div>
-            {/* when a new message enters the chat, the screen scrolls down to the scroll div */}
             <span ref={scroll}></span>
             <SendMessage scroll={scroll} />
         </main>
