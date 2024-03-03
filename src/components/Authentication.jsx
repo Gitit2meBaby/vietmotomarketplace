@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile, signInWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile, signInWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail, onAuthStateChanged } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, list, getDownloadURL } from 'firebase/storage'
 import { db, storage } from '../firebase'
@@ -10,7 +10,7 @@ import '../sass/authentication.css'
 
 const Authentication = () => {
     // global state for recognised user
-    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser, setChosenImage, setCropper, avatarImageUpload, setAvatarImageUpload } = useAppContext();
+    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser, setChosenImage, setCropper, avatarImageUpload, setAvatarImageUpload, setShowChatBox, setShowMessenger } = useAppContext();
 
     const [emailLogIn, setEmailLogIn] = useState(false)
 
@@ -181,6 +181,22 @@ const Authentication = () => {
         handleClose();
     };
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in.
+                setCurrentUser(user);
+                setIsLoggedIn(true)
+            } else {
+                // No user is signed in.
+                setCurrentUser(null);
+            }
+        });
+
+        // Clean up the subscription when the component unmounts.
+        return () => unsubscribe();
+    }, []);
+
     const handleSignUp = async (e) => {
         e.preventDefault();
 
@@ -195,7 +211,7 @@ const Authentication = () => {
             // Update the user's profile with display name and avatar photo URL
             await updateProfile(user, {
                 displayName: displayName,
-                photoURL: avatarURL, // Set the photoURL here
+                photoURL: avatarURL,
             });
 
             // Create user data object
@@ -203,7 +219,7 @@ const Authentication = () => {
                 displayName: displayName,
                 email: user.email,
                 uid: user.uid,
-                avatar: avatarURL, // Use the avatar URL here
+                avatar: avatarURL,
             };
 
             // Save user data to Firestore
@@ -249,7 +265,6 @@ const Authentication = () => {
             setSignUpSuccess(false);
         }, 2000);
     };
-
 
     const signInWithGoogle = async () => {
         try {
@@ -310,6 +325,8 @@ const Authentication = () => {
             setCurrentUser(null);
             localStorage.removeItem('user');
             setIsLoggedIn(false)
+            setShowChatBox(false)
+            setShowMessenger(false)
         } catch (err) {
             console.error(err);
         }
@@ -441,12 +458,6 @@ const Authentication = () => {
                                             <div className='choose-avatar-wrapper'>
                                                 <label htmlFor="avatarInput">Choose an Avatar</label>
                                                 <input type='file' name='avatarInput' onChange={(e) => handleAvatarImageChange(e)} />
-
-                                                {/* <div className="upload-avatar-wrapper">
-                                                    <button className={imageUploading ? 'uploading-wait avatar-upload-btn' : imageUploaded ? 'uploaded avatar-upload-btn' : 'avatar-upload-btn'}
-                                                        onClick={() => handleImageUpload('avatar', avatarImageUpload)}>{imageUploading ? 'Please wait...' : imageUploaded ? 'Sucess!' : 'Upload'}</button>
-                                                </div> */}
-
                                             </div>
 
                                             <button className='signup-btn' type="submit">Sign Up</button>

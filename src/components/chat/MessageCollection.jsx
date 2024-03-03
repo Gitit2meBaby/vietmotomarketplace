@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useAppContext } from '../../context';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, query, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import ChatBox from './ChatBox';
 
 const Messages = () => {
     const { currentUser, showMessenger, setShowMessenger, showChatBox, setShowChatBox, roomChosen, setRoomChosen } = useAppContext()
     const [userRooms, setUserRooms] = useState([]);
-    const [userDetails, setUserDetails] = useState([]);
+    const [usersList, setUsersList] = useState([])
 
-
+    // return an array of all the user Ids that have sent a message
     useEffect(() => {
         const fetchUserRooms = async () => {
             if (currentUser) {
@@ -33,12 +33,41 @@ const Messages = () => {
         fetchUserRooms();
     }, [currentUser]);
 
-
-
-
     useEffect(() => {
         console.log('userRooms', userRooms);
     }, [userRooms])
+
+    // Find User Data for matching roomIds
+    useEffect(() => {
+        const fetchUserList = async () => {
+            try {
+                const usersCollection = collection(db, 'users');
+                const usersQuery = query(usersCollection);
+                const snapshot = await getDocs(usersQuery);
+
+                const usersData = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+
+                setUsersList(usersData);
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+            }
+        };
+        fetchUserList();
+        filterUserData()
+    }, [userRooms]);
+
+    useEffect(() => {
+        console.log('usersList', usersList);
+    }, [usersList])
+
+    const filterUserData = async () => {
+        const matchedUsers = usersList.filter(item => userRooms.includes(item));
+        console.log('matchedUsers', matchedUsers);
+    }
+
 
     const handleRoomClick = (roomId) => {
         setRoomChosen(roomId);

@@ -82,7 +82,6 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
             return priceStr.slice(0, length - 6) + '.' + priceStr.slice(length - 6, length - 5) + 'mil';
         }
 
-        // Default case: return the original number
         return price;
     }
 
