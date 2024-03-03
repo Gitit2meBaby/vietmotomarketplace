@@ -2,15 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile, signInWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, uploadBytes, list, getDownloadURL } from 'firebase/storage'
+import { db, storage } from '../firebase'
 import anonAvatar from '../assets/anonAvatar.webp'
 import { useAppContext } from '../context';
 import '../sass/authentication.css'
 
-
 const Authentication = () => {
     // global state for recognised user
-    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser } = useAppContext();
+    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser, setChosenImage, setCropper, avatarImageUpload, setAvatarImageUpload } = useAppContext();
 
     const [emailLogIn, setEmailLogIn] = useState(false)
 
@@ -18,6 +18,8 @@ const Authentication = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('')
+
+    const [uploading, setUploading] = useState(false)
 
     // error states
     const [emptyEmail, setEmptyEmail] = useState(false)
@@ -78,6 +80,7 @@ const Authentication = () => {
         setPasswordReset(false);
         setPasswordResetError(false);
         setSignUpSuccess(false);
+        setAvatarImageUpload(null)
     };
 
     const storeUserInLocalStorage = (user) => {
@@ -103,6 +106,44 @@ const Authentication = () => {
         setDisplayName(e.target.value)
         setEmptyDisplayName(false)
     }
+
+    // setting images and names into state (not URLS for firestore) 
+    const handleAvatarImageChange = (e) => {
+        setAvatarImageUpload('current');
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
+    };
+
+    const handleImageUpload = async (imageKey, image) => {
+        try {
+            // Convert Blob URL to Blob object
+            const blob = await fetch(image).then((response) => response.blob());
+
+            const imageName = imageKey;
+            const userFolderRef = ref(storage, `userImages/${email}`);
+
+            // Log the upload result
+            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), blob, {
+                contentType: image.type,
+            });
+            console.log('Upload result:', uploadResult);
+
+            // Fetch the updated file list and update the state
+            try {
+
+                // Get the download URL for the uploaded image
+                const downloadURL = await getDownloadURL(ref(userFolderRef, imageName));
+                console.log('Download URL:', downloadURL);
+
+                return downloadURL; // Return the download URL for further use
+
+            } catch (error) {
+                console.error('Error listing files:', error);
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -142,55 +183,50 @@ const Authentication = () => {
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+
         try {
-            const methods = await fetchSignInMethodsForEmail(auth, email);
+            // Upload the user's avatar image and get the download URL
+            const avatarURL = await handleImageUpload('avatar', avatarImageUpload);
 
-            if (email === '') {
-                setEmptyEmail(true);
-                emailSignUpRef.current.focus();
-                return;
-            } else if (password === '') {
-                setEmptyPassword(true);
-                passwordSignUpRef.current.focus();
-                return;
-            } else if (displayName === '') {
-                setEmptyDisplayName(true);
-                displayNameSignUpRef.current.focus();
-                return;
-            } else if (methods && methods.length > 0) {
-                console.log('User already exists');
-                setEmailExists(true);
-                emailSignUpRef.current.focus();
-                return;
-            } else {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+            // Create a new user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-                await updateProfile(user, {
-                    displayName: displayName,
-                });
+            // Update the user's profile with display name and avatar photo URL
+            await updateProfile(user, {
+                displayName: displayName,
+                photoURL: avatarURL, // Set the photoURL here
+            });
 
-                const userData = {
-                    displayName: displayName,
-                    email: user.email,
-                    uid: user.uid,
-                };
+            // Create user data object
+            const userData = {
+                displayName: displayName,
+                email: user.email,
+                uid: user.uid,
+                avatar: avatarURL, // Use the avatar URL here
+            };
 
-                await setDoc(doc(db, 'users', user.uid), userData);
-                setCurrentUser(user);
-                storeUserInLocalStorage(user);
-                setIsLoggedIn(true);
+            // Save user data to Firestore
+            await setDoc(doc(db, 'users', user.uid), userData);
 
-                handleSignUpSuccess()
-                setEmptyEmail(false);
-                setEmptyPassword(false);
-                setEmptyDisplayName(false);
-                setEmailExists(false);
-                setEmailFormatError(false);
-                setPasswordError(false);
-                handleClose();
-            }
+            // Update local state and localStorage
+            setCurrentUser(user);
+            storeUserInLocalStorage(user);
+            setIsLoggedIn(true);
+
+            handleSignUpSuccess();
+
+            // Reset form state
+            setEmptyEmail(false);
+            setEmptyPassword(false);
+            setEmptyDisplayName(false);
+            setEmailExists(false);
+            setEmailFormatError(false);
+            setPasswordError(false);
+            setAvatarImageUpload(null);
+            handleClose();
         } catch (error) {
+            // Handle authentication errors
             if (error.code === 'auth/invalid-email') {
                 setEmailFormatError(true);
                 emailSignUpRef.current.focus();
@@ -225,6 +261,7 @@ const Authentication = () => {
                 displayName: user.displayName,
                 email: user.email,
                 uid: user.uid,
+                avatar: user.photoURL,
             };
 
             await setDoc(doc(db, 'users', user.uid), userData);
@@ -289,13 +326,12 @@ const Authentication = () => {
 
                 {currentUser && (
                     <img
-                        src={currentUser.photoURL || anonAvatar}
+                        src={currentUser.photoURL || currentUser.avatar || anonAvatar}
                         alt={currentUser.email}
                         onClick={() => setIsAuthOpen(true)}
                     />
                 )}
             </div>
-
 
             {isAuthOpen && (
                 <div className="sign-in-modal">
@@ -400,6 +436,17 @@ const Authentication = () => {
                                                         </div>
                                                     </>
                                                 )}
+                                            </div>
+
+                                            <div className='choose-avatar-wrapper'>
+                                                <label htmlFor="avatarInput">Choose an Avatar</label>
+                                                <input type='file' name='avatarInput' onChange={(e) => handleAvatarImageChange(e)} />
+
+                                                {/* <div className="upload-avatar-wrapper">
+                                                    <button className={imageUploading ? 'uploading-wait avatar-upload-btn' : imageUploaded ? 'uploaded avatar-upload-btn' : 'avatar-upload-btn'}
+                                                        onClick={() => handleImageUpload('avatar', avatarImageUpload)}>{imageUploading ? 'Please wait...' : imageUploaded ? 'Sucess!' : 'Upload'}</button>
+                                                </div> */}
+
                                             </div>
 
                                             <button className='signup-btn' type="submit">Sign Up</button>

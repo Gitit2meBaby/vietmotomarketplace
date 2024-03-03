@@ -25,6 +25,7 @@ const AppProvider = ({ children }) => {
     const [featureRentalImageUpload, setFeatureRentalImageUpload] = useState(null)
     const [secondRentalImageUpload, setSecondRentalImageUpload] = useState(null)
     const [thirdRentalImageUpload, setThirdRentalImageUpload] = useState(null)
+    const [avatarImageUpload, setAvatarImageUpload] = useState(null)
 
     return (
         <AppContext.Provider value={{
@@ -34,6 +35,7 @@ const AppProvider = ({ children }) => {
             imageUrls, setImageUrls,
             cropper, setCropper,
             setChosenImage, chosenImage,
+            avatarImageUpload, setAvatarImageUpload,
             featureImageUpload, setFeatureImageUpload,
             secondImageUpload, setSecondImageUpload,
             thirdImageUpload, setThirdImageUpload,

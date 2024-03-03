@@ -19,6 +19,7 @@
     min-width: 80vw;
     max-height: 98dvh;
     @extend %glassModal;
+    z-index: 100;
 
     .Crop-Controls {
         margin-bottom: 1.5rem;

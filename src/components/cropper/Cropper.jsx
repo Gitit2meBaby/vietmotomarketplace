@@ -42,9 +42,15 @@ export default function Cropper() {
         thirdImageUpload, setThirdImageUpload, featureRentalImageUpload, setFeatureRentalImageUpload,
         secondRentalImageUpload, setSecondRentalImageUpload,
         thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
-        setCropper, chosenImage, setChosenImage } = useAppContext()
+        setCropper, chosenImage, setChosenImage, avatarImageUpload, setAvatarImageUpload } = useAppContext()
 
     const [why, setWhy] = useState(false)
+
+    useEffect(() => {
+        if (avatarImageUpload === 'current') {
+            setAspect(1 / 1)
+        }
+    }, [])
 
     useEffect(() => {
         if (chosenImage instanceof File) {
@@ -63,7 +69,7 @@ export default function Cropper() {
         }
     }
 
-    // 5th attempt
+    // Creating cropped image in URL
     async function onDownloadCropClick() {
         const image = imgRef.current;
         const previewCanvas = previewCanvasRef.current;
@@ -74,8 +80,13 @@ export default function Cropper() {
         const scaleX = image.naturalWidth / image.width;
         const scaleY = image.naturalHeight / image.height;
 
-        const targetWidth = 400;
-        const targetHeight = 225;
+        let targetWidth = 400;
+        let targetHeight = 225;
+
+        if (avatarImageUpload === "current") {
+            targetWidth = 40;
+            targetHeight = 40;
+        }
 
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = targetWidth;
@@ -105,8 +116,6 @@ export default function Cropper() {
         chooseStateUpload(objectURL);
     }
 
-
-
     function chooseStateUpload(blob) {
         if (featureImageUpload === 'current') {
             setFeatureImageUpload(blob);
@@ -120,10 +129,11 @@ export default function Cropper() {
             setSecondRentalImageUpload(blob);
         } else if (thirdRentalImageUpload === 'current') {
             setThirdRentalImageUpload(blob);
+        } else if (avatarImageUpload === 'current') {
+            setAvatarImageUpload(blob)
         }
         setCropper(false);
     }
-
 
     useDebounceEffect(
         async () => {

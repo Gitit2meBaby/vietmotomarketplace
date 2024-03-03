@@ -48,7 +48,7 @@ $white: #fff;
     top: 50%;
     left: 50%;
     width: 80vw;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -50%);
     z-index: 50;
     border-radius: .5rem;
     background: #ffffff33;
@@ -91,6 +91,57 @@ $white: #fff;
     flex-direction: column;
     margin-bottom: 1rem;
 }
+
+.choose-avatar-wrapper {
+    // display: flex;
+    // flex-direction: column;
+    margin-bottom: .5rem;
+}
+
+.upload-avatar-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.avatar-upload-btn {
+    margin-top: 0.5rem;
+    background-color: transparent;
+    border: none;
+    border-radius: .2rem;
+    text-transform: uppercase;
+    letter-spacing: .05rem;
+    color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+    transform: translateX(150%);
+    transition: transform 1s ease-in-out;
+}
+
+.uploading-wait {
+    animation: pulse 2s infinite;
+}
+
+.uploaded {
+    transform: translateX(0%);
+    transition: transform 1s ease-in-out;
+    color: rgba(2, 206, 2, 0.796);
+    box-shadow: 0 0 2px 2px rgba(2, 206, 2, 0.796);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
 
 .signup-btn {
     margin-top: 1rem;

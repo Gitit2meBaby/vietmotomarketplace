@@ -18,7 +18,7 @@ const ChatBox = () => {
 
     useEffect(() => {
         const q = query(
-            collection(db, `/users/${roomChosen}/rooms/${currentUser.uid}/messages`),  // Adjust this line
+            collection(db, `/users/${roomChosen}/rooms/${currentUser.uid}/messages`),
             orderBy("createdAt", "desc"),
             limit(25)
         );
@@ -47,7 +47,9 @@ const ChatBox = () => {
     return (
         <main className="chat-box">
             <div className="chat-box-header">
-                <img src={roomChosen.avatar} alt={roomChosen.name} />
+                {/* {roomChosen.avatar && (
+                    <img src={roomChosen.avatar} alt={roomChosen.name} />
+                )} */}
                 <h2>{roomChosen.name}</h2>
             </div>
             <button onClick={() => handleExitChatBox()}>Back</button>
