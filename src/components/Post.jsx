@@ -13,7 +13,7 @@ import faceBookLogo from '../assets/socials/facebook.svg'
 import zaloLogo from '../assets/socials/zalo.svg'
 
 import { doc, deleteDoc } from "firebase/firestore";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+import { getStorage, ref, deleteObject, getMetadata } from "firebase/storage";
 
 
 const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt }) => {
@@ -99,16 +99,18 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
             let imageRefs;
             if (transaction === 'sell') {
                 imageRefs = [
-                    ref(storage, `sellImages/${postId}/feature.jpg`),
-                    ref(storage, `sellImages/${postId}/second.jpg`),
-                    ref(storage, `sellImages/${postId}/third.jpg`),
+                    ref(storage, `/sellImages/${postId}/feature.png`),
+                    ref(storage, `/sellImages/${postId}/second.png`),
+                    ref(storage, `/sellImages/${postId}/third.png`),
                 ];
+                console.log('imageRefs', imageRefs);
             } else {
                 imageRefs = [
-                    ref(storage, `rentImages/${postId}/feature.jpg`),
-                    ref(storage, `rentImages/${postId}/second.jpg`),
-                    ref(storage, `rentImages/${postId}/third.jpg`),
+                    ref(storage, `/rentImages/${postId}/feature.png`),
+                    ref(storage, `/rentImages/${postId}/second.png`),
+                    ref(storage, `/rentImages/${postId}/third.png`),
                 ];
+                console.log('imageRefsRent', imageRefs);
             }
 
             const deletionPromises = imageRefs.map(async (imageRef) => {
@@ -116,15 +118,28 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
                 console.log(`Deleting image: ${fullPath}`);
 
                 try {
-                    await deleteObject(imageRef); // Attempt deletion within the async loop
-                    console.log(`Image deleted successfully: ${fullPath}`); // Log success message
+                    await getMetadata(imageRef);
+                    console.log(`Image ${fullPath} found in storage. Proceeding with deletion...`);
+                    console.log('imageRef in metadata:', imageRef)
                 } catch (error) {
-                    console.error(`Error deleting image: ${fullPath}`, error); // Log specific error messages
+                    if (error.code === 'storage/object-not-found') {
+                        console.warn(`Image ${fullPath} not found in storage. Skipping deletion...`);
+                    } else {
+                        throw error; // Re-throw other errors
+                    }
+                }
+
+                try {
+                    await deleteObject(imageRef);
+                    console.log(`Image ${fullPath} deleted successfully.`);
+                } catch (error) {
+                    console.error(`Error deleting image ${fullPath}:`, error.message);
                 }
             });
 
             // Wait for all deletion promises to resolve or reject
             await Promise.all(deletionPromises);
+            console.log('deletionPromises', deletionPromises);
 
             // Delete document from Firestore after successful image deletions
             const docRef = doc(db, "listings", postId);

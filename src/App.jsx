@@ -6,10 +6,11 @@ import { Routes, Route } from 'react-router-dom'
 import Footer from './components/Footer'
 import Cropper from './components/cropper/Cropper'
 import { useAppContext } from './context';
+import ChatBox from './components/chat/ChatBox'
 
 
 function App() {
-  const { cropper } = useAppContext()
+  const { cropper, currentUser } = useAppContext()
   return (
     <>
       <Header />
@@ -21,6 +22,9 @@ function App() {
       <Footer />
       {cropper && (
         <Cropper />
+      )}
+      {currentUser && (
+        <ChatBox />
       )}
     </>
   )
