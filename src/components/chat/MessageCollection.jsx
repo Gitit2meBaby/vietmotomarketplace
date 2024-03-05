@@ -20,12 +20,13 @@ const MessageCollection = () => {
         orderBy('lastUpdatedAt', 'desc')
     );
 
-
     useEffect(() => {
         const unsubscribe = onSnapshot(getRooms, (querySnapshot) => {
             const rooms = [];
             querySnapshot.forEach((doc) => {
                 const roomData = doc.data();
+
+                const previousTimestamp = roomData.lastMessage.timeStamp.seconds * 1000 + roomData.lastMessage.timeStamp.nanoseconds / 1000000;
 
                 rooms.push({
                     lastUpdatedAt: roomData.lastUpdatedAt,
@@ -33,7 +34,7 @@ const MessageCollection = () => {
                         message: roomData.lastMessage.message,
                         recipientId: roomData.lastMessage.recipientId,
                         senderId: roomData.lastMessage.senderId,
-                        timeStamp: roomData.lastMessage.timeStamp,
+                        timeStamp: previousTimestamp,
                     },
                     participants: {
                         recipientId: roomData.participants.recipientId,
@@ -44,8 +45,11 @@ const MessageCollection = () => {
                         senderAvatar: roomData.participants.senderAvatar,
                     },
                 });
+
+                console.log(previousTimestamp);
             });
             setUserRooms(rooms);
+
 
             if (rooms.length === 0) {
                 setIsNoMessages(true);
@@ -61,6 +65,29 @@ const MessageCollection = () => {
         console.log('userRooms', userRooms);
     }, [userRooms])
 
+    function timeDifference(current, previous) {
+        const millisecondsPerMinute = 60 * 1000;
+        const millisecondsPerHour = millisecondsPerMinute * 60;
+        const millisecondsPerDay = millisecondsPerHour * 24;
+
+        const elapsed = current - previous;
+
+        if (elapsed < millisecondsPerMinute) {
+            const secondsAgo = Math.round(elapsed / 1000);
+            return `${secondsAgo} ${secondsAgo === 1 ? 'second' : 'seconds'} ago`;
+        } else if (elapsed < millisecondsPerHour) {
+            const minutesAgo = Math.round(elapsed / millisecondsPerMinute);
+            return `${minutesAgo} ${minutesAgo === 1 ? 'm' : 'm'}`;
+        } else if (elapsed < millisecondsPerDay) {
+            const hoursAgo = Math.round(elapsed / millisecondsPerHour);
+            return `${hoursAgo} ${hoursAgo === 1 ? 'hr' : 'hrs'}`;
+        } else {
+            const daysAgo = Math.round(elapsed / millisecondsPerDay);
+            return `${daysAgo} ${daysAgo === 1 ? 'day' : 'days'}`;
+        }
+    }
+
+    const currentTimestamp = new Date().getTime();
 
     const handleRoomClick = (roomId) => {
         setRoomChosen(roomId);
@@ -80,9 +107,10 @@ const MessageCollection = () => {
 
             <aside>
                 {userRooms.map((room) => (
-                    <div key={room.id}
+                    <div key={room.participants.senderId}
                         onClick={() => handleRoomClick(room.participants.senderId)}>
                         <img src={room.participants.senderAvatar} alt="user avatar" />
+                        <p>{timeDifference(currentTimestamp, room.lastMessage.timeStamp)}</p>
                         <h2>{room.participants.senderName}</h2>
                         <p>{room.lastMessage.message}</p>
                     </div>
@@ -92,11 +120,6 @@ const MessageCollection = () => {
             </aside>
 
             <section className="chatbox">
-                {/* <div className="messages-wrapper">
-                {messages?.map((message) => (
-                    <Message key={message.id} message={message} />
-                ))}
-                </div> */}
                 <span ref={scroll}></span>
                 <SendMessage scroll={scroll} />
             </section>
