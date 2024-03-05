@@ -7,18 +7,23 @@ const AppProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null)
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [imageUrls, setImageUrls] = useState([]);
 
     const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+    // chat app
     const [showMessenger, setShowMessenger] = useState(false)
-    const [showChatBox, setShowChatBox] = useState(false)
-    const [roomChosen, setRoomChosen] = useState(null)
+    const [roomChosen, setRoomChosen] = useState({
+        id: '',
+        name: '',
+        avatar: '',
+    })
 
     const [buyOrRent, setBuyOrRent] = useState('sell')
 
     // image cropper, store files to edit before sending to firebase
     const [cropper, setCropper] = useState(false)
     const [chosenImage, setChosenImage] = useState(null)
+    const [imageUrls, setImageUrls] = useState([]);
     const [featureImageUpload, setFeatureImageUpload] = useState(null)
     const [secondImageUpload, setSecondImageUpload] = useState(null)
     const [thirdImageUpload, setThirdImageUpload] = useState(null)
@@ -45,7 +50,6 @@ const AppProvider = ({ children }) => {
             isAuthOpen, setIsAuthOpen,
             buyOrRent, setBuyOrRent,
             showMessenger, setShowMessenger,
-            showChatBox, setShowChatBox,
             roomChosen, setRoomChosen,
         }}>
             {children}

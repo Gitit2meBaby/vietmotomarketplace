@@ -27,6 +27,7 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
         if (currentUser && currentUser.uid === userId) {
             setSameUser(true);
             console.log('postId', postId)
+            console.log('userId', userId)
         }
     }, [currentUser, userId]);
 
@@ -95,9 +96,9 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
     }, [setRoomChosen, setShowChatBox, userId]);
 
     useEffect(() => {
-        console.log('showChatBox', showChatBox);
+        console.log('userId', userId);
         console.log('roomChosen', roomChosen);
-    }, [showChatBox, roomChosen]);
+    }, [roomChosen]);
 
     async function handleDelete() {
         try {

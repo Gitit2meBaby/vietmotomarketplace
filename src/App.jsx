@@ -27,9 +27,6 @@ function App() {
       {showMessenger && (
         < MessageCollection />
       )}
-      {showChatBox && (
-        < ChatBox />
-      )}
     </>
   )
 }

@@ -85,6 +85,39 @@ Optimize the application for performance, considering factors like pagination fo
 Document your messaging system, including data structures, components, and any Firebase rules or functions.
 
 
+## STRUCTURE DATABASE
+- Have the post Id become a room, use the post => listings.model as title
+
+- When a user makes a post..
+    - create a field hasMadePost (this will shorten the query to firebase on user Auth)
+
+   # Onload (or even local state change)
+    - Make that query (for all users with the field hasMadePost)
+     if true, 
+    - check through listings => where postId =>  conatins {userId:}
+    
+    - map through the postIds and create a room(chatBox) for each post in the messageCenter
+
+- Now the messages center contains a sidebar with all the posts they have made.
+
+# Other Users can join the room when clicking on the postId
+- query listings => postId => (subcollection) messages
+    - map through the two fields (fromSeller & fromBuyer)
+    - Keep all of O.P's messages (fromSeller) on left and all other users can just message into the group.
+    - new Messages become a document
+    - new Messages from currentUserId !== userId(in the post fields) have their addDoc to field fromBuyer + timestamp, userId, displayName, avatar
+    - useSnapshot to update instantly (query listings => postId => (subcollection) messages)
+    - arrange using the timestamp in listings => postId => messages => {timestamp} 
+
+- To avoid fetching everyone elses names and avatars (ie not readily available data (not currentUser or userId from seller)) set them to Anon if userId !== currentUserId, or just go with the extra fields in the messages document
+
+Listings (root collection) => 
+PostId (already implemented, first doc) => 
+messages (sub-collection) =>
+postId (document using same name as postId for ease) =>
+{fromSeller:, fromBuyer:} (two fields within the document)
+
+
 ## CheckList
 - Create a global provider for authentication.
 - set up react router

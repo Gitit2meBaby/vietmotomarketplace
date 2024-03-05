@@ -19,7 +19,7 @@ const SellBikeForm = () => {
     const { imageUrls, setImageUrls, featureImageUpload, setFeatureImageUpload,
         secondImageUpload, setSecondImageUpload,
         thirdImageUpload, setThirdImageUpload, cropper,
-        setCropper, setChosenImage, chosenImage, isLoggedIn } = useAppContext()
+        setCropper, setChosenImage, chosenImage, isLoggedIn, currentUser } = useAppContext()
 
     const [postId, setPostId] = useState(null)
 
@@ -129,6 +129,9 @@ const SellBikeForm = () => {
 
             await addDoc(sellRef, {
                 postID: postId,
+                userId: currentUser.uid,
+                avatar: currentUser.photoURL,
+                name: currentUser.displayName,
                 type: type,
                 price: price,
                 model: model,
@@ -145,7 +148,6 @@ const SellBikeForm = () => {
                 featureImage: filteredImageUrls[0],
                 secondImage: filteredImageUrls[1] !== undefined ? filteredImageUrls[1] : null,
                 thirdImage: filteredImageUrls[2] !== undefined ? filteredImageUrls[2] : null,
-                userId: auth?.currentUser?.uid,
                 createdAt: serverTimestamp(),
             });
 

@@ -19,7 +19,7 @@ const RentBikeForm = () => {
     const { imageUrls, setImageUrls, featureRentalImageUpload, setFeatureRentalImageUpload,
         secondRentalImageUpload, setSecondRentalImageUpload,
         thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
-        setCropper, setChosenImage, chosenImage, isLoggedIn } = useAppContext()
+        setCropper, setChosenImage, chosenImage, isLoggedIn, currentUser } = useAppContext()
 
     const [postId, setPostId] = useState(null)
 
@@ -366,6 +366,9 @@ const RentBikeForm = () => {
 
             await addDoc(rentRef, {
                 postID: postId,
+                userId: currentUser.uid,
+                avatar: currentUser.photoURL,
+                name: currentUser.displayName,
                 type: typeRental,
                 pricePerDay: pricePerDay,
                 pricePerWeek: pricePerWeek,
@@ -384,7 +387,6 @@ const RentBikeForm = () => {
                 featureRentalImageUpload: filteredImageUrls[0],
                 secondRentalImageUpload: filteredImageUrls[1] !== undefined ? filteredImageUrls[1] : null,
                 thirdRentalImageUpload: filteredImageUrls[2] !== undefined ? filteredImageUrls[2] : null,
-                userId: auth?.currentUser?.uid,
                 createdAt: serverTimestamp(),
             });
 

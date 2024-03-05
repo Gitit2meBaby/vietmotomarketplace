@@ -1,38 +1,67 @@
 import { useState } from "react";
-import { auth, db } from "../../firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import avatar from '../../assets/anonAvatar.webp'
+import { db } from "../../firebase";
+import { serverTimestamp, setDoc, doc, collection } from "firebase/firestore";
 import { useAppContext } from "../../context";
 
 const SendMessage = ({ scroll }) => {
-    const { roomChosen, setRoomChosen } = useAppContext()
+    const { roomChosen, currentUser } = useAppContext()
     const [message, setMessage] = useState("");
 
-    const sendMessage = async (event) => {
-        event.preventDefault();
-        if (message.trim() === "") {
-            alert("Enter valid message");
-            return;
-        }
+    const newMessageFields = {
+        initiatedAt: serverTimestamp(),
+        initiatedBy: currentUser.uid,
+        lastMessage: {
+            message: message,
+            recipientId: roomChosen.id,
+            senderId: currentUser.uid,
+            status: "sent",
+            timeStamp: serverTimestamp(),
+        },
+        lastUpdatedAt: serverTimestamp(),
+        participants: {
+            recipientId: roomChosen.id,
+            recipientName: roomChosen.name,
+            recipientAvatar: roomChosen.avatar,
+            senderId: currentUser.uid,
+            senderName: currentUser.displayName,
+            senderAvatar: currentUser.photoURL,
+        },
+        participantIds: {
+            recipientId: roomChosen.id,
+            senderId: currentUser.uid,
+        },
+    };
 
-        const { uid, displayName, photoURL } = auth.currentUser;
+    const messageDoc = {
+        message: message,
+        senderId: currentUser.uid,
+        recipientId: roomChosen.id,
+        status: 'sent',
+        timestamp: serverTimestamp()
+    }
 
-        // Construct the correct path in the database
-        const messagePath = `users/${roomChosen}/rooms/${uid}/messages`;
+    const handleMessageSend = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(collection(db, 'conversations')), newMessageFields, { merge: true });
 
-        await addDoc(collection(db, messagePath), {
-            text: message,
-            name: displayName,
-            avatar: photoURL ? photoURL : avatar,
-            createdAt: serverTimestamp(),
-            uid,
-        });
-        setMessage("");
+        await setDoc(messageRef, newMessageFields, { merge: true });
+
+        const messageRef = collection(db, 'conversations', messageRef.id, 'messages');
+        const newMessageRef = doc(messageRef);
+
+        setDoc(newMessageRef, messageDoc)
+            .then(() => {
+                setMessage('')
+
+            })
+            .catch((error) => {
+                console.error("Error adding message:", error);
+            });
         scroll.current.scrollIntoView({ behavior: "smooth" });
     };
 
     return (
-        <form onSubmit={(event) => sendMessage(event)} className="send-message">
+        <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
             <label htmlFor="messageInput" hidden>
                 Enter Message
             </label>

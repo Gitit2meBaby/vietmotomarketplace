@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppContext } from '../../context';
-import { collection, getDocs, doc, query, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, query, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 import ChatBox from './ChatBox';
 
@@ -11,31 +11,34 @@ const Messages = () => {
 
     // return an array of all the user Ids that have sent a message
     useEffect(() => {
-        const fetchUserRooms = async () => {
-            if (currentUser) {
-                const userDocRef = doc(db, `users/${currentUser.uid}`);
-                const roomsCollectionRef = collection(userDocRef, 'rooms');
-                const roomsSnapshot = await getDocs(roomsCollectionRef);
+        const userDocRef = doc(db, `users/${currentUser.uid}`);
+        console.log('currentUser.uid', currentUser.uid);
+        const roomsCollectionRef = collection(userDocRef, 'rooms');
 
-                const roomsData = [];
-                roomsSnapshot.forEach((roomDoc) => {
-                    const roomData = {
-                        id: roomDoc.id,
-                        ...roomDoc.data(),
-                    };
-                    roomsData.push(roomData);
-                });
-
-                setUserRooms(roomsData);
+        const unsubscribe = onSnapshot(roomsCollectionRef, (querySnapshot) => {
+            if (querySnapshot.empty) {
+                console.log('No documents found in rooms collection.');
+                return;
             }
-        };
 
-        fetchUserRooms();
+            const roomsData = [];
+            querySnapshot.forEach((roomDoc) => {
+                const roomPath = roomDoc.ref.path; // Get the full path
+                const roomId = roomPath.split('/').pop(); // Extract the last segment
+                const roomData = {
+                    id: roomId,
+                    ...roomDoc.data(),
+                };
+                roomsData.push(roomData);
+            });
+
+            setUserRooms(roomsData);
+        });
+
+        return () => unsubscribe(); // Cleanup the listener on component unmount
     }, [currentUser]);
 
-    useEffect(() => {
-        console.log('userRooms', userRooms);
-    }, [userRooms])
+
 
     // Find User Data for matching roomIds
     useEffect(() => {
