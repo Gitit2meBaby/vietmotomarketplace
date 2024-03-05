@@ -324,7 +324,6 @@ const Authentication = () => {
             setCurrentUser(null);
             localStorage.removeItem('user');
             setIsLoggedIn(false)
-            setShowChatBox(false)
             setShowMessenger(false)
             await signOut(auth);
         } catch (err) {

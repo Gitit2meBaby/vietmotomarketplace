@@ -13,10 +13,12 @@ const BikeList = () => {
     const { isLoading, setIsLoading } = useAppContext()
 
     useEffect(() => {
+        setIsLoading(false)
         const fetchListings = async () => {
             try {
                 const listingsCollection = collection(db, 'listings');
                 const listingsQuery = query(listingsCollection);
+                console.log(listingsQuery)
                 const snapshot = await getDocs(listingsQuery);
 
                 const listingsData = snapshot.docs.map((doc) => ({
@@ -25,15 +27,15 @@ const BikeList = () => {
                 }));
 
                 setListings(listingsData);
-                setTimeout(() => {
-                    setIsLoading(false);
-                }, 1000);
+                // setTimeout(() => {
+                //     setIsLoading(false);
+                // }, 1000);
             } catch (error) {
                 console.error('Error fetching listings:', error);
             }
         };
         fetchListings();
-    }, [setIsLoading]);
+    }, []);
 
 
     if (isLoading) return (
@@ -92,11 +94,13 @@ const BikeList = () => {
 
     return (
         <div>
-            {listings.map(({ id, userId, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
+            {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}
                     id={id}
                     userId={userId}
+                    avatar={avatar}
+                    name={name}
                     postId={postID}
                     transaction={transaction}
                     type={type}

@@ -16,7 +16,7 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject, getMetadata } from "firebase/storage";
 
 
-const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, }) => {
+const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, }) => {
 
     const { isLoggedIn, currentUser, setIsAuthOpen, roomChosen, setRoomChosen, showMessenger, setShowMessenger } = useAppContext();
     const [showMore, setShowMore] = useState(false)
@@ -90,13 +90,16 @@ const Post = ({ id, userId, postId, transaction, type, price, pricePerDay, price
         setIsAuthOpen(true)
     }
 
-    const handleMessengerOpen = useCallback(() => {
-        setRoomChosen(userId);
+    const handleMessengerOpen = () => {
+        setRoomChosen({
+            id: userId,
+            name: name,
+            avatar: avatar,
+        });
         setShowMessenger(true);
-    }, [setRoomChosen, setShowMessenger, userId]);
+    };
 
     useEffect(() => {
-        console.log('userId', userId);
         console.log('roomChosen', roomChosen);
     }, [roomChosen]);
 

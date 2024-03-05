@@ -10,32 +10,52 @@ const MessageCollection = () => {
     const [showSidebar, setShowSidebar] = useState(true);
     const [userRooms, setUserRooms] = useState([]);
     const [usersList, setUsersList] = useState([]);
+    const [isNoMessages, setIsNoMessages] = useState(true)
 
     const scroll = useRef();
 
-    const getRooms = query(collection(db, "conversations"), where('participantsIds', 'arrayContains', 'userId'), orderBy('lastUpdatedAt', 'desc'));
+    const getRooms = query(
+        collection(db, "conversations"),
+        where('participantsIds', 'array-contains', currentUser.uid),
+        orderBy('lastUpdatedAt', 'desc')
+    );
+
 
     useEffect(() => {
         const unsubscribe = onSnapshot(getRooms, (querySnapshot) => {
             const rooms = [];
             querySnapshot.forEach((doc) => {
-                // Ensure your data structure has the required fields
                 const roomData = doc.data();
+
                 rooms.push({
-                    // Access relevant fields from roomData
-                    uid: roomData.uid, // Assuming this exists in your data
-                    participants: {
-                        avatar: roomData.participants.avatar, // Assuming this exists
-                        name: roomData.participants.name // Assuming this exists
+                    lastUpdatedAt: roomData.lastUpdatedAt,
+                    lastMessage: {
+                        message: roomData.lastMessage.message,
+                        recipientId: roomData.lastMessage.recipientId,
+                        senderId: roomData.lastMessage.senderId,
+                        timeStamp: roomData.lastMessage.timeStamp,
                     },
-                    // ...other relevant information
+                    participants: {
+                        recipientId: roomData.participants.recipientId,
+                        recipientName: roomData.participants.recipientName,
+                        recipientAvatar: roomData.participants.recipientAvatar,
+                        senderId: roomData.participants.senderId,
+                        senderName: roomData.participants.senderName,
+                        senderAvatar: roomData.participants.senderAvatar,
+                    },
                 });
             });
             setUserRooms(rooms);
+
+            if (rooms.length === 0) {
+                setIsNoMessages(true);
+            } else {
+                setIsNoMessages(false);
+            }
         });
 
-        return unsubscribe; // Clean up the listener when the component unmounts
-    }, [getRooms]); // Run the effect only when userId changes
+        return unsubscribe;
+    }, []);
 
     useEffect(() => {
         console.log('userRooms', userRooms);
@@ -60,11 +80,11 @@ const MessageCollection = () => {
 
             <aside>
                 {userRooms.map((room) => (
-                    <div key={room.uid}
-                        onClick={() => handleRoomClick(room.uid)}>
-                        <img src={room.participants.avatar} alt="user avatar" />
-                        <h2>{room.participants.name}</h2>
-                        <p>{room.lastMessage}</p>
+                    <div key={room.id}
+                        onClick={() => handleRoomClick(room.participants.senderId)}>
+                        <img src={room.participants.senderAvatar} alt="user avatar" />
+                        <h2>{room.participants.senderName}</h2>
+                        <p>{room.lastMessage.message}</p>
                     </div>
                 ))}
                 <svg className={showMessenger ? '' : 'rotate'}

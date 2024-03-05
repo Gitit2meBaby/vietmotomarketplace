@@ -7,6 +7,10 @@ const SendMessage = ({ scroll }) => {
     const { roomChosen, currentUser } = useAppContext()
     const [message, setMessage] = useState("");
 
+    const roomId = roomChosen.id
+    const postCreator = roomChosen.name
+    const postAvatar = roomChosen.avatar
+
     const newMessageFields = {
         initiatedAt: serverTimestamp(),
         initiatedBy: currentUser.uid,
@@ -39,23 +43,30 @@ const SendMessage = ({ scroll }) => {
 
     const handleMessageSend = async (e) => {
         e.preventDefault();
-        await setDoc(doc(collection(db, 'conversations')), newMessageFields, { merge: true });
 
-        await setDoc(messageRef, newMessageFields, { merge: true });
+        // Create a new document and get the reference
+        const conversationRef = doc(collection(db, 'conversations'));
+        await setDoc(conversationRef, newMessageFields, { merge: true });
 
-        const messageRef = collection(db, 'conversations', messageRef.id, 'messages');
+        // Get the ID of the newly created document
+        const conversationId = conversationRef.id;
+
+        // Use the document reference to create the sub-collection 'messages'
+        const messageRef = collection(db, 'conversations', conversationId, 'messages');
         const newMessageRef = doc(messageRef);
 
-        setDoc(newMessageRef, messageDoc)
-            .then(() => {
-                setMessage('')
+        // Set the message document in the 'messages' sub-collection
+        await setDoc(newMessageRef, messageDoc);
 
-            })
-            .catch((error) => {
-                console.error("Error adding message:", error);
-            });
-        scroll.current.scrollIntoView({ behavior: "smooth" });
+        // Clear the message input
+        setMessage('');
+
+        // Scroll to the bottom
+        scroll.current.scrollIntoView({ behavior: 'smooth' });
     };
+
+
+
 
     return (
         <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
