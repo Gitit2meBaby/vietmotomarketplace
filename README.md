@@ -140,3 +140,83 @@ postId (document using same name as postId for ease) =>
 - Set up facebook sign in
 - Create some kind of auto deleting of old posts
 - create a terms of service and privacy policy, link in authentication and footer
+
+## Keyword Links for vietnam motorbikes
+can a foreigner buy a motorbike in vietnam
+
+can i rent a motorbike in vietnam
+
+can i ride a motorbike in vietnam
+
+do you need a motorbike licence in vietnam
+
+how much to hire a motorbike in vietnam
+
+how many motorbikes in vietnam
+
+
+
+### USER TO USER MESSAGING
+|*| conversations [collection]
+    |**|documentName (use documentId) [document]
+            |_  documentId: (id of this current document)
+                initiatedAt: (Use serverTimestamp)
+                initiatedBy: (currentUser.uid)
+                lastMessage: (
+                    |_  message: (message.text)
+                        recepientId: (post.userId)
+                        senderId: (currentUserId)
+                        status: sent
+                        timeStamp: (Use serverTimestamp)
+                    )
+                lastUpdatedAt: (Use serverTimestamp)
+                participants: (
+                    |_  recepientId: post.userId: (
+                        id: userId
+                        name: displayName
+                        avatar: photoUrl
+                    )
+                    |_ senderId: currentUserId: (
+                        id: currentUserId
+                        name: displayName
+                        avatar: photoUrl
+                    )
+                    )
+                participantIds: (
+                    |_  recepientId: (receipient)
+                        senderId: (currentUserId) 
+                    )
+    |*| Messages [sub-collection]
+        |*| MessageName (use generated Id) [document]
+                |_  message: message.text (string of actual message)
+                    senderId: currentUserId
+                    recipientId: (recepientId in conversations document field)
+                    status: sent
+                    timestamp: (Use serverTimestamp)
+        
+
+
+# Querying the collections to get the conversations of the current user
+*checking the participantsIds array and getting all documents where the user ID is included.
+
+// snapshot (stream) of conversation
+_firebaseFirestore
+          .collection('conversations')
+          .where(
+            'participantsIds',
+            arrayContains: userId,
+          )
+          .orderBy('lastUpdatedAt', descending: true)
+          .snapshots()
+
+
+# Retrieving all the messages from that document
+final docId = {the document id} // the id we saved in the documentId field
+
+// snapshots (stream) of messages
+_firebaseFirestore
+          .collection('conversations')
+          .doc(docId)
+          .collection('messages')
+          .orderBy('timestamp')
+          .snapshots()

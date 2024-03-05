@@ -14,31 +14,8 @@ import { useAppContext } from "../../context";
 const ChatBox = () => {
     const { roomChosen, setShowChatBox, currentUser } = useAppContext()
     const [messages, setMessages] = useState([]);
+
     const scroll = useRef();
-
-    useEffect(() => {
-        const q = query(
-            collection(db, `/users/${roomChosen}/rooms/${currentUser.uid}/messages`),
-            orderBy("createdAt", "desc"),
-            limit(25)
-        );
-
-        console.log('currentUser.uid', currentUser.uid);
-        console.log('roomChosen', roomChosen);
-
-        const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-            const fetchedMessages = [];
-            QuerySnapshot.forEach((doc) => {
-                fetchedMessages.push({ ...doc.data(), id: doc.id });
-            });
-            const sortedMessages = fetchedMessages.sort(
-                (a, b) => a.createdAt - b.createdAt
-            );
-            setMessages(sortedMessages);
-            console.log('messages', messages);
-        });
-        return () => unsubscribe;
-    }, []);
 
     const handleExitChatBox = () => {
         setShowChatBox(false)
@@ -65,3 +42,31 @@ const ChatBox = () => {
 };
 
 export default ChatBox;
+
+
+
+// REFERENCE OLD CODE********
+
+// useEffect(() => {
+//     const q = query(
+//         collection(db, `/users/${roomChosen}/rooms/${currentUser.uid}/messages`),
+//         orderBy("createdAt", "desc"),
+//         limit(25)
+//     );
+
+//     console.log('currentUser.uid', currentUser.uid);
+//     console.log('roomChosen', roomChosen);
+
+//     const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
+//         const fetchedMessages = [];
+//         QuerySnapshot.forEach((doc) => {
+//             fetchedMessages.push({ ...doc.data(), id: doc.id });
+//         });
+//         const sortedMessages = fetchedMessages.sort(
+//             (a, b) => a.createdAt - b.createdAt
+//         );
+//         setMessages(sortedMessages);
+//         console.log('messages', messages);
+//     });
+//     return () => unsubscribe;
+// }, []);

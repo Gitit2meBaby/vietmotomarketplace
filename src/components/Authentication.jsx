@@ -321,12 +321,12 @@ const Authentication = () => {
 
     const logout = async () => {
         try {
-            await signOut(auth);
             setCurrentUser(null);
             localStorage.removeItem('user');
             setIsLoggedIn(false)
             setShowChatBox(false)
             setShowMessenger(false)
+            await signOut(auth);
         } catch (err) {
             console.error(err);
         }

@@ -1,80 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppContext } from '../../context';
-import { collection, getDocs, doc, query, getDoc, onSnapshot } from 'firebase/firestore';
+import Message from "./Message";
+import SendMessage from "./SendMessage";
+import { collection, orderBy, where, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
-import ChatBox from './ChatBox';
 
-const Messages = () => {
-    const { currentUser, showMessenger, setShowMessenger, showChatBox, setShowChatBox, roomChosen, setRoomChosen } = useAppContext()
+const MessageCollection = () => {
+    const { currentUser, showMessenger, setShowMessenger, roomChosen, setRoomChosen } = useAppContext();
+    const [showSidebar, setShowSidebar] = useState(true);
     const [userRooms, setUserRooms] = useState([]);
-    const [usersList, setUsersList] = useState([])
+    const [usersList, setUsersList] = useState([]);
 
-    // return an array of all the user Ids that have sent a message
+    const scroll = useRef();
+
+    const getRooms = query(collection(db, "conversations"), where('participantsIds', 'arrayContains', 'userId'), orderBy('lastUpdatedAt', 'desc'));
+
     useEffect(() => {
-        const userDocRef = doc(db, `users/${currentUser.uid}`);
-        console.log('currentUser.uid', currentUser.uid);
-        const roomsCollectionRef = collection(userDocRef, 'rooms');
-
-        const unsubscribe = onSnapshot(roomsCollectionRef, (querySnapshot) => {
-            if (querySnapshot.empty) {
-                console.log('No documents found in rooms collection.');
-                return;
-            }
-
-            const roomsData = [];
-            querySnapshot.forEach((roomDoc) => {
-                const roomPath = roomDoc.ref.path; // Get the full path
-                const roomId = roomPath.split('/').pop(); // Extract the last segment
-                const roomData = {
-                    id: roomId,
-                    ...roomDoc.data(),
-                };
-                roomsData.push(roomData);
+        const unsubscribe = onSnapshot(getRooms, (querySnapshot) => {
+            const rooms = [];
+            querySnapshot.forEach((doc) => {
+                // Ensure your data structure has the required fields
+                const roomData = doc.data();
+                rooms.push({
+                    // Access relevant fields from roomData
+                    uid: roomData.uid, // Assuming this exists in your data
+                    participants: {
+                        avatar: roomData.participants.avatar, // Assuming this exists
+                        name: roomData.participants.name // Assuming this exists
+                    },
+                    // ...other relevant information
+                });
             });
-
-            setUserRooms(roomsData);
+            setUserRooms(rooms);
         });
 
-        return () => unsubscribe(); // Cleanup the listener on component unmount
-    }, [currentUser]);
-
-
-
-    // Find User Data for matching roomIds
-    useEffect(() => {
-        const fetchUserList = async () => {
-            try {
-                const usersCollection = collection(db, 'users');
-                const usersQuery = query(usersCollection);
-                const snapshot = await getDocs(usersQuery);
-
-                const usersData = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-
-                setUsersList(usersData);
-            } catch (error) {
-                console.error('Error fetching listings:', error);
-            }
-        };
-        fetchUserList();
-        filterUserData()
-    }, [userRooms]);
+        return unsubscribe; // Clean up the listener when the component unmounts
+    }, [getRooms]); // Run the effect only when userId changes
 
     useEffect(() => {
-        console.log('usersList', usersList);
-    }, [usersList])
-
-    const filterUserData = async () => {
-        const matchedUsers = usersList.filter(item => userRooms.includes(item));
-        console.log('matchedUsers', matchedUsers);
-    }
+        console.log('userRooms', userRooms);
+    }, [userRooms])
 
 
     const handleRoomClick = (roomId) => {
         setRoomChosen(roomId);
-        setShowChatBox(true)
+        setShowSidebar(false)
     };
 
     const handleMessengerClose = () => {
@@ -82,26 +52,36 @@ const Messages = () => {
     }
 
     return (
-        <div>
-            <button onClick={() => handleMessengerClose()}>Close</button>
-            <h1>Your Messages</h1>
-            <ul>
-                {userRooms.map((room) => (
-                    <li key={room.uid}>
-                        <button onClick={() => handleRoomClick(room.uid)}>
-                            <img src={room.avatar} alt={room.name} />
-                            <h2>{room.name}</h2>
-                        </button>
-                        {/* <p>{room.text[0]}</p> */}
-                    </li>
-                ))}
-            </ul>
+        <main className='messager'>
+            <header className='messager-header'>
+                <button onClick={() => handleMessengerClose()}>Close</button>
+                <h1>Messages</h1>
+            </header>
 
-            {showChatBox && (
-                <ChatBox />
-            )}
-        </div>
+            <aside>
+                {userRooms.map((room) => (
+                    <div key={room.uid}
+                        onClick={() => handleRoomClick(room.uid)}>
+                        <img src={room.participants.avatar} alt="user avatar" />
+                        <h2>{room.participants.name}</h2>
+                        <p>{room.lastMessage}</p>
+                    </div>
+                ))}
+                <svg className={showMessenger ? '' : 'rotate'}
+                    stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M12,2C6.486,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.514,2,12,2z M12,20c-4.411,0-8-3.589-8-8s3.589-8,8-8 s8,3.589,8,8S16.411,20,12,20z"></path><path d="M9.293 7.707L13.586 12 9.293 16.293 10.707 17.707 16.414 12 10.707 6.293z"></path></svg>
+            </aside>
+
+            <section className="chatbox">
+                {/* <div className="messages-wrapper">
+                {messages?.map((message) => (
+                    <Message key={message.id} message={message} />
+                ))}
+                </div> */}
+                <span ref={scroll}></span>
+                <SendMessage scroll={scroll} />
+            </section>
+        </main>
     );
 };
 
-export default Messages;
+export default MessageCollection;

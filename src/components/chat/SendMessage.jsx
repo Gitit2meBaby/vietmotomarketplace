@@ -26,10 +26,7 @@ const SendMessage = ({ scroll }) => {
             senderName: currentUser.displayName,
             senderAvatar: currentUser.photoURL,
         },
-        participantIds: {
-            recipientId: roomChosen.id,
-            senderId: currentUser.uid,
-        },
+        participantsIds: [roomChosen.id, currentUser.uid],
     };
 
     const messageDoc = {
