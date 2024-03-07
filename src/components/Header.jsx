@@ -3,6 +3,7 @@ import Authentication from './Authentication'
 import { useAppContext } from '../context';
 import { Link } from 'react-router-dom'
 import "../sass/header.css"
+import OnAuthQuery from './OnAuthQuery';
 
 
 const Header = () => {
@@ -66,6 +67,7 @@ const Header = () => {
             </div>
 
             <div className={isLoggedIn ? "header-auth-div" : "header-signin-wrapper"}>
+                <OnAuthQuery />
                 <Authentication />
             </div>
 

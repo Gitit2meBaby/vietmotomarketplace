@@ -124,6 +124,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
     const handleMessagerOpen = () => {
         setMessageSent(false)
         setShowMessenger(true)
+        showMessageInput(false)
     }
 
     console.log('showMessenger', showMessenger);

@@ -4,7 +4,7 @@ import { useAppContext } from '../context';
 
 const Home = () => {
     const { currentUser } = useAppContext()
-    console.log(currentUser);
+    console.log('currentUser', currentUser);
     return (
         <>
             <div>Home</div>

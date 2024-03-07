@@ -224,6 +224,11 @@ body {
   padding: 0 0.8rem 0.1rem 0.2rem;
 }
 
+.copy-clipboard-btn {
+  background-color: #000;
+  border: none;
+}
+
 .post-contact {
   position: relative;
 }
@@ -239,6 +244,20 @@ body {
 }
 .post-contact-details:last-of-type {
   margin-bottom: 1rem;
+}
+.post-contact-details button {
+  margin-left: auto;
+  margin-right: 0.5rem;
+  cursor: copy;
+}
+.post-contact-details a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.post-contact-details a svg {
+  fill: #fff;
 }
 
 .svg-wrapper {
