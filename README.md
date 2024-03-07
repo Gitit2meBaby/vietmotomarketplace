@@ -1,5 +1,8 @@
 ## Immediate todos
 - make another todo app like everybody else..
+
+- Set an if else in SendMessage component, if roomChosen then dont create a new doc but append to the existing, otherwise continue as it is.
+- set pagination for messages to  only show 10.
 - sort UI fo rental posts
 - consolidate how data is stored after submission of posts
 - approach some color pallete Ui changes
@@ -156,7 +159,7 @@ how many motorbikes in vietnam
 
 
 
-### USER TO USER MESSAGING
+### USER TO USER MESSAGING DATA STRUCTURE
 |*| conversations [collection]
     |**|documentName (use documentId) [document]
             |_  documentId: (id of this current document)
@@ -195,28 +198,4 @@ how many motorbikes in vietnam
                     timestamp: (Use serverTimestamp)
         
 
-
-# Querying the collections to get the conversations of the current user
-*checking the participantsIds array and getting all documents where the user ID is included.
-
-// snapshot (stream) of conversation
-_firebaseFirestore
-          .collection('conversations')
-          .where(
-            'participantsIds',
-            arrayContains: userId,
-          )
-          .orderBy('lastUpdatedAt', descending: true)
-          .snapshots()
-
-
-# Retrieving all the messages from that document
-final docId = {the document id} // the id we saved in the documentId field
-
-// snapshots (stream) of messages
-_firebaseFirestore
-          .collection('conversations')
-          .doc(docId)
-          .collection('messages')
-          .orderBy('timestamp')
-          .snapshots()
+          

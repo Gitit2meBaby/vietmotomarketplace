@@ -14,6 +14,7 @@ import zaloLogo from '../assets/socials/zalo.svg'
 
 import { doc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject, getMetadata } from "firebase/storage";
+import SendMessage from './chat/SendMessage';
 
 
 const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, }) => {
@@ -21,6 +22,7 @@ const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pric
     const { isLoggedIn, currentUser, setIsAuthOpen, roomChosen, setRoomChosen, showMessenger, setShowMessenger } = useAppContext();
     const [showMore, setShowMore] = useState(false)
     const [sameUser, setSameUser] = useState(false)
+    const [showMessageInput, setShowMessageInput] = useState(false);
 
     // match user with their own posts
     useEffect(() => {
@@ -90,13 +92,14 @@ const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pric
         setIsAuthOpen(true)
     }
 
-    const handleMessengerOpen = () => {
+    const handleShowMessageInput = () => {
         setRoomChosen({
+            docId: '',
             id: userId,
             name: name,
             avatar: avatar,
         });
-        setShowMessenger(true);
+        setShowMessageInput(true);
     };
 
     useEffect(() => {
@@ -309,22 +312,31 @@ const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pric
                             )}
                         </div>
 
-                        {!sameUser && (
-                            <button disabled={!isLoggedIn} className='msg-btn'
-                                onClick={() => handleMessengerOpen()}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 240 240" height="3em" width="3em">
-                                    <path
-                                        fillRule="evenodd"
-                                        fill="#FFFF05"
-                                        d="m117.41 130.18-56.225-28.75-46.504 42.72 9.974-62.356-55.008-31.023 62.391-9.785 12.506-61.903 28.586 56.314 62.74-7.235-44.726 44.589 26.266 57.429z"
-                                    /></svg>
-                                Message
-                            </button>
+                        {!showMessageInput && (
+                            <>
+                                {!sameUser && (
+                                    <button disabled={!isLoggedIn} className='msg-btn'
+                                        onClick={() => handleShowMessageInput()}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 240 240" height="3em" width="3em">
+                                            <path
+                                                fillRule="evenodd"
+                                                fill="#FFFF05"
+                                                d="m117.41 130.18-56.225-28.75-46.504 42.72 9.974-62.356-55.008-31.023 62.391-9.785 12.506-61.903 28.586 56.314 62.74-7.235-44.726 44.589 26.266 57.429z"
+                                            /></svg>
+                                        Message
+                                    </button>
+                                )}
+
+                                {sameUser && (
+                                    <button onClick={() => handleDelete()}
+                                        className='delete-post-btn'>Delete Post</button>
+                                )}
+
+                            </>
                         )}
 
-                        {sameUser && (
-                            <button onClick={() => handleDelete()}
-                                className='delete-post-btn'>Delete Post</button>
+                        {showMessageInput && (
+                            <SendMessage showMessageInput={showMessageInput} />
                         )}
                     </>
                 )}

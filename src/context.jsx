@@ -13,10 +13,14 @@ const AppProvider = ({ children }) => {
     // chat app
     const [showMessenger, setShowMessenger] = useState(false)
     const [roomChosen, setRoomChosen] = useState({
+        docId: '',
         id: '',
         name: '',
         avatar: '',
     })
+    const [shouldFetchMessages, setShouldFetchMessages] = useState(false);
+
+
 
     const [buyOrRent, setBuyOrRent] = useState('sell')
 
@@ -51,6 +55,7 @@ const AppProvider = ({ children }) => {
             buyOrRent, setBuyOrRent,
             showMessenger, setShowMessenger,
             roomChosen, setRoomChosen,
+            shouldFetchMessages, setShouldFetchMessages,
         }}>
             {children}
         </AppContext.Provider>

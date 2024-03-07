@@ -1,89 +1,145 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../../firebase";
-import { serverTimestamp, setDoc, doc, collection } from "firebase/firestore";
+import {
+    serverTimestamp,
+    setDoc,
+    doc,
+    collection,
+    where,
+    getDocs,
+    query
+} from "firebase/firestore";
 import { useAppContext } from "../../context";
 
-const SendMessage = ({ scroll }) => {
-    const { roomChosen, currentUser } = useAppContext()
+const SendMessage = ({ scroll, showMessageInput }) => {
+    const { roomChosen, currentUser, setShouldFetchMessages, setShowMessenger } = useAppContext()
     const [message, setMessage] = useState("");
+    const [messageSent, setMessageSent] = useState(false);
 
-    const roomId = roomChosen.id
-    const postCreator = roomChosen.name
-    const postAvatar = roomChosen.avatar
-
-    const newMessageFields = {
-        initiatedAt: serverTimestamp(),
-        initiatedBy: currentUser.uid,
-        lastMessage: {
-            message: message,
-            recipientId: roomChosen.id,
-            senderId: currentUser.uid,
-            status: "sent",
-            timeStamp: serverTimestamp(),
-        },
-        lastUpdatedAt: serverTimestamp(),
-        participants: {
-            recipientId: roomChosen.id,
-            recipientName: roomChosen.name,
-            recipientAvatar: roomChosen.avatar,
-            senderId: currentUser.uid,
-            senderName: currentUser.displayName,
-            senderAvatar: currentUser.photoURL,
-        },
-        participantsIds: [roomChosen.id, currentUser.uid],
-    };
-
-    const messageDoc = {
-        message: message,
-        senderId: currentUser.uid,
-        recipientId: roomChosen.id,
-        status: 'sent',
-        timestamp: serverTimestamp()
-    }
-
+    useEffect(() => {
+        setMessageSent(false)
+    }, [])
     const handleMessageSend = async (e) => {
         e.preventDefault();
 
-        // Create a new document and get the reference
-        const conversationRef = doc(collection(db, 'conversations'));
-        await setDoc(conversationRef, newMessageFields, { merge: true });
+        if (message.trim() === "") {
+            return;
+        }
 
-        // Get the ID of the newly created document
-        const conversationId = conversationRef.id;
+        // Check if the conversation with the recipient already exists
+        const participantIds = [roomChosen.id, currentUser.uid];
+        const conversationQuery = query(collection(db, 'conversations'), where('participantsIds', 'array-contains-any', participantIds));
 
-        // Use the document reference to create the sub-collection 'messages'
-        const messageRef = collection(db, 'conversations', conversationId, 'messages');
-        const newMessageRef = doc(messageRef);
+        const conversationSnapshot = await getDocs(conversationQuery);
+        let newMessageRef;
 
-        // Set the message document in the 'messages' sub-collection
-        await setDoc(newMessageRef, messageDoc);
+        if (conversationSnapshot.empty) {
+            // Create a new conversation document and get the reference
+            const conversationRef = doc(collection(db, 'conversations'));
 
-        // Clear the message input
+            // Use the document reference to create the sub-collection 'messages'
+            const messageRef = collection(db, 'conversations', conversationRef.id, 'messages');
+            newMessageRef = doc(messageRef);
+
+            // Get the ID of the newly created document
+            const conversationId = conversationRef.id;
+
+            const newMessageFields = {
+                docId: conversationId,
+
+                initiatedAt: serverTimestamp(),
+                initiatedBy: currentUser.uid,
+                lastMessage: {
+                    message: message,
+                    recipientId: roomChosen.id,
+                    senderId: currentUser.uid,
+                    status: "sent",
+                    timeStamp: serverTimestamp(),
+                },
+                lastUpdatedAt: serverTimestamp(),
+                participants: {
+                    recipientId: roomChosen.id,
+                    recipientName: roomChosen.name,
+                    recipientAvatar: roomChosen.avatar,
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName,
+                    senderAvatar: currentUser.photoURL,
+                },
+                participantsIds: [roomChosen.id, currentUser.uid],
+            };
+
+            const messageDoc = {
+                message: message,
+                senderId: currentUser.uid,
+                recipientId: roomChosen.id,
+                status: 'sent',
+                timestamp: serverTimestamp()
+            }
+
+            // Set the conversation document with the obtained ID
+            await setDoc(conversationRef, newMessageFields, { merge: true });
+
+            // Set the message document in the 'messages' sub-collection
+            await setDoc(newMessageRef, messageDoc);
+        } else {
+            // Get the ID of the existing conversation
+            const conversationId = conversationSnapshot.docs[0].id;
+
+            const messageDoc = {
+                message: message,
+                senderId: currentUser.uid,
+                recipientId: roomChosen.id,
+                status: 'sent',
+                timestamp: serverTimestamp()
+            }
+
+            // Use the existing conversation document reference to create the sub-collection 'messages'
+            const messageRef = collection(db, 'conversations', conversationId, 'messages');
+            newMessageRef = doc(messageRef);
+
+            // Set the message document in the 'messages' sub-collection
+            await setDoc(newMessageRef, messageDoc, { merge: true });
+        }
+
         setMessage('');
-
-        // Scroll to the bottom
-        scroll.current.scrollIntoView({ behavior: 'smooth' });
+        setShouldFetchMessages(true);
+        setMessageSent(true)
+        if (!showMessageInput) {
+            scroll.current.scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
-
-
-
+    const handleMessagerOpen = () => {
+        setMessageSent(false)
+        setShowMessenger(true)
+    }
     return (
-        <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
-            <label htmlFor="messageInput" hidden>
-                Enter Message
-            </label>
-            <input
-                id="messageInput"
-                name="messageInput"
-                type="text"
-                className="form-input__input"
-                placeholder="type message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <button type="submit">Send</button>
-        </form>
+        <>
+            {!messageSent && (
+                <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
+                    <label htmlFor="messageInput" hidden>
+                        Enter Message
+                    </label>
+                    <input
+                        id="messageInput"
+                        name="messageInput"
+                        type="text"
+                        className="form-input__input"
+                        placeholder="type message..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <button type="submit" disabled={roomChosen.id === ''}>Send</button>
+                </form>
+            )}
+
+            {messageSent && (
+                <div className="message-sent-wrapper">
+                    <p className="message-sent">Message sent!</p>
+                    <button onClick={() => handleMessagerOpen()} className="open-messager-btn">Messager</button>
+                </div>
+            )}
+        </>
     );
 };
 
