@@ -7,7 +7,8 @@ import {
     collection,
     where,
     getDocs,
-    query
+    query,
+    updateDoc
 } from "firebase/firestore";
 import { useAppContext } from "../../context";
 
@@ -95,6 +96,14 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                 status: 'sent',
                 timestamp: serverTimestamp()
             }
+
+            // Update the 'lastMessage' field in the existing conversation document
+            await updateDoc(doc(db, 'conversations', conversationId), {
+                lastMessage: {
+                    message: message,
+                    timestamp: serverTimestamp()
+                },
+            });
 
             // Use the existing conversation document, create 'messages'
             const messageRef = collection(db, 'conversations', conversationId, 'messages');

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, orderBy, doc, query, onSnapshot } from 'firebase/firestore';
+import { collection, orderBy, query, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAppContext } from '../../context';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,14 +32,13 @@ const Message = () => {
         }
     }
 
-
     console.log("db:", db);
     console.log("roomChosen.docId:", roomChosen.docId);
     console.log("roomChosen", roomChosen);
 
     const getMessages = query(
         collection(db, "conversations", roomChosen.docId, "messages"),
-        orderBy('timestamp')
+        orderBy('timestamp', 'asc'),
     );
 
     useEffect(() => {

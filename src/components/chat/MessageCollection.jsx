@@ -14,6 +14,8 @@ const MessageCollection = () => {
     const [userRooms, setUserRooms] = useState([]);
     const [isNoMessages, setIsNoMessages] = useState(true)
     const [showRoom, setShowRoom] = useState(false)
+    const [chosenName, setChosenName] = useState('');
+    const [chosenAvatar, setChosenAvatar] = useState('');
 
     const scroll = useRef();
 
@@ -32,7 +34,10 @@ const MessageCollection = () => {
                 const roomData = doc.data();
                 console.log('roomData', roomData);
 
-                const previousTimestamp = roomData.lastMessage.timeStamp.seconds * 1000 + roomData.lastMessage.timeStamp.nanoseconds / 1000000;
+                const previousTimestamp = roomData.lastMessage.timestamp
+                    ? roomData.lastMessage.timestamp.seconds * 1000 + roomData.lastMessage.timestamp.nanoseconds / 1000000
+                    : 0;
+
 
                 rooms.push({
                     docId: roomData.docId,
@@ -41,7 +46,7 @@ const MessageCollection = () => {
                         message: roomData.lastMessage.message,
                         recipientId: roomData.lastMessage.recipientId,
                         senderId: roomData.lastMessage.senderId,
-                        timeStamp: previousTimestamp,
+                        timestamp: previousTimestamp,
                     },
                     participants: {
                         recipientId: roomData.participants.recipientId,
@@ -53,7 +58,7 @@ const MessageCollection = () => {
                     },
                 });
 
-                console.log(previousTimestamp);
+                console.log('roomData.lastMessage.timestamp', roomData.lastMessage.timestamp);
             });
             setUserRooms(rooms);
 
@@ -98,16 +103,17 @@ const MessageCollection = () => {
     const currentTimestamp = new Date().getTime();
 
     // Enter into a room/user to user chat
-    const handleRoomClick = (room) => {
+    const handleRoomClick = (room, name, avatar) => {
         setRoomChosen({
             docId: room.docId,
             id: room.participants.recipientId,
             name: room.participants.recipientName,
             avatar: room.participants.recipientAvatar
         });
-        setShowSidebar(false)
-        setShowRoom(true)
-        console.log('roomChosen', roomChosen);
+        setChosenName(name);
+        setChosenAvatar(avatar);
+        setShowSidebar(false);
+        setShowRoom(true);
     };
 
     const handleMessengerClose = () => {
@@ -154,10 +160,13 @@ const MessageCollection = () => {
 
             <aside className='message-sidebar'>
                 {userRooms.map((room) => (
-                    <div key={uuidv4()}
-                        onClick={() => handleRoomClick(room)}>
+                    <div
+                        key={uuidv4()}
+                        onClick={() => handleRoomClick(room, displayNameChoice(room), displayAvatarChoice(room))}
+                    >
+
                         <img src={displayAvatarChoice(room)} alt="user avatar" />
-                        <p>{timeDifference(currentTimestamp, room.lastMessage.timeStamp)}</p>
+                        <p>{timeDifference(currentTimestamp, room.lastMessage.timestamp)}</p>
                         <h2>{displayNameChoice(room)}</h2>
                         <p>{room.lastMessage.message}</p>
                     </div>
@@ -169,8 +178,8 @@ const MessageCollection = () => {
             {showRoom && (
                 <section className="chatbox">
                     <div className='message-header'>
-                        {/* <img src={displayAvatarChoice(roomChosen)} alt="user avatar" /> */}
-                        {/* <h2>{displayNameChoice(roomChosen)}</h2> */}
+                        <img src={chosenAvatar} alt="user avatar" />
+                        <h2>{chosenName}</h2>
                     </div>
                     <Message />
                     <span ref={scroll}></span>
