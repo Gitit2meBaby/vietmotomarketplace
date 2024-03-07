@@ -9,6 +9,8 @@ const Message = () => {
     const [messageList, setMessageList] = useState([]);
 
     // create a better UX for time display
+    const currentTimestamp = new Date().getTime();
+
     function timeDifference(current, previous) {
         const elapsed = current - previous;
 
@@ -23,15 +25,17 @@ const Message = () => {
             return `${minutesAgo} ${minutesAgo === 1 ? 'm' : 'm'}`;
         } else if (hoursAgo < 24) {
             return `${hoursAgo} ${hoursAgo === 1 ? 'hr' : 'hrs'}`;
-        } else {
+        } else if (previous.seconds) {
             return `${daysAgo} ${daysAgo === 1 ? 'day' : 'days'}`;
+        } else {
+            return "Now";  // Or handle this case as needed
         }
     }
 
-    const currentTimestamp = new Date().getTime();
 
     console.log("db:", db);
     console.log("roomChosen.docId:", roomChosen.docId);
+    console.log("roomChosen", roomChosen);
 
     const getMessages = query(
         collection(db, "conversations", roomChosen.docId, "messages"),
@@ -67,7 +71,10 @@ const Message = () => {
                     key={uuidv4()}
                 >
                     <p className="user-message">{message}</p>
-                    <p className="message-timestamp">{timeDifference(currentTimestamp, timestamp.seconds * 1000)}</p>
+                    <p className="message-timestamp">
+                        {timestamp ? timeDifference(currentTimestamp, timestamp.seconds * 1000) : "Now"}
+                    </p>
+
 
                 </div>
             ))}

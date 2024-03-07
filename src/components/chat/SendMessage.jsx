@@ -12,13 +12,16 @@ import {
 import { useAppContext } from "../../context";
 
 const SendMessage = ({ scroll, showMessageInput }) => {
-    const { roomChosen, currentUser, setShouldFetchMessages, setShowMessenger } = useAppContext()
+    const { roomChosen, currentUser, setShouldFetchMessages, setShowMessenger, showMessenger } = useAppContext()
     const [message, setMessage] = useState("");
     const [messageSent, setMessageSent] = useState(false);
 
+    // In case user has sent direct message from Post.jsx
     useEffect(() => {
         setMessageSent(false)
     }, [])
+
+    // Send message of input value
     const handleMessageSend = async (e) => {
         e.preventDefault();
 
@@ -37,7 +40,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
             // Create a new conversation document and get the reference
             const conversationRef = doc(collection(db, 'conversations'));
 
-            // Use the document reference to create the sub-collection 'messages'
+            // Use reference to create the sub-collection 'messages'
             const messageRef = collection(db, 'conversations', conversationRef.id, 'messages');
             newMessageRef = doc(messageRef);
 
@@ -93,7 +96,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                 timestamp: serverTimestamp()
             }
 
-            // Use the existing conversation document reference to create the sub-collection 'messages'
+            // Use the existing conversation document, create 'messages'
             const messageRef = collection(db, 'conversations', conversationId, 'messages');
             newMessageRef = doc(messageRef);
 
@@ -113,9 +116,12 @@ const SendMessage = ({ scroll, showMessageInput }) => {
         setMessageSent(false)
         setShowMessenger(true)
     }
+
+    console.log('showMessenger', showMessenger);
+
     return (
         <>
-            {!messageSent && (
+            {(!messageSent || showMessenger) && (
                 <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
                     <label htmlFor="messageInput" hidden>
                         Enter Message
@@ -133,7 +139,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                 </form>
             )}
 
-            {messageSent && (
+            {(messageSent && !showMessenger) && (
                 <div className="message-sent-wrapper">
                     <p className="message-sent">Message sent!</p>
                     <button onClick={() => handleMessagerOpen()} className="open-messager-btn">Messager</button>

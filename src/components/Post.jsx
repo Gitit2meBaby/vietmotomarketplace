@@ -31,6 +31,8 @@ const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pric
             console.log('postId', postId)
             console.log('userId', userId)
         }
+        setShowMessageInput(false)
+        setShowMore(false)
     }, [currentUser, userId]);
 
     // culminate the rent and sell data into one variable
