@@ -1,25 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile, signInWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, signOut, updateProfile, signInWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail, onAuthStateChanged } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, uploadBytes, list, getDownloadURL } from 'firebase/storage'
+import { db, storage } from '../firebase'
 import anonAvatar from '../assets/anonAvatar.webp'
 import { useAppContext } from '../context';
 import '../sass/authentication.css'
 
-
 const Authentication = () => {
-    const [isOpen, setIsOpen] = useState(false);
     // global state for recognised user
-    const { isLoggedIn, setIsLoggedIn } = useAppContext();
+    const { isLoggedIn, setIsLoggedIn, isAuthOpen, setIsAuthOpen, currentUser, setCurrentUser, setChosenImage, setCropper, avatarImageUpload, setAvatarImageUpload, setShowChatBox, setShowMessenger } = useAppContext();
 
     const [emailLogIn, setEmailLogIn] = useState(false)
 
     // stored input values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [currentUser, setCurrentUser] = useState(null);
     const [displayName, setDisplayName] = useState('')
+
+    const [uploading, setUploading] = useState(false)
 
     // error states
     const [emptyEmail, setEmptyEmail] = useState(false)
@@ -56,13 +56,14 @@ const Authentication = () => {
             const user = JSON.parse(storedUser);
             setCurrentUser(user);
             setIsLoggedIn(true)
+            console.log('user', user);
         }
     }, []);
 
     // modal opening
-    const handleOpen = () => setIsOpen(true);
+    const handleOpen = () => setIsAuthOpen(true);
     const handleClose = () => {
-        setIsOpen(false)
+        setIsAuthOpen(false)
         setEmailLogIn(false)
         // Reset all relevant states when closing the modal
         setEmail('');
@@ -79,6 +80,7 @@ const Authentication = () => {
         setPasswordReset(false);
         setPasswordResetError(false);
         setSignUpSuccess(false);
+        setAvatarImageUpload(null)
     };
 
     const storeUserInLocalStorage = (user) => {
@@ -104,6 +106,44 @@ const Authentication = () => {
         setDisplayName(e.target.value)
         setEmptyDisplayName(false)
     }
+
+    // setting images and names into state (not URLS for firestore) 
+    const handleAvatarImageChange = (e) => {
+        setAvatarImageUpload('current');
+        setChosenImage(e.target.files.length > 0 ? e.target.files[0] : null)
+        setCropper(true)
+    };
+
+    const handleImageUpload = async (imageKey, image) => {
+        try {
+            // Convert Blob URL to Blob object
+            const blob = await fetch(image).then((response) => response.blob());
+
+            const imageName = imageKey;
+            const userFolderRef = ref(storage, `userImages/${email}`);
+
+            // Log the upload result
+            const uploadResult = await uploadBytes(ref(userFolderRef, imageName), blob, {
+                contentType: image.type,
+            });
+            console.log('Upload result:', uploadResult);
+
+            // Fetch the updated file list and update the state
+            try {
+
+                // Get the download URL for the uploaded image
+                const downloadURL = await getDownloadURL(ref(userFolderRef, imageName));
+                console.log('Download URL:', downloadURL);
+
+                return downloadURL; // Return the download URL for further use
+
+            } catch (error) {
+                console.error('Error listing files:', error);
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -141,57 +181,68 @@ const Authentication = () => {
         handleClose();
     };
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in.
+                setCurrentUser(user);
+                setIsLoggedIn(true)
+            } else {
+                // No user is signed in.
+                setCurrentUser(null);
+            }
+        });
+
+        // Clean up the subscription when the component unmounts.
+        return () => unsubscribe();
+    }, []);
+
     const handleSignUp = async (e) => {
         e.preventDefault();
+
         try {
-            const methods = await fetchSignInMethodsForEmail(auth, email);
+            // Upload the user's avatar image and get the download URL
+            const avatarURL = await handleImageUpload('avatar', avatarImageUpload);
 
-            if (email === '') {
-                setEmptyEmail(true);
-                emailSignUpRef.current.focus();
-                return;
-            } else if (password === '') {
-                setEmptyPassword(true);
-                passwordSignUpRef.current.focus();
-                return;
-            } else if (displayName === '') {
-                setEmptyDisplayName(true);
-                displayNameSignUpRef.current.focus();
-                return;
-            } else if (methods && methods.length > 0) {
-                console.log('User already exists');
-                setEmailExists(true);
-                emailSignUpRef.current.focus();
-                return;
-            } else {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+            // Create a new user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-                await updateProfile(user, {
-                    displayName: displayName,
-                });
+            // Update the user's profile with display name and avatar photo URL
+            await updateProfile(user, {
+                displayName: displayName,
+                photoURL: avatarURL,
+            });
 
-                const userData = {
-                    displayName: displayName,
-                    email: user.email,
-                    uid: user.uid,
-                };
+            // Create user data object
+            const userData = {
+                displayName: displayName,
+                email: user.email,
+                uid: user.uid,
+                avatar: avatarURL,
+            };
 
-                await setDoc(doc(db, 'users', user.uid), userData);
-                setCurrentUser(user);
-                storeUserInLocalStorage(user);
-                setIsLoggedIn(true);
+            // Save user data to Firestore
+            await setDoc(doc(db, 'users', user.uid), userData);
 
-                handleSignUpSuccess()
-                setEmptyEmail(false);
-                setEmptyPassword(false);
-                setEmptyDisplayName(false);
-                setEmailExists(false);
-                setEmailFormatError(false);
-                setPasswordError(false);
-                handleClose();
-            }
+            // Update local state and localStorage
+            setCurrentUser(user);
+            storeUserInLocalStorage(user);
+            setIsLoggedIn(true);
+
+            handleSignUpSuccess();
+
+            // Reset form state
+            setEmptyEmail(false);
+            setEmptyPassword(false);
+            setEmptyDisplayName(false);
+            setEmailExists(false);
+            setEmailFormatError(false);
+            setPasswordError(false);
+            setAvatarImageUpload(null);
+            handleClose();
         } catch (error) {
+            // Handle authentication errors
             if (error.code === 'auth/invalid-email') {
                 setEmailFormatError(true);
                 emailSignUpRef.current.focus();
@@ -215,7 +266,6 @@ const Authentication = () => {
         }, 2000);
     };
 
-
     const signInWithGoogle = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
@@ -226,6 +276,7 @@ const Authentication = () => {
                 displayName: user.displayName,
                 email: user.email,
                 uid: user.uid,
+                avatar: user.photoURL,
             };
 
             await setDoc(doc(db, 'users', user.uid), userData);
@@ -249,7 +300,7 @@ const Authentication = () => {
 
     // Send password reset email
     const handleForgotPassword = async (email) => {
-        setIsOpen(false);
+        setIsAuthOpen(false);
 
         if (email === '') {
             setEmptyEmail(true);
@@ -270,10 +321,11 @@ const Authentication = () => {
 
     const logout = async () => {
         try {
-            await signOut(auth);
             setCurrentUser(null);
             localStorage.removeItem('user');
             setIsLoggedIn(false)
+            setShowMessenger(false)
+            await signOut(auth);
         } catch (err) {
             console.error(err);
         }
@@ -283,22 +335,21 @@ const Authentication = () => {
     return (
         <main className="auth">
             <div>
-                {currentUser == null && !isOpen && (
+                {currentUser == null && !isAuthOpen && (
                     <button onClick={handleOpen}
                         className='header-signin-btn'>Sign In</button>
                 )}
 
                 {currentUser && (
                     <img
-                        src={currentUser.photoURL || anonAvatar}
+                        src={currentUser.photoURL || currentUser.avatar || anonAvatar}
                         alt={currentUser.email}
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => setIsAuthOpen(true)}
                     />
                 )}
             </div>
 
-
-            {isOpen && (
+            {isAuthOpen && (
                 <div className="sign-in-modal">
                     <svg className='close-modal-btn' onClick={handleClose} stroke="#3d3d3d" fill="#3d3d3d" strokeWidth="0" viewBox="0 0 24 24" height="1.8em" width="1.8em" xmlns="http://www.w3.org/2000/svg"><path d="M16.3956 7.75734C16.7862 8.14786 16.7862 8.78103 16.3956 9.17155L13.4142 12.153L16.0896 14.8284C16.4802 15.2189 16.4802 15.8521 16.0896 16.2426C15.6991 16.6331 15.0659 16.6331 14.6754 16.2426L12 13.5672L9.32458 16.2426C8.93405 16.6331 8.30089 16.6331 7.91036 16.2426C7.51984 15.8521 7.51984 15.2189 7.91036 14.8284L10.5858 12.153L7.60436 9.17155C7.21383 8.78103 7.21383 8.14786 7.60436 7.75734C7.99488 7.36681 8.62805 7.36681 9.01857 7.75734L12 10.7388L14.9814 7.75734C15.372 7.36681 16.0051 7.36681 16.3956 7.75734Z" fill="#3d3d3d"></path><path fillRule="evenodd" clipRule="evenodd" d="M4 1C2.34315 1 1 2.34315 1 4V20C1 21.6569 2.34315 23 4 23H20C21.6569 23 23 21.6569 23 20V4C23 2.34315 21.6569 1 20 1H4ZM20 3H4C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4C21 3.44772 20.5523 3 20 3Z" fill="#3d3d3d"></path></svg>
                     {!currentUser && (
@@ -403,6 +454,11 @@ const Authentication = () => {
                                                 )}
                                             </div>
 
+                                            <div className='choose-avatar-wrapper'>
+                                                <label htmlFor="avatarInput">Choose an Avatar</label>
+                                                <input type='file' name='avatarInput' onChange={(e) => handleAvatarImageChange(e)} />
+                                            </div>
+
                                             <button className='signup-btn' type="submit">Sign Up</button>
                                         </form>
 
@@ -485,7 +541,7 @@ const Authentication = () => {
                                             <button className='forgot-pass-btn' type='button'
                                                 onClick={() => handleForgotPasswordLink()}>forgot password?</button>
 
-                                            <button className='signup-btn' type="submit">Login</button>
+                                            <button className='signup-btn login-btn' type="submit">Login</button>
                                         </form>
                                     </>
                                 )}

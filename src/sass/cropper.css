@@ -18,6 +18,7 @@
   padding: 1rem;
   min-width: 80vw;
   max-height: 98dvh;
+  z-index: 100;
 }
 .cropper .Crop-Controls {
   margin-bottom: 1.5rem;

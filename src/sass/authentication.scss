@@ -1,5 +1,11 @@
 $white: #fff;
 
+%glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
 @font-face {
     font-family: "Mitr-Regular";
     src: url("../assets/fonts/Mitr-Regular.ttf");
@@ -7,6 +13,20 @@ $white: #fff;
 
 .auth {
     position: relative;
+    z-index: 100;
+
+    textarea,
+    input[type='email'],
+    input[type='password'],
+    input[type='text'],
+    input[type='number'] {
+        border-radius: 0.2rem;
+        border: none;
+        padding: 0.3rem;
+        margin-top: 0.2rem;
+        width: 80%;
+        @extend %glass;
+    }
 }
 
 .header-signin-btn {
@@ -28,7 +48,7 @@ $white: #fff;
     top: 50%;
     left: 50%;
     width: 80vw;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -50%);
     z-index: 50;
     border-radius: .5rem;
     background: #ffffff33;
@@ -72,14 +92,24 @@ $white: #fff;
     margin-bottom: 1rem;
 }
 
+.choose-avatar-wrapper {
+    margin-bottom: .5rem;
+}
+
 .signup-btn {
     margin-top: 1rem;
     text-transform: uppercase;
     letter-spacing: .1rem;
     width: 100%;
     padding-block: .3rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
     box-shadow: none;
     border: 1px solid #000;
+}
+
+.login-btn {
+    margin-bottom: 0.5rem;
 }
 
 .have-account-wrapper {

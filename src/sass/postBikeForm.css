@@ -89,15 +89,6 @@
   font-size: 1.2rem;
   padding-bottom: 0.2rem;
 }
-.post-page .required-span {
-  color: rgb(203, 4, 4);
-}
-.post-page .required-span span {
-  font-size: 1.2rem;
-  font-weight: 800;
-  position: relative;
-  top: -10px;
-}
 .post-page .input-wrapper {
   display: flex;
   flex-direction: column;
@@ -472,6 +463,16 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.required-span {
+  color: rgb(203, 4, 4);
+}
+.required-span span {
+  font-size: 1.2rem;
+  font-weight: 800;
+  position: relative;
+  top: -10px;
 }
 
 .submit-success-modal {

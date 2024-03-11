@@ -42,9 +42,15 @@ export default function Cropper() {
         thirdImageUpload, setThirdImageUpload, featureRentalImageUpload, setFeatureRentalImageUpload,
         secondRentalImageUpload, setSecondRentalImageUpload,
         thirdRentalImageUpload, setThirdRentalImageUpload, cropper,
-        setCropper, chosenImage, setChosenImage } = useAppContext()
+        setCropper, chosenImage, setChosenImage, avatarImageUpload, setAvatarImageUpload } = useAppContext()
 
     const [why, setWhy] = useState(false)
+
+    useEffect(() => {
+        if (avatarImageUpload === 'current') {
+            setAspect(1 / 1)
+        }
+    }, [])
 
     useEffect(() => {
         if (chosenImage instanceof File) {
@@ -56,16 +62,6 @@ export default function Cropper() {
         }
     }, [chosenImage]);
 
-    // function onSelectFile(e) {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setCrop(undefined);
-    //         const reader = new FileReader();
-    //         reader.addEventListener('load', () => setImgSrc(reader.result || ''));
-    //         reader.readAsDataURL(e.target.files[0]);
-    //         console.log('imgSrc', imgSrc);
-    //     }
-    // }
-
     function onImageLoad(e) {
         if (aspect) {
             const { width, height } = e.currentTarget;
@@ -73,6 +69,7 @@ export default function Cropper() {
         }
     }
 
+    // Creating cropped image in URL
     async function onDownloadCropClick() {
         const image = imgRef.current;
         const previewCanvas = previewCanvasRef.current;
@@ -83,8 +80,13 @@ export default function Cropper() {
         const scaleX = image.naturalWidth / image.width;
         const scaleY = image.naturalHeight / image.height;
 
-        const targetWidth = 400;
-        const targetHeight = 225;
+        let targetWidth = 400;
+        let targetHeight = 225;
+
+        if (avatarImageUpload === "current") {
+            targetWidth = 40;
+            targetHeight = 40;
+        }
 
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = targetWidth;
@@ -96,7 +98,7 @@ export default function Cropper() {
         }
 
         ctx.drawImage(
-            previewCanvas,
+            image,
             completedCrop.x * scaleX,
             completedCrop.y * scaleY,
             completedCrop.width * scaleX,
@@ -107,36 +109,28 @@ export default function Cropper() {
             targetHeight
         );
 
-        const blob = await new Promise((resolve) => {
-            tempCanvas.toBlob((b) => resolve(b), 'image/png');
-        });
+        // Use URL.createObjectURL to create an object URL
+        const objectURL = tempCanvas.toDataURL('image/png');
 
-        if (blobUrlRef.current) {
-            URL.revokeObjectURL(blobUrlRef.current);
-        }
-        blobUrlRef.current = URL.createObjectURL(blob);
-
-        if (hiddenAnchorRef.current) {
-            hiddenAnchorRef.current.href = blobUrlRef.current;
-
-            // Instead of triggering download, set the cropped image to the global state
-            chooseStateUpload(blobUrlRef.current)
-        }
+        // Pass the object URL to the state-setting functions
+        chooseStateUpload(objectURL);
     }
 
-    function chooseStateUpload(blobUrl) {
+    function chooseStateUpload(blob) {
         if (featureImageUpload === 'current') {
-            setFeatureImageUpload(blobUrl);
+            setFeatureImageUpload(blob);
         } else if (secondImageUpload === 'current') {
-            setSecondImageUpload(blobUrl);
+            setSecondImageUpload(blob);
         } else if (thirdImageUpload === 'current') {
-            setThirdImageUpload(blobUrl);
+            setThirdImageUpload(blob);
         } else if (featureRentalImageUpload === 'current') {
-            setFeatureRentalImageUpload(blobUrl);
+            setFeatureRentalImageUpload(blob);
         } else if (secondRentalImageUpload === 'current') {
-            setSecondRentalImageUpload(blobUrl);
+            setSecondRentalImageUpload(blob);
         } else if (thirdRentalImageUpload === 'current') {
-            setThirdRentalImageUpload(blobUrl);
+            setThirdRentalImageUpload(blob);
+        } else if (avatarImageUpload === 'current') {
+            setAvatarImageUpload(blob)
         }
         setCropper(false);
     }
@@ -165,7 +159,6 @@ export default function Cropper() {
     return (
         <div className="cropper">
             <div className="Crop-Controls">
-                {/* <input id='file-input' type="file" accept="image/*" onChange={onSelectFile} /> */}
 
                 <h2>Edit Image <span onClick={() => setWhy(true)}>why?</span></h2>
                 <div>

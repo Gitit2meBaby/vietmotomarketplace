@@ -9,7 +9,7 @@
 }
 
 %glass {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(5px);
     box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
 }
@@ -83,11 +83,9 @@ body {
     }
 }
 
-// react slick & image absolutes
-// .slider-wrapper {
-//     position: relative;
-//     // z-index: -5;
-// }
+.slider-wrapper {
+    position: relative;
+}
 
 .slick-arrow {
     box-shadow: none;
@@ -95,10 +93,12 @@ body {
     z-index: 10;
 }
 
-.slick-slider button {
-    backdrop-filter: blur(0px);
-    cursor: pointer;
-    pointer-events: initial;
+.slick-slider {
+    button {
+        backdrop-filter: blur(0px);
+        cursor: pointer;
+        pointer-events: initial;
+    }
 }
 
 .slick-prev {
@@ -117,14 +117,17 @@ body {
     }
 }
 
+.messages-on-post,
 .timestamp,
 .price-wrapper {
     position: absolute;
     color: white;
     border-radius: .3rem;
     padding: 0.3rem;
+    z-index: 5;
     @extend %glass;
 
+    h2,
     h4,
     p {
         font-family: 'Mitr-Regular';
@@ -138,43 +141,65 @@ body {
     }
 
     h4 {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
+    }
+
+    a {
+        font-size: 1.2rem;
+        color: #750175;
     }
 }
 
+.messages-on-post {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: .5rem;
+    right: .5rem;
+    background-color: rgba(255, 0, 0, 0.595);
+}
+
 .timestamp {
-    top: 1.5rem;
-    left: 1.5rem;
+    top: .5rem;
+    left: .5rem;
 }
 
 .price-wrapper {
-    bottom: 2.5rem;
-    right: 2rem;
+    bottom: 1.8rem;
+    right: .5rem;
 }
 
-// .post-img {
-//     max-width: 100%;
-//     margin: 0 auto;
-// }
-
-// .slider-wrapper 
-// post content
+.cover {
+    background-color: #000;
+    position: absolute;
+    top: -1rem;
+    left: 0.3px;
+    width: 95vw;
+    height: 1rem;
+    border-radius: 1rem 0 0 0rem;
+}
 
 .post-content {
+    position: relative;
     display: flex;
     flex-direction: column;
-    background-color: black;
-    border-radius: 1rem 0 0 1rem;
+    background-color: #000;
+    border-radius: 0rem 0 0 1rem;
     padding: 1rem;
-    margin: -1.5rem 0 1rem 1.5rem;
+    margin: -.3rem 0 1rem 1.5rem;
     box-shadow: 10px 5px 5px 5px rgba(0, 0, 0, 0.3);
-    z-index: 5;
+    z-index: 50;
+
 
     h1,
     p {
         color: white;
         margin: 0;
         font-family: 'Mitr-Regular';
+    }
+
+    h1 {
+        margin-top: -0.5rem;
     }
 }
 
@@ -192,6 +217,7 @@ body {
 .show-btn {
     border-radius: 0 0 0px 10px;
     padding: 0 0.2rem 0.1rem 0.8rem;
+    margin-top: 1rem;
 }
 
 .hide-btn {
@@ -199,6 +225,10 @@ body {
     padding: 0 0.8rem 0.1rem 0.2rem;
 }
 
+.copy-clipboard-btn {
+    background-color: #000;
+    border: none;
+}
 
 .post-contact {
     position: relative;
@@ -216,6 +246,24 @@ body {
 
     &:last-of-type {
         margin-bottom: 1rem;
+    }
+
+    button {
+        margin-left: auto;
+        margin-right: .5rem;
+        cursor: copy;
+
+    }
+
+    a {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        svg {
+            fill: #fff;
+        }
     }
 }
 
@@ -256,6 +304,7 @@ body {
 }
 
 .msg-btn {
+    position: relative;
     font-family: 'Mitr-Regular';
     text-transform: uppercase;
     letter-spacing: .1rem;
@@ -264,12 +313,37 @@ body {
     background-color: $red;
     padding: .3rem 1rem;
     color: $yellow;
+    display: flex;
+    padding-left: 1.5rem;
+    border-radius: .3rem;
+    border: none;
+    margin-bottom: 1rem;
+    cursor: pointer;
+
+    svg {
+        position: absolute;
+        top: -1.2rem;
+        left: -1rem;
+    }
 
     &:disabled {
         color: rgba(83, 83, 83, 0.5);
         background-color: rgba(248, 248, 248, 0.655);
         cursor: not-allowed;
+        pointer-events: none;
     }
+}
+
+.delete-post-btn {
+    font-family: 'Mitr-Regular';
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: .1rem;
+    border-radius: .3rem;
+    border: none;
+    margin: 0 1rem 1rem 1rem;
+    cursor: pointer;
+    background-color: $red;
 }
 
 .post-grid {

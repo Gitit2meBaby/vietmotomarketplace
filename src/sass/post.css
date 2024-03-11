@@ -6,9 +6,10 @@
   font-family: "Caveat-SemiBold";
   src: url("../assets/fonts/Caveat-SemiBold.ttf");
 }
+.messages-on-post,
 .timestamp,
 .price-wrapper, .preview .preview-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.4);
   -webkit-backdrop-filter: blur(5px);
           backdrop-filter: blur(5px);
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
@@ -73,6 +74,10 @@ body {
   margin: 0 auto;
 }
 
+.slider-wrapper {
+  position: relative;
+}
+
 .slick-arrow {
   box-shadow: none;
   -webkit-backdrop-filter: blur(0px);
@@ -101,15 +106,22 @@ body {
   font-size: 30px;
 }
 
+.messages-on-post,
 .timestamp,
 .price-wrapper {
   position: absolute;
   color: white;
   border-radius: 0.3rem;
   padding: 0.3rem;
+  z-index: 5;
 }
+.messages-on-post h2,
+.messages-on-post h4,
+.messages-on-post p,
+.timestamp h2,
 .timestamp h4,
 .timestamp p,
+.price-wrapper h2,
 .price-wrapper h4,
 .price-wrapper p {
   font-family: "Mitr-Regular";
@@ -117,42 +129,77 @@ body {
   color: rgba(0, 0, 0, 0.8);
   letter-spacing: 0.05rem;
 }
+.messages-on-post h2 span,
+.messages-on-post h4 span,
+.messages-on-post p span,
+.timestamp h2 span,
 .timestamp h4 span,
 .timestamp p span,
+.price-wrapper h2 span,
 .price-wrapper h4 span,
 .price-wrapper p span {
   font-size: 1.2rem;
 }
+.messages-on-post h4,
 .timestamp h4,
 .price-wrapper h4 {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
+}
+.messages-on-post a,
+.timestamp a,
+.price-wrapper a {
+  font-size: 1.2rem;
+  color: #750175;
+}
+
+.messages-on-post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(255, 0, 0, 0.595);
 }
 
 .timestamp {
-  top: 1.5rem;
-  left: 1.5rem;
+  top: 0.5rem;
+  left: 0.5rem;
 }
 
 .price-wrapper {
-  bottom: 2.5rem;
-  right: 2rem;
+  bottom: 1.8rem;
+  right: 0.5rem;
+}
+
+.cover {
+  background-color: #000;
+  position: absolute;
+  top: -1rem;
+  left: 0.3px;
+  width: 95vw;
+  height: 1rem;
+  border-radius: 1rem 0 0 0rem;
 }
 
 .post-content {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background-color: black;
-  border-radius: 1rem 0 0 1rem;
+  background-color: #000;
+  border-radius: 0rem 0 0 1rem;
   padding: 1rem;
-  margin: -1.5rem 0 1rem 1.5rem;
+  margin: -0.3rem 0 1rem 1.5rem;
   box-shadow: 10px 5px 5px 5px rgba(0, 0, 0, 0.3);
-  z-index: 5;
+  z-index: 50;
 }
 .post-content h1,
 .post-content p {
   color: white;
   margin: 0;
   font-family: "Mitr-Regular";
+}
+.post-content h1 {
+  margin-top: -0.5rem;
 }
 
 .hide-btn,
@@ -169,11 +216,17 @@ body {
 .show-btn {
   border-radius: 0 0 0px 10px;
   padding: 0 0.2rem 0.1rem 0.8rem;
+  margin-top: 1rem;
 }
 
 .hide-btn {
   border-radius: 0 0 10px 0px;
   padding: 0 0.8rem 0.1rem 0.2rem;
+}
+
+.copy-clipboard-btn {
+  background-color: #000;
+  border: none;
 }
 
 .post-contact {
@@ -191,6 +244,20 @@ body {
 }
 .post-contact-details:last-of-type {
   margin-bottom: 1rem;
+}
+.post-contact-details button {
+  margin-left: auto;
+  margin-right: 0.5rem;
+  cursor: copy;
+}
+.post-contact-details a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.post-contact-details a svg {
+  fill: #fff;
 }
 
 .svg-wrapper {
@@ -227,6 +294,7 @@ body {
 }
 
 .msg-btn {
+  position: relative;
   font-family: "Mitr-Regular";
   text-transform: uppercase;
   letter-spacing: 0.1rem;
@@ -235,11 +303,35 @@ body {
   background-color: #DB261E;
   padding: 0.3rem 1rem;
   color: #FFFF05;
+  display: flex;
+  padding-left: 1.5rem;
+  border-radius: 0.3rem;
+  border: none;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.msg-btn svg {
+  position: absolute;
+  top: -1.2rem;
+  left: -1rem;
 }
 .msg-btn:disabled {
   color: rgba(83, 83, 83, 0.5);
   background-color: rgba(248, 248, 248, 0.655);
   cursor: not-allowed;
+  pointer-events: none;
+}
+
+.delete-post-btn {
+  font-family: "Mitr-Regular";
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  border-radius: 0.3rem;
+  border: none;
+  margin: 0 1rem 1rem 1rem;
+  cursor: pointer;
+  background-color: #DB261E;
 }
 
 .post-grid {
