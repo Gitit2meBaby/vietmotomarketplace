@@ -11,6 +11,8 @@ const PostBikeForm = () => {
 
     const { isLoggedIn } = useAppContext()
 
+    console.log('PostBikeForm rendered');
+
     return (
         <main className='post-page'>
 

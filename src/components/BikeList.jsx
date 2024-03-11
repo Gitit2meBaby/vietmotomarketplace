@@ -7,12 +7,16 @@ import { useAppContext } from '../context';
 import loadingImg from '../assets/loadingImg.webp'
 import loadingImg2 from '../assets/loadingImg2.webp'
 import spinner from '../assets/spinner.gif'
+import Sorter from './Sorter';
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
     const { isLoading, setIsLoading, buyOrRent } = useAppContext()
 
-    const fetchListings = async (lastListing) => {
+    console.log('bikeList rendered');
+
+    // Initial fetch, should return limit, descending order, set with buyOrRent from global state
+    const fetchFirstListings = async (lastListing) => {
         try {
             const listingsCollection = collection(db, 'listings');
             let listingsQuery = query(listingsCollection,
@@ -39,12 +43,12 @@ const BikeList = () => {
     };
 
     useEffect(() => {
-        fetchListings();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        fetchFirstListings();
+    }, []);
 
     const handleLoadMore = () => {
         const lastListing = listings[listings.length - 1];
-        fetchListings(lastListing);
+        fetchFirstListings(lastListing);
     };
 
     if (isLoading) return (
@@ -101,9 +105,9 @@ const BikeList = () => {
         </>
     )
 
-
     return (
         <section>
+            <Sorter />
             {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}

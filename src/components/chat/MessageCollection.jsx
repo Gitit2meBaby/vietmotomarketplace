@@ -21,6 +21,8 @@ const MessageCollection = () => {
     const scroll = useRef();
     const messageInputRef = useRef();
 
+    console.log('Message Collection rendered');
+
     // check for any conversations that contain the current user
     const getRooms = query(
         collection(db, "conversations"),

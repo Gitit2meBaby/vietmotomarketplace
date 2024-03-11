@@ -47,6 +47,7 @@ const Authentication = () => {
     const passwordLoginRef = useRef(null)
     const emailPasswordResetRef = useRef(null)
 
+    console.log('Authentication rendered');
 
     // Check local storage for user data
     useEffect(() => {

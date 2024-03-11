@@ -8,6 +8,9 @@ const Message = () => {
     const { currentUser, roomChosen, shouldFetchMessages } = useAppContext();
     const [messageList, setMessageList] = useState([]);
 
+    console.log('Message rendered');
+
+
     // create a better UX for time display
     const currentTimestamp = new Date().getTime();
 
