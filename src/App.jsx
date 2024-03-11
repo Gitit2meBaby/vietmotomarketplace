@@ -10,7 +10,7 @@ import MessageCollection from './components/chat/MessageCollection'
 
 
 function App() {
-  const { cropper, showMessenger, showChatBox } = useAppContext()
+  const { cropper, showMessenger } = useAppContext()
   return (
     <>
       <Header />

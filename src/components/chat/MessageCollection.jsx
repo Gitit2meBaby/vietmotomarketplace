@@ -25,7 +25,7 @@ const MessageCollection = () => {
     const getRooms = query(
         collection(db, "conversations"),
         where('participantsIds', 'array-contains', currentUser.uid),
-        orderBy('lastUpdatedAt', 'desc')
+        orderBy('lastUpdatedAt', 'asc')
     );
 
     // populate the userRooms array by fetching all documents in messages folder

@@ -84,15 +84,15 @@ const Header = () => {
                     className={(activeLink === '/list' && buyOrRent === 'buy') ? 'active-link' : ''}
                     to="/list">Buy</Link>
 
-                <Link onClick={() => handleLinkClick("/post")}
-                    style={{ ...navItemStyles, transitionDelay: '0.6s' }}
-                    className={activeLink === '/post' ? 'active-link' : ''}
-                    to="/post">Sell</Link>
-
                 <Link onClick={() => handleListClick("/list", "rent")}
                     style={{ ...navItemStyles, transitionDelay: '0.8s' }}
                     className={(activeLink === '/list' && buyOrRent === 'rent') ? 'active-link' : ''}
                     to="/list">Rent</Link>
+
+                <Link onClick={() => handleLinkClick("/post")}
+                    style={{ ...navItemStyles, transitionDelay: '0.6s' }}
+                    className={activeLink === '/post' ? 'active-link' : ''}
+                    to="/post">Sell</Link>
 
                 <Link onClick={() => handleLinkClick("/guides")}
                     style={{ ...navItemStyles, transitionDelay: '1s' }}

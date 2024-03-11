@@ -66,16 +66,15 @@ const Message = () => {
         <div className="message-list">
             {messageList.map(({ message, senderId, recipientId, status, timestamp }) => (
                 <div
-                    className={`chat-bubble ${senderId === currentUser.id ? "right" : "left"}`}
+                    className={`chat-bubble ${senderId === currentUser.uid ? "right" : "left"}`}
                     key={uuidv4()}
                 >
                     <p>{message}</p>
                     <p className="message-timestamp">
                         {timestamp ? timeDifference(currentTimestamp, timestamp.seconds * 1000) : "Now"}
                     </p>
-
-
                 </div>
+
             ))}
         </div>
     );

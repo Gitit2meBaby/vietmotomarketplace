@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getDocs, collection, query } from 'firebase/firestore';
+import { getDocs, collection, query, orderBy, limit, startAfter, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import Post from './Post';
 import { useAppContext } from '../context';
@@ -10,33 +10,42 @@ import spinner from '../assets/spinner.gif'
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
-    const { isLoading, setIsLoading } = useAppContext()
+    const { isLoading, setIsLoading, buyOrRent } = useAppContext()
+
+    const fetchListings = async (lastListing) => {
+        try {
+            const listingsCollection = collection(db, 'listings');
+            let listingsQuery = query(listingsCollection,
+                orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), limit(5));
+
+            if (lastListing) {
+                listingsQuery = query(listingsCollection,
+                    orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), startAfter(lastListing.createdAt));
+            }
+
+            const snapshot = await getDocs(listingsQuery);
+
+            const listingsData = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+
+            setListings((prevListings) => [...prevListings, ...listingsData]);
+        } catch (error) {
+            console.error('Error fetching listings:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        setIsLoading(false)
-        const fetchListings = async () => {
-            try {
-                const listingsCollection = collection(db, 'listings');
-                const listingsQuery = query(listingsCollection);
-                console.log(listingsQuery)
-                const snapshot = await getDocs(listingsQuery);
-
-                const listingsData = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-
-                setListings(listingsData);
-                // setTimeout(() => {
-                //     setIsLoading(false);
-                // }, 1000);
-            } catch (error) {
-                console.error('Error fetching listings:', error);
-            }
-        };
         fetchListings();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const handleLoadMore = () => {
+        const lastListing = listings[listings.length - 1];
+        fetchListings(lastListing);
+    };
 
     if (isLoading) return (
         <>
@@ -94,7 +103,7 @@ const BikeList = () => {
 
 
     return (
-        <div>
+        <section>
             {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}
@@ -133,7 +142,9 @@ const BikeList = () => {
                 />
             ))}
 
-        </div>
+            <button onClick={handleLoadMore}>Load More</button>
+
+        </section>
     );
 };
 

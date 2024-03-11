@@ -79,6 +79,9 @@ $main-font: 'Mitr-Regular';
     max-height: calc(100svh - 70px);
     max-height: calc(100vh - 70px);
     overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .chatbox-header {
@@ -110,11 +113,14 @@ $main-font: 'Mitr-Regular';
 }
 
 .chat-bubble {
+    position: relative;
     @extend %glass;
     border-radius: .5rem;
     padding: .5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     width: 90vw;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
 
     p {
         margin: 0;
@@ -130,12 +136,14 @@ $main-font: 'Mitr-Regular';
 }
 
 .right {
-    background-color: blue;
+    align-self: flex-end;
+    margin-right: 0.5rem;
+    background-color: rgba(34, 34, 34, 0.451);
 }
 
 .left {
-    background-color: pink;
     margin-left: 0.5rem;
+    background-color: rgba(191, 191, 191, 0.7);
 }
 
 .in-message-input-wrapper {
