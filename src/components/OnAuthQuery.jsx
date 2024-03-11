@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import {
     collection,
-    doc,
-    getDoc,
     getDocs,
     query,
     where,
-    onSnapshot
+    onSnapshot,
+    collectionGroup // Import collectionGroup
 } from "firebase/firestore";
 import { useAppContext } from "../context";
+
 const OnAuthQuery = () => {
     const { currentUser } = useAppContext();
     const [newMessages, setNewMessages] = useState([]);
@@ -27,25 +27,20 @@ const OnAuthQuery = () => {
                 const messages = [];
 
                 for (const doc of querySnapshot.docs) {
-                    const conversationDoc = await getDoc(doc.ref);
-                    const conversationData = conversationDoc.data();
-                    console.log("conversationData:", conversationData);
+                    // Use collectionGroup for messages subcollection
+                    const messagesRef = collectionGroup(db, 'messages');
+                    const messagesQuery = query(messagesRef, where('status', '==', 'sent'), where('conversationId', '==', doc.id));
 
-                    if (conversationData) {
-                        const messagesRef = collection(doc.ref, 'messages');
-                        const messagesQuery = query(messagesRef, where('status', '==', 'sent'));
-                        console.log("messagesQuery:", messagesQuery);
+                    console.log("messagesQuery:", messagesQuery);
 
-                        const messagesSnapshot = await getDocs(messagesQuery);
-                        console.log("messagesSnapshot:", messagesSnapshot);
+                    const messagesSnapshot = await getDocs(messagesQuery);
+                    console.log("messagesSnapshot:", messagesSnapshot);
 
-                        messagesSnapshot.forEach((messageDoc) => {
-                            const messageData = messageDoc.data();
-                            messages.push(messageData);
-                        });
-                    }
+                    messagesSnapshot.forEach((messageDoc) => {
+                        const messageData = messageDoc.data();
+                        messages.push(messageData);
+                    });
                 }
-
 
                 setNewMessages(messages);
             });

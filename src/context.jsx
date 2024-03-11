@@ -17,6 +17,7 @@ const AppProvider = ({ children }) => {
         id: '',
         name: '',
         avatar: '',
+        initiatedBy: '',
     })
     const [shouldFetchMessages, setShouldFetchMessages] = useState(false);
 

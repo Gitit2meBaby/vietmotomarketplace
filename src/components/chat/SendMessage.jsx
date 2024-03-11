@@ -16,11 +16,20 @@ const SendMessage = ({ scroll, showMessageInput }) => {
     const { roomChosen, currentUser, setShouldFetchMessages, setShowMessenger, showMessenger } = useAppContext()
     const [message, setMessage] = useState("");
     const [messageSent, setMessageSent] = useState(false);
+    const [showButton, setShowButton] = useState(false);
 
     // In case user has sent direct message from Post.jsx
     useEffect(() => {
         setMessageSent(false)
     }, [])
+
+    const handleInputChange = (e) => {
+        setMessage(e.target.value);
+        setShowButton(true)
+        if (e.target.value === "") {
+            setShowButton(false)
+        }
+    };
 
     // Send message of input value
     const handleMessageSend = async (e) => {
@@ -30,14 +39,33 @@ const SendMessage = ({ scroll, showMessageInput }) => {
             return;
         }
 
-        // Check if the conversation with the recipient already exists
         const participantIds = [roomChosen.id, currentUser.uid];
-        const conversationQuery = query(collection(db, 'conversations'), where('participantsIds', 'array-contains-any', participantIds));
+        const concatenatedIds = participantIds.join('_');
+        const reversedIds = [...participantIds].reverse().join('_');
+        const existingIds = currentUser.uid + '_' + roomChosen.initiatedBy
+        const existingIdsReverse = roomChosen.initiatedBy + '_' + currentUser.uid
+
+        const conversationQuery = query(
+            collection(db, 'conversations'),
+            where('concatIds', 'in', [concatenatedIds, reversedIds, existingIds, existingIdsReverse]));
+
+        console.log('conversationQuery:', conversationQuery);
+        console.log('participantIds:', participantIds);
+        console.log('currentUser:', currentUser.uid);
+        console.log('roomChosen:', roomChosen.id)
+        console.log('concatenatedIds:', concatenatedIds);
+        console.log('reversedIds:', reversedIds);
+        console.log('existingIds:', existingIds);
+        console.log('existingIdsReverse:', existingIdsReverse);
+
 
         const conversationSnapshot = await getDocs(conversationQuery);
+        console.log('conversationSnapshot:', conversationSnapshot);
         let newMessageRef;
 
         if (conversationSnapshot.empty) {
+            console.log('No conversation found. Creating new one...');
+
             // Create a new conversation document and get the reference
             const conversationRef = doc(collection(db, 'conversations'));
 
@@ -70,6 +98,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                     senderAvatar: currentUser.photoURL,
                 },
                 participantsIds: [roomChosen.id, currentUser.uid],
+                concatIds: [roomChosen.id, currentUser.uid].sort().join('_'),
             };
 
             const messageDoc = {
@@ -86,8 +115,12 @@ const SendMessage = ({ scroll, showMessageInput }) => {
             // Set the message document in the 'messages' sub-collection
             await setDoc(newMessageRef, messageDoc);
         } else {
+            console.log('conversation found... updating existing one...');
             // Get the ID of the existing conversation
             const conversationId = conversationSnapshot.docs[0].id;
+            console.log('conversationId:', conversationId);
+            console.log('conversationSnapshot.docs[0]:', conversationSnapshot.docs[0]);
+            console.log('conversationSnapshot.docs:', conversationSnapshot.docs);
 
             const messageDoc = {
                 message: message,
@@ -114,6 +147,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
         }
 
         setMessage('');
+        setShowButton(false)
         setShouldFetchMessages(true);
         setMessageSent(true)
         if (!showMessageInput) {
@@ -127,12 +161,13 @@ const SendMessage = ({ scroll, showMessageInput }) => {
         showMessageInput(false)
     }
 
-    console.log('showMessenger', showMessenger);
+    // console.log('showMessenger', showMessenger);
 
     return (
-        <>
+        <section className={showMessenger ? 'in-message-input-wrapper' : 'in-post-input-wrapper'}>
             {(!messageSent || showMessenger) && (
-                <form onSubmit={(e) => handleMessageSend(e)} className="send-message">
+                <form onSubmit={(e) => handleMessageSend(e)}
+                    className={showMessenger ? 'in-message-input' : 'in-post-input'}>
                     <label htmlFor="messageInput" hidden>
                         Enter Message
                     </label>
@@ -143,9 +178,13 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                         className="form-input__input"
                         placeholder="type message..."
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        autoComplete="off"
+                        onChange={(e) => handleInputChange(e)}
                     />
-                    <button type="submit" disabled={roomChosen.id === ''}>Send</button>
+                    <button type="submit"
+                        disabled={(roomChosen.id === '' || showButton === false)}
+                        className={'send-btn' + (!showButton ? ' send-btn-disabled' : '')}
+                    ><svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="2.2em" width="2.2em" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 17.707L16.414 12 10.707 6.293 9.293 7.707 13.586 12 9.293 16.293z"></path></svg></button>
                 </form>
             )}
 
@@ -155,7 +194,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
                     <button onClick={() => handleMessagerOpen()} className="open-messager-btn">Messager</button>
                 </div>
             )}
-        </>
+        </section>
     );
 };
 

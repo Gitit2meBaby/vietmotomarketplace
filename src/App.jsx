@@ -6,7 +6,6 @@ import { Routes, Route } from 'react-router-dom'
 import Footer from './components/Footer'
 import Cropper from './components/cropper/Cropper'
 import { useAppContext } from './context';
-import ChatBox from './components/chat/ChatBox'
 import MessageCollection from './components/chat/MessageCollection'
 
 

@@ -83,6 +83,10 @@ body {
     }
 }
 
+.slider-wrapper {
+    position: relative;
+}
+
 .slick-arrow {
     box-shadow: none;
     backdrop-filter: blur(0px);
@@ -161,12 +165,8 @@ body {
 }
 
 .price-wrapper {
-    top: 9rem;
+    bottom: 1.8rem;
     right: .5rem;
-}
-
-.post {
-    position: relative;
 }
 
 .cover {

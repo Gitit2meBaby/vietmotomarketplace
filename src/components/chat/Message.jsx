@@ -32,9 +32,9 @@ const Message = () => {
         }
     }
 
-    console.log("db:", db);
-    console.log("roomChosen.docId:", roomChosen.docId);
-    console.log("roomChosen", roomChosen);
+    // console.log("db:", db);
+    // console.log("roomChosen.docId:", roomChosen.docId);
+    // console.log("roomChosen", roomChosen);
 
     const getMessages = query(
         collection(db, "conversations", roomChosen.docId, "messages"),
@@ -47,7 +47,7 @@ const Message = () => {
 
             querySnapshot.forEach((doc) => {
                 const messages = doc.data();
-                console.log("messages:", messages);
+                // console.log("messages:", messages);
                 if (messages) {
                     newMessageList.push(messages);
                 }
@@ -57,19 +57,19 @@ const Message = () => {
         });
 
         return unsubscribe;
-    }, [shouldFetchMessages]);
+    }, [shouldFetchMessages, roomChosen]);
 
-    console.log("messageList:", messageList);
+    // console.log("messageList:", messageList);
 
 
     return (
-        <div>
+        <div className="message-list">
             {messageList.map(({ message, senderId, recipientId, status, timestamp }) => (
                 <div
                     className={`chat-bubble ${senderId === currentUser.id ? "right" : "left"}`}
                     key={uuidv4()}
                 >
-                    <p className="user-message">{message}</p>
+                    <p>{message}</p>
                     <p className="message-timestamp">
                         {timestamp ? timeDifference(currentTimestamp, timestamp.seconds * 1000) : "Now"}
                     </p>
