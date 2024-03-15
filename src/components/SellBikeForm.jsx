@@ -133,7 +133,7 @@ const SellBikeForm = () => {
                 avatar: currentUser.photoURL,
                 name: currentUser.displayName,
                 type: type,
-                price: price,
+                price: parseFloat(price),
                 model: model,
                 location: location,
                 seller: seller,

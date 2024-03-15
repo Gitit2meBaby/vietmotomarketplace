@@ -11,20 +11,34 @@ import Sorter from './Sorter';
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
-    const { isLoading, setIsLoading, buyOrRent } = useAppContext()
+    const { isLoading, setIsLoading, buyOrRent, direction, orderType, price } = useAppContext();
 
     console.log('bikeList rendered');
 
-    // Initial fetch, should return limit, descending order, set with buyOrRent from global state
-    const fetchFirstListings = async (lastListing) => {
+    // Fetch query, using global state to help sort and filter
+    const fetchListings = async (lastListing) => {
+        console.log('lastListing', lastListing);
         try {
             const listingsCollection = collection(db, 'listings');
-            let listingsQuery = query(listingsCollection,
-                orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), limit(5));
+            let listingsQuery = query(
+                listingsCollection,
+                orderBy(orderType, direction),
+                where('transaction', '==', buyOrRent),
+                // where('price', '>=', price.minPrice),
+                // where('price', '<=', price.maxPrice),
+                limit(5)
+            );
 
             if (lastListing) {
-                listingsQuery = query(listingsCollection,
-                    orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), startAfter(lastListing.createdAt));
+                listingsQuery = query(
+                    listingsCollection,
+                    orderBy(orderType, direction),
+                    where('transaction', '==', buyOrRent),
+                    // where('price', '>=', price.minPrice),
+                    // where('price', '<=', price.maxPrice), 
+                    limit(5),
+                    orderType === 'price' ? startAfter(lastListing.price) : startAfter(lastListing.createdAt),
+                );
             }
 
             const snapshot = await getDocs(listingsQuery);
@@ -34,6 +48,9 @@ const BikeList = () => {
                 ...doc.data(),
             }));
 
+            // console.log('listingsData', listingsData);
+            console.log(orderType, direction);
+
             setListings((prevListings) => [...prevListings, ...listingsData]);
         } catch (error) {
             console.error('Error fetching listings:', error);
@@ -42,13 +59,16 @@ const BikeList = () => {
         }
     };
 
+    // Fetch initial listings
     useEffect(() => {
-        fetchFirstListings();
+        fetchListings();
     }, []);
 
+    // Load more listings
     const handleLoadMore = () => {
+        console.log('listings', listings);
         const lastListing = listings[listings.length - 1];
-        fetchFirstListings(lastListing);
+        fetchListings(lastListing);
     };
 
     if (isLoading) return (
@@ -107,7 +127,7 @@ const BikeList = () => {
 
     return (
         <section>
-            <Sorter />
+            <Sorter fetchListings={fetchListings} setListings={setListings} />
             {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}

@@ -1,30 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppContext } from '../context';
 
-const Sorter = () => {
-    const { buyOrRent, setBuyOrRent, sortBy, setSortBy, location, setLocation, price, setPrice, transmission, setTransmission, newSearch, setNewSearch } = useAppContext();
+const Sorter = ({ fetchListings, setListings }) => {
+    const { buyOrRent, setBuyOrRent, orderType, setOrderType, price, setPrice, location, setLocation, setTransmission, direction, setDirection } = useAppContext();
 
     const [showRefine, setShowRefine] = useState(false);
+    const [newSearch, setNewSearch] = useState(false);
 
-    const handleSortChange = (value) => {
-        setSortBy(value);
+    useEffect(() => {
+        fetchListings(null)
+    }, [newSearch]);
+
+    // const handleSortChange = (value) => {
+    //     const sortType = document.querySelector(`option[value="${value}"]`).getAttribute('data-sort-type');
+    //     console.log('sortType', sortType);
+    //     console.log('value', value);
+    //     if (sortType === "price") {
+    //         handlePriceOrder(value);
+    //         setOrderType('price')
+    //     } else {
+    //         handleTimeOrder(value);
+    //         setOrderType('createdAt')
+    //     }
+    //     console.log('orderType in Function', orderType);
+    //     console.log('direction in Function', direction);
+    //     console.log('sortType in Function', sortType);
+    // };
+
+    const handleSortChange = (value, option) => {
+        if (option === "price") {
+            handlePriceOrder(value);
+            setOrderType('price')
+        } else {
+            handleTimeOrder(value);
+            setOrderType('createdAt')
+        }
+        console.log('orderType in Function', option);
+        console.log('direction in Function', value);
     };
 
+    const handlePriceOrder = (value) => {
+        setDirection(value)
+        setListings([])
+        setNewSearch(!newSearch)
+    }
+
+    const handlePriceRefine = (min, max) => {
+        setPrice({
+            minPrice: min,
+            maxPrice: max
+        })
+        setListings([])
+        setNewSearch(!newSearch)
+    }
+    const handleTimeOrder = (value) => {
+        setDirection(value)
+        setListings([])
+        setNewSearch(!newSearch)
+    }
+
     const handleBuyOrRentChange = (type) => {
-        setBuyOrRent(type);
+        setBuyOrRent(type)
+        setListings([])
+        setNewSearch(!newSearch)
     };
 
     const handleLocationChange = (value) => {
         setLocation(value)
     }
 
-    let minPrice = 0;
-    let maxPrice = 20000000;
-
-    const handlePriceChange = (min, max) => {
+    const handleMinPriceChange = (e) => {
         setPrice({
-            minPrice: min,
-            maxPrice: max
+            ...price,
+            minPrice: e.target.value
+        })
+    }
+
+    const handleMaxPriceChange = (e) => {
+        setPrice({
+            ...price,
+            maxPrice: e.target.value
         })
     }
 
@@ -33,8 +88,8 @@ const Sorter = () => {
     }
 
     const handleFilterBtn = () => {
-        setNewSearch(true);
         setShowRefine(false)
+        setNewSearch(!newSearch)
     }
 
     return (
@@ -43,12 +98,13 @@ const Sorter = () => {
                 <div className="sort-dropdown-wrapper">
                     <label>
                         Sort
-                        <select value={sortBy}
-                            onChange={(e) => handleSortChange(e.target.value)}>
-                            <option value="priceLowHigh">Price (Low to High)</option>
-                            <option value="priceHighLow">Price (High to Low)</option>
-                            <option value="newest">Time (Newest first)</option>
-                            <option value="oldest">Time (Oldest first)</option>
+                        {/* <select onChange={(e) => handleSortChange(e.target.value)}> */}
+                        <select onChange={(e) => handleSortChange(e.target.value, e.target.options[e.target.selectedIndex].getAttribute('data-sort-type'))}>
+
+                            <option value="asc" data-sort-type="price">Price (Low to High)</option>
+                            <option value="desc" data-sort-type="price">Price (High to Low)</option>
+                            <option value="desc" data-sort-type="createdAt">Time (Newest first)</option>
+                            <option value="asc" data-sort-type="createdAt">Time (Oldest first)</option>
                         </select>
                     </label>
                 </div>
@@ -81,7 +137,6 @@ const Sorter = () => {
                         </select>
                     </div>
 
-
                     {(buyOrRent === 'sell') && (
                         <div>
                             <label htmlFor="min">
@@ -90,9 +145,10 @@ const Sorter = () => {
                                     type="number"
                                     id="min"
                                     placeholder="e.g., 2000000"
-                                    value={minPrice}
+                                    value={price.minPrice}
                                     aria-label="Minimum Price"
                                     aria-live="polite"
+                                    onChange={(e) => handleMinPriceChange(e)}
                                 />
                             </label>
 
@@ -102,15 +158,12 @@ const Sorter = () => {
                                     type="number"
                                     id="max"
                                     placeholder="e.g., 80000000"
-                                    value={maxPrice}
+                                    value={price.maxPrice}
                                     aria-label="Maximum Price"
                                     aria-live="polite"
+                                    onChange={(e) => handleMaxPriceChange(e)}
                                 />
                             </label>
-
-                            <button className="set-price-btn" onClick={() => handlePriceChange(minPrice, maxPrice)}>
-                                Set
-                            </button>
                         </div>
                     )}
 
