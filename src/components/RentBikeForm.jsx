@@ -50,6 +50,7 @@ const RentBikeForm = () => {
     // Error states to show tooltips
     const [modelError, setModelError] = useState(false)
     const [imageError, setImageError] = useState(false)
+    const [locationError, setLocationError] = useState(false)
     const [noUpload, setNoUpload] = useState(false)
     const [priceErrors, setPriceErrors] = useState({
         day: false,
@@ -346,6 +347,12 @@ const RentBikeForm = () => {
         });
     };
 
+    // Location Input
+    const handleLocationChange = (e) => {
+        setLocationRental(e.target.value)
+        setLocationError(false)
+    }
+
     // final submission, validations from previous functions and submit to DB
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
@@ -370,6 +377,7 @@ const RentBikeForm = () => {
                 avatar: currentUser.photoURL,
                 name: currentUser.displayName,
                 type: typeRental,
+                price: parseFloat(pricePerDay),
                 pricePerDay: parseFloat(pricePerDay),
                 pricePerWeek: parseFloat(pricePerWeek),
                 pricePerMonth: parseFloat(pricePerMonth),
@@ -606,12 +614,14 @@ const RentBikeForm = () => {
                 <div className="input-wrapper dropdown-wrapper">
                     <label className='main-label' htmlFor="locationRental"
                         value={locationRental}
-                        onClick={() => setShowTootltip(false)}
-                        onChange={(e) => setLocationRental(e.target.value)}
                     >Pick Up Location
                         <select
                             name="location"
-                            id="locationRental">
+                            id="locationRental"
+                            onClick={() => setShowTootltip(false)}
+                            onChange={(e) => handleLocationChange(e)}
+                            aria-label="Select location"
+                        >
                             <option disabled>Please select..</option>
                             <option value="Hanoi">Hanoi</option>
                             <option value="HCMC">HCMC</option>
@@ -622,6 +632,15 @@ const RentBikeForm = () => {
                             <option value="Dalat">Dalat</option>
                         </select>
                     </label>
+
+                    {locationError && (
+                        <>
+                            <div className="pointer location-pointer"></div>
+                            <div className="form-error location-error" role="alert">
+                                <p>Must Include a location.</p>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <div className="checkbox-wrapper">

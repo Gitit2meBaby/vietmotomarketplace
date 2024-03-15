@@ -27,7 +27,6 @@ const SellBikeForm = () => {
     const [type, setType] = useState('');
     const [price, setPrice] = useState('');
     const [localLocation, setLocalLocation] = useState('');
-    const [seller, setSeller] = useState('');
     const [description, setDescription] = useState('')
     const [model, setModel] = useState('')
 
@@ -145,7 +144,6 @@ const SellBikeForm = () => {
                 price: parseFloat(price),
                 model: model,
                 location: localLocation,
-                seller: seller,
                 transaction: 'sell',
                 description: description,
                 phone: phone,
@@ -164,7 +162,6 @@ const SellBikeForm = () => {
             setType('');
             setPrice('');
             setLocalLocation('');
-            setSeller('');
             setModel('')
             setDescription('')
             setPhone('')
@@ -484,14 +481,17 @@ const SellBikeForm = () => {
                     </div>
 
                     <div className="input-wrapper dropdown-wrapper">
-                        <label className='main-label' htmlFor="location"
-                            value={location}
-                            onChange={(e) => handleLocationChange(e)}
-                            onClick={() => setShowTootltip(false)}
-                            ref={locationInputRef}
-                        >Location
-                            <select name="location" id="location">
-                                <option disabled selected>Please select..</option>
+                        <label className='main-label' htmlFor="location" ref={locationInputRef}>
+                            Location
+                            <select
+                                name="location"
+                                id="location"
+                                value={location}
+                                onChange={(e) => handleLocationChange(e)}
+                                onClick={() => setShowTootltip(false)}
+                                aria-label="Select location"
+                            >
+                                <option value="">Please select..</option>
                                 <option value="Hanoi">Hanoi</option>
                                 <option value="HCMC">HCMC</option>
                                 <option value="Danang">Danang</option>
@@ -502,6 +502,7 @@ const SellBikeForm = () => {
                             </select>
                         </label>
 
+
                         {locationError && (
                             <>
                                 <div className="pointer location-pointer"></div>
@@ -509,7 +510,8 @@ const SellBikeForm = () => {
                                     <p>Must Include a location.</p>
                                 </div>
                             </>
-                        )}                    </div>
+                        )}
+                    </div>
 
                     <div className='radio-wrapper'>
                         <label className='main-label'>Transmission</label>
@@ -545,33 +547,6 @@ const SellBikeForm = () => {
                                     onChange={(e) => setType(e.target.value)}
                                 />
                                 Manual
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="radio-wrapper">
-                        <label className='main-label'>Seller</label>
-                        <div>
-                            <label className='small-label'>
-                                <input
-                                    name='seller'
-                                    type="radio"
-                                    value="private"
-                                    onChange={(e) => setSeller(e.target.value)}
-                                />
-                                Private
-                            </label>
-                        </div>
-
-                        <div>
-                            <label className='small-label'>
-                                <input
-                                    name='seller'
-                                    type="radio"
-                                    value="business"
-                                    onChange={(e) => setSeller(e.target.value)}
-                                />
-                                Business
                             </label>
                         </div>
                     </div>
@@ -798,7 +773,6 @@ const SellBikeForm = () => {
                         type={type}
                         price={formatPrice(price)}
                         location={location}
-                        seller={seller}
                         description={description}
                         phone={phone}
                         whatsapp={whatsapp}

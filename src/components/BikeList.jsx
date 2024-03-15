@@ -24,7 +24,7 @@ const BikeList = () => {
                 listingsCollection,
                 orderBy(orderType, direction),
                 where('transaction', '==', buyOrRent),
-                location === null ? where('location', '==', '') : where('location', '==', location),
+                ...(location ? [where('location', '==', location)] : []),
                 // where('price', '>=', price.minPrice),
                 // where('price', '<=', price.maxPrice),
                 limit(5)
@@ -35,7 +35,7 @@ const BikeList = () => {
                     listingsCollection,
                     orderBy(orderType, direction),
                     where('transaction', '==', buyOrRent),
-                    location === '' ? where('location', '==', '') : where('location', '==', location),
+                    ...(location ? [where('location', '==', location)] : []),
                     // where('price', '>=', price.minPrice),
                     // where('price', '<=', price.maxPrice), 
                     limit(5),
@@ -91,7 +91,6 @@ const BikeList = () => {
                         <p>Hanoi</p>
                         <div>
                             <p className='type manual'>manual</p>
-                            <p className='seller private'>private</p>
                         </div>
                     </div>
                     <p>Well serviced and maintained bike, selling due to moving to a different...</p>
@@ -117,7 +116,6 @@ const BikeList = () => {
                         <p>Danang</p>
                         <div>
                             <p className='type automatic'>automatic</p>
-                            <p className='seller private'>private</p>
                         </div>
                     </div>
                     <p>Beautiful bike that has given me no issues over the past 3 months of riding between...</p>
@@ -130,7 +128,7 @@ const BikeList = () => {
     return (
         <section>
             <Sorter fetchListings={fetchListings} setListings={setListings} />
-            {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
+            {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}
                     id={id}
@@ -143,7 +141,6 @@ const BikeList = () => {
                     price={price}
                     location={location}
                     locationRental={locationRental}
-                    seller={seller}
                     description={description}
                     descriptionRental={descriptionRental}
                     phone={phone}
