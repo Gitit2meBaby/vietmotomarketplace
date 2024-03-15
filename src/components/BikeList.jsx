@@ -11,7 +11,7 @@ import Sorter from './Sorter';
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
-    const { isLoading, setIsLoading, buyOrRent, direction, orderType, price } = useAppContext();
+    const { isLoading, setIsLoading, buyOrRent, direction, orderType, price, location } = useAppContext();
 
     console.log('bikeList rendered');
 
@@ -24,6 +24,7 @@ const BikeList = () => {
                 listingsCollection,
                 orderBy(orderType, direction),
                 where('transaction', '==', buyOrRent),
+                location === null ? where('location', '==', '') : where('location', '==', location),
                 // where('price', '>=', price.minPrice),
                 // where('price', '<=', price.maxPrice),
                 limit(5)
@@ -34,6 +35,7 @@ const BikeList = () => {
                     listingsCollection,
                     orderBy(orderType, direction),
                     where('transaction', '==', buyOrRent),
+                    location === '' ? where('location', '==', '') : where('location', '==', location),
                     // where('price', '>=', price.minPrice),
                     // where('price', '<=', price.maxPrice), 
                     limit(5),

@@ -11,22 +11,7 @@ const Sorter = ({ fetchListings, setListings }) => {
         fetchListings(null)
     }, [newSearch]);
 
-    // const handleSortChange = (value) => {
-    //     const sortType = document.querySelector(`option[value="${value}"]`).getAttribute('data-sort-type');
-    //     console.log('sortType', sortType);
-    //     console.log('value', value);
-    //     if (sortType === "price") {
-    //         handlePriceOrder(value);
-    //         setOrderType('price')
-    //     } else {
-    //         handleTimeOrder(value);
-    //         setOrderType('createdAt')
-    //     }
-    //     console.log('orderType in Function', orderType);
-    //     console.log('direction in Function', direction);
-    //     console.log('sortType in Function', sortType);
-    // };
-
+    // takes in value(asc or desc) and option(price or createdAt) from dropdown
     const handleSortChange = (value, option) => {
         if (option === "price") {
             handlePriceOrder(value);
@@ -35,8 +20,8 @@ const Sorter = ({ fetchListings, setListings }) => {
             handleTimeOrder(value);
             setOrderType('createdAt')
         }
-        console.log('orderType in Function', option);
-        console.log('direction in Function', value);
+        // console.log('orderType in Function', option);
+        // console.log('direction in Function', value);
     };
 
     const handlePriceOrder = (value) => {
@@ -45,14 +30,6 @@ const Sorter = ({ fetchListings, setListings }) => {
         setNewSearch(!newSearch)
     }
 
-    const handlePriceRefine = (min, max) => {
-        setPrice({
-            minPrice: min,
-            maxPrice: max
-        })
-        setListings([])
-        setNewSearch(!newSearch)
-    }
     const handleTimeOrder = (value) => {
         setDirection(value)
         setListings([])
@@ -89,6 +66,7 @@ const Sorter = ({ fetchListings, setListings }) => {
 
     const handleFilterBtn = () => {
         setShowRefine(false)
+        setListings([])
         setNewSearch(!newSearch)
     }
 
@@ -98,7 +76,6 @@ const Sorter = ({ fetchListings, setListings }) => {
                 <div className="sort-dropdown-wrapper">
                     <label>
                         Sort
-                        {/* <select onChange={(e) => handleSortChange(e.target.value)}> */}
                         <select onChange={(e) => handleSortChange(e.target.value, e.target.options[e.target.selectedIndex].getAttribute('data-sort-type'))}>
 
                             <option value="asc" data-sort-type="price">Price (Low to High)</option>
@@ -127,13 +104,13 @@ const Sorter = ({ fetchListings, setListings }) => {
                             value={location}
                             onChange={(e) => handleLocationChange(e.target.value)}
                         >
-                            <option value="hcmc">HCMC</option>
-                            <option value="hanoi">Hanoi</option>
-                            <option value="danang">Danang</option>
-                            <option value="dalat">Dalat</option>
-                            <option value="hoi an">Hoi An</option>
-                            <option value="mui ne">Mui Ne</option>
-                            <option value="nha trang">Nha Trang</option>
+                            <option value="HCMC">HCMC</option>
+                            <option value="Hanoi">Hanoi</option>
+                            <option value="Danang">Danang</option>
+                            <option value="Dalat">Dalat</option>
+                            <option value="Hoi An">Hoi An</option>
+                            <option value="Mui Ne">Mui Ne</option>
+                            <option value="Nha Trang">Nha Trang</option>
                         </select>
                     </div>
 

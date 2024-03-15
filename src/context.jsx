@@ -25,7 +25,7 @@ const AppProvider = ({ children }) => {
     const [buyOrRent, setBuyOrRent] = useState('sell')
     const [direction, setDirection] = useState('desc')
     const [orderType, setOrderType] = useState('createdAt')
-    const [location, setLocation] = useState('')
+    const [location, setLocation] = useState(null)
     const [price, setPrice] = useState({
         minPrice: 0,
         maxPrice: 50000000000,
