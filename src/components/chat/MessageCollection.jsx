@@ -62,8 +62,6 @@ const MessageCollection = () => {
                         senderAvatar: roomData.participants.senderAvatar,
                     },
                 });
-
-                // console.log('roomData.lastMessage.timestamp', roomData.lastMessage.timestamp);
             });
             setUserRooms(rooms);
 

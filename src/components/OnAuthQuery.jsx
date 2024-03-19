@@ -17,7 +17,7 @@ const OnAuthQuery = () => {
     useEffect(() => {
         if (currentUser && currentUser.uid) {
             const getUnreadConversations = query(
-                collection(db, "conversations"),
+                collection(db, "conversations",),
                 where('participantIds', 'array-contains', currentUser.uid)
             );
 
@@ -29,7 +29,8 @@ const OnAuthQuery = () => {
                 for (const doc of querySnapshot.docs) {
                     // Use collectionGroup for messages subcollection
                     const messagesRef = collectionGroup(db, 'messages');
-                    const messagesQuery = query(messagesRef, where('status', '==', 'sent'), where('conversationId', '==', doc.id));
+                    const messagesQuery = query(messagesRef,
+                    )
 
                     console.log("messagesQuery:", messagesQuery);
 
@@ -43,11 +44,12 @@ const OnAuthQuery = () => {
                 }
 
                 setNewMessages(messages);
+                console.log("newMessages:", newMessages);
             });
 
             return unsubscribe;
         }
-    }, [currentUser]);
+    }, []);
 
     useEffect(() => {
         console.log("newMessages Updated:", newMessages);

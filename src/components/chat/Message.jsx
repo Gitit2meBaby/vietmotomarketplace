@@ -62,7 +62,7 @@ const Message = () => {
         return unsubscribe;
     }, [shouldFetchMessages, roomChosen]);
 
-    // console.log("messageList:", messageList);
+    console.log("messageList:", messageList);
 
 
     return (
@@ -74,7 +74,7 @@ const Message = () => {
                 >
                     <p>{message}</p>
                     <p className="message-timestamp">
-                        {timestamp ? timeDifference(currentTimestamp, timestamp.seconds * 1000) : "Now"}
+                        {timestamp && timestamp.seconds ? timeDifference(currentTimestamp, timestamp.seconds * 1000) : "Now"}
                     </p>
                 </div>
 

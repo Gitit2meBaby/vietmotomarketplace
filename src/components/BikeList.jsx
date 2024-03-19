@@ -11,7 +11,7 @@ import Sorter from './Sorter';
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
-    const { isLoading, setIsLoading, buyOrRent, direction, orderType, price, location } = useAppContext();
+    const { isLoading, setIsLoading, buyOrRent, direction, orderType, location } = useAppContext();
 
     console.log('bikeList rendered');
 
@@ -25,8 +25,6 @@ const BikeList = () => {
                 orderBy(orderType, direction),
                 where('transaction', '==', buyOrRent),
                 ...(location ? [where('location', '==', location)] : []),
-                // where('price', '>=', price.minPrice),
-                // where('price', '<=', price.maxPrice),
                 limit(5)
             );
 
@@ -36,8 +34,6 @@ const BikeList = () => {
                     orderBy(orderType, direction),
                     where('transaction', '==', buyOrRent),
                     ...(location ? [where('location', '==', location)] : []),
-                    // where('price', '>=', price.minPrice),
-                    // where('price', '<=', price.maxPrice), 
                     limit(5),
                     orderType === 'price' ? startAfter(lastListing.price) : startAfter(lastListing.createdAt),
                 );
@@ -82,7 +78,7 @@ const BikeList = () => {
                     </div>
                     <img src={loadingImg} alt="motorbike" />
                     <div className="price-wrapper">
-                        <p>17,000,000₫</p>
+                        <p>₫17mil</p>
                     </div>
                 </div>
                 <div className="post-content">
@@ -107,7 +103,7 @@ const BikeList = () => {
                     </div>
                     <img src={loadingImg2} alt="motorbike" />
                     <div className="price-wrapper">
-                        <p>9,000,000₫</p>
+                        <p>₫9mill</p>
                     </div>
                 </div>
                 <div className="post-content">
