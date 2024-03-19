@@ -377,15 +377,6 @@
         cursor: pointer;
     }
 
-    // input[type='file'],
-    // button {
-    //     border: none;
-    //     border-radius: .3rem;
-    //     margin: 0.1rem;
-    //     @extend %glass;
-    //     cursor: pointer;
-    // }
-
     .final-form-btns {
         display: flex;
         justify-content: space-around;
@@ -447,6 +438,16 @@
     .currency-pointer {
         bottom: .6rem;
         right: 15.5rem;
+    }
+
+    .location-error {
+        bottom: -1.7rem;
+        right: 3rem;
+    }
+
+    .location-pointer {
+        bottom: 0.1rem;
+        right: 12rem;
     }
 
     .image-error {

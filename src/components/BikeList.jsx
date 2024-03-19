@@ -7,20 +7,36 @@ import { useAppContext } from '../context';
 import loadingImg from '../assets/loadingImg.webp'
 import loadingImg2 from '../assets/loadingImg2.webp'
 import spinner from '../assets/spinner.gif'
+import Sorter from './Sorter';
 
 const BikeList = () => {
     const [listings, setListings] = useState([]);
-    const { isLoading, setIsLoading, buyOrRent } = useAppContext()
+    const { isLoading, setIsLoading, buyOrRent, direction, orderType, location } = useAppContext();
 
+    console.log('bikeList rendered');
+
+    // Fetch query, using global state to help sort and filter
     const fetchListings = async (lastListing) => {
+        console.log('lastListing', lastListing);
         try {
             const listingsCollection = collection(db, 'listings');
-            let listingsQuery = query(listingsCollection,
-                orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), limit(5));
+            let listingsQuery = query(
+                listingsCollection,
+                orderBy(orderType, direction),
+                where('transaction', '==', buyOrRent),
+                ...(location ? [where('location', '==', location)] : []),
+                limit(5)
+            );
 
             if (lastListing) {
-                listingsQuery = query(listingsCollection,
-                    orderBy('createdAt', 'desc'), where('transaction', '==', buyOrRent), startAfter(lastListing.createdAt));
+                listingsQuery = query(
+                    listingsCollection,
+                    orderBy(orderType, direction),
+                    where('transaction', '==', buyOrRent),
+                    ...(location ? [where('location', '==', location)] : []),
+                    limit(5),
+                    orderType === 'price' ? startAfter(lastListing.price) : startAfter(lastListing.createdAt),
+                );
             }
 
             const snapshot = await getDocs(listingsQuery);
@@ -30,6 +46,9 @@ const BikeList = () => {
                 ...doc.data(),
             }));
 
+            // console.log('listingsData', listingsData);
+            console.log(orderType, direction);
+
             setListings((prevListings) => [...prevListings, ...listingsData]);
         } catch (error) {
             console.error('Error fetching listings:', error);
@@ -38,11 +57,14 @@ const BikeList = () => {
         }
     };
 
+    // Fetch initial listings
     useEffect(() => {
         fetchListings();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
+    // Load more listings
     const handleLoadMore = () => {
+        console.log('listings', listings);
         const lastListing = listings[listings.length - 1];
         fetchListings(lastListing);
     };
@@ -56,7 +78,7 @@ const BikeList = () => {
                     </div>
                     <img src={loadingImg} alt="motorbike" />
                     <div className="price-wrapper">
-                        <p>17,000,000₫</p>
+                        <p>₫17mil</p>
                     </div>
                 </div>
                 <div className="post-content">
@@ -65,7 +87,6 @@ const BikeList = () => {
                         <p>Hanoi</p>
                         <div>
                             <p className='type manual'>manual</p>
-                            <p className='seller private'>private</p>
                         </div>
                     </div>
                     <p>Well serviced and maintained bike, selling due to moving to a different...</p>
@@ -82,7 +103,7 @@ const BikeList = () => {
                     </div>
                     <img src={loadingImg2} alt="motorbike" />
                     <div className="price-wrapper">
-                        <p>9,000,000₫</p>
+                        <p>₫9mill</p>
                     </div>
                 </div>
                 <div className="post-content">
@@ -91,7 +112,6 @@ const BikeList = () => {
                         <p>Danang</p>
                         <div>
                             <p className='type automatic'>automatic</p>
-                            <p className='seller private'>private</p>
                         </div>
                     </div>
                     <p>Beautiful bike that has given me no issues over the past 3 months of riding between...</p>
@@ -101,10 +121,10 @@ const BikeList = () => {
         </>
     )
 
-
     return (
         <section>
-            {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, seller, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
+            <Sorter fetchListings={fetchListings} setListings={setListings} />
+            {listings.map(({ id, userId, avatar, name, postID, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, description, descriptionRental, model, modelRental, dropLocationRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, phone, whatsapp, facebook, zalo, website, address, }) => (
                 <Post
                     key={id}
                     id={id}
@@ -117,7 +137,6 @@ const BikeList = () => {
                     price={price}
                     location={location}
                     locationRental={locationRental}
-                    seller={seller}
                     description={description}
                     descriptionRental={descriptionRental}
                     phone={phone}

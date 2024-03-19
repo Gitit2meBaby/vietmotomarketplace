@@ -39,6 +39,7 @@ const SendMessage = ({ scroll, showMessageInput }) => {
             return;
         }
 
+        // Need to check all these variables to find just one document per user to user message room
         const participantIds = [roomChosen.id, currentUser.uid];
         const concatenatedIds = participantIds.join('_');
         const reversedIds = [...participantIds].reverse().join('_');
@@ -49,14 +50,14 @@ const SendMessage = ({ scroll, showMessageInput }) => {
             collection(db, 'conversations'),
             where('concatIds', 'in', [concatenatedIds, reversedIds, existingIds, existingIdsReverse]));
 
-        console.log('conversationQuery:', conversationQuery);
-        console.log('participantIds:', participantIds);
-        console.log('currentUser:', currentUser.uid);
-        console.log('roomChosen:', roomChosen.id)
-        console.log('concatenatedIds:', concatenatedIds);
-        console.log('reversedIds:', reversedIds);
-        console.log('existingIds:', existingIds);
-        console.log('existingIdsReverse:', existingIdsReverse);
+        // console.log('conversationQuery:', conversationQuery);
+        // console.log('participantIds:', participantIds);
+        // console.log('currentUser:', currentUser.uid);
+        // console.log('roomChosen:', roomChosen.id)
+        // console.log('concatenatedIds:', concatenatedIds);
+        // console.log('reversedIds:', reversedIds);
+        // console.log('existingIds:', existingIds);
+        // console.log('existingIdsReverse:', existingIdsReverse);
 
 
         const conversationSnapshot = await getDocs(conversationQuery);

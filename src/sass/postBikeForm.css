@@ -372,6 +372,14 @@
   bottom: 0.6rem;
   right: 15.5rem;
 }
+.post-page .location-error {
+  bottom: -1.7rem;
+  right: 3rem;
+}
+.post-page .location-pointer {
+  bottom: 0.1rem;
+  right: 12rem;
+}
 .post-page .image-error {
   bottom: 2.5rem;
   right: 5.5rem;

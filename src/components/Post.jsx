@@ -17,7 +17,7 @@ import { getStorage, ref, deleteObject, getMetadata } from "firebase/storage";
 import SendMessage from './chat/SendMessage';
 
 
-const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, seller, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, }) => {
+const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pricePerDay, pricePerWeek, pricePerMonth, location, locationRental, dropLocation, description, descriptionRental, phone, whatsapp, facebook, zalo, website, address, model, modelRental, featureRentalImageUpload, secondRentalImageUpload, thirdRentalImageUpload, featureImage, secondImage, thirdImage, createdAt, }) => {
 
     const { isLoggedIn, currentUser, setIsAuthOpen, roomChosen, setRoomChosen, showMessenger, setShowMessenger } = useAppContext();
     const [showMore, setShowMore] = useState(false)
@@ -218,9 +218,6 @@ const Post = ({ id, userId, avatar, name, postId, transaction, type, price, pric
                         {(type != '') && (
                             <p className={`type ${type === 'automatic' ? 'automatic' : type === 'manual' ? 'manual' : 'semi'}`}>{type}</p>
                         )}
-                        {(seller != '') && (
-                            <p className={`seller ${seller === 'private' ? 'private' : 'business'}`}>{seller}</p>
-                        )}
                     </div>
                 </div>
 
@@ -390,7 +387,6 @@ Post.propTypes = {
     type: PropTypes.string,
     price: PropTypes.string,
     location: PropTypes.string,
-    seller: PropTypes.string,
     description: PropTypes.string,
     contact: PropTypes.string,
     model: PropTypes.string,

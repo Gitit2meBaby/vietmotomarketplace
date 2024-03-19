@@ -26,8 +26,7 @@ const SellBikeForm = () => {
     // states to be passed to firestore DB
     const [type, setType] = useState('');
     const [price, setPrice] = useState('');
-    const [location, setLocation] = useState('');
-    const [seller, setSeller] = useState('');
+    const [localLocation, setLocalLocation] = useState('');
     const [description, setDescription] = useState('')
     const [model, setModel] = useState('')
 
@@ -45,6 +44,7 @@ const SellBikeForm = () => {
     const [modelError, setModelError] = useState(false)
     const [imageError, setImageError] = useState(false)
     const [noUpload, setNoUpload] = useState(false)
+    const [locationError, setLocationError] = useState(false)
 
     // information tooltips
     const [showTooltip, setShowTootltip] = useState(false)
@@ -71,6 +71,7 @@ const SellBikeForm = () => {
     // refs used for scrollTo after errors
     const modelInputRef = useRef(null);
     const priceInputRef = useRef(null);
+    const locationInputRef = useRef(null);
 
     // clear the url array required if same user makes multiple posts, reset submission state, create a new postId
     useEffect(() => {
@@ -110,6 +111,12 @@ const SellBikeForm = () => {
         setModelError(false)
     }
 
+    // Location Input
+    const handleLocationChange = (e) => {
+        setLocalLocation(e.target.value)
+        setLocationError(false)
+    }
+
     // Final submission function
     const handleSaleSubmit = async (e) => {
         e.preventDefault();
@@ -117,8 +124,9 @@ const SellBikeForm = () => {
         const isModelValid = checkModelField();
         const isUpload = checkNoUpload()
         const isImageValid = checkImageField();
+        const isLocationValid = checkLocationField();
 
-        if (!isPriceValid || !isModelValid || !isImageValid || !isUpload) {
+        if (!isPriceValid || !isModelValid || !isImageValid || !isUpload || !isLocationValid) {
             return;
         }
 
@@ -133,10 +141,9 @@ const SellBikeForm = () => {
                 avatar: currentUser.photoURL,
                 name: currentUser.displayName,
                 type: type,
-                price: price,
+                price: parseFloat(price),
                 model: model,
-                location: location,
-                seller: seller,
+                location: localLocation,
                 transaction: 'sell',
                 description: description,
                 phone: phone,
@@ -154,8 +161,7 @@ const SellBikeForm = () => {
             // Clear form fields after successful submission
             setType('');
             setPrice('');
-            setLocation('');
-            setSeller('');
+            setLocalLocation('');
             setModel('')
             setDescription('')
             setPhone('')
@@ -208,6 +214,14 @@ const SellBikeForm = () => {
         return true;
     };
 
+    const checkLocationField = () => {
+        if (localLocation === '') {
+            setLocationError(true);
+            return false;
+        }
+        return true;
+    };
+
     // scroll to errors
     useEffect(() => {
         if (modelError) {
@@ -239,9 +253,17 @@ const SellBikeForm = () => {
             });
 
             priceInputRef.current.focus();
+        } else if (locationError) {
+            const locationOffsetTop = locationInputRef.current.getBoundingClientRect().top + window.scrollY;
+
+            window.scrollTo({
+                top: locationOffsetTop,
+                behavior: 'smooth',
+            });
         }
         setSubmitting(false);
-    }, [modelError, priceError, currencyError, submitting]);
+    }, [modelError, priceError, currencyError, submitting, locationError]);
+
 
     // Make the filenames short enough to not force a second line
     const truncateFileName = (fileName, charLimit) => {
@@ -459,13 +481,17 @@ const SellBikeForm = () => {
                     </div>
 
                     <div className="input-wrapper dropdown-wrapper">
-                        <label className='main-label' htmlFor="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            onClick={() => setShowTootltip(false)}
-                        >Location
-                            <select name="location" id="location">
-                                <option disabled selected>Please select..</option>
+                        <label className='main-label' htmlFor="location" ref={locationInputRef}>
+                            Location
+                            <select
+                                name="location"
+                                id="location"
+                                value={location}
+                                onChange={(e) => handleLocationChange(e)}
+                                onClick={() => setShowTootltip(false)}
+                                aria-label="Select location"
+                            >
+                                <option value="">Please select..</option>
                                 <option value="Hanoi">Hanoi</option>
                                 <option value="HCMC">HCMC</option>
                                 <option value="Danang">Danang</option>
@@ -475,6 +501,16 @@ const SellBikeForm = () => {
                                 <option value="Dalat">Dalat</option>
                             </select>
                         </label>
+
+
+                        {locationError && (
+                            <>
+                                <div className="pointer location-pointer"></div>
+                                <div className="form-error location-error" role="alert">
+                                    <p>Must Include a location.</p>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className='radio-wrapper'>
@@ -511,33 +547,6 @@ const SellBikeForm = () => {
                                     onChange={(e) => setType(e.target.value)}
                                 />
                                 Manual
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="radio-wrapper">
-                        <label className='main-label'>Seller</label>
-                        <div>
-                            <label className='small-label'>
-                                <input
-                                    name='seller'
-                                    type="radio"
-                                    value="private"
-                                    onChange={(e) => setSeller(e.target.value)}
-                                />
-                                Private
-                            </label>
-                        </div>
-
-                        <div>
-                            <label className='small-label'>
-                                <input
-                                    name='seller'
-                                    type="radio"
-                                    value="business"
-                                    onChange={(e) => setSeller(e.target.value)}
-                                />
-                                Business
                             </label>
                         </div>
                     </div>
@@ -764,7 +773,6 @@ const SellBikeForm = () => {
                         type={type}
                         price={formatPrice(price)}
                         location={location}
-                        seller={seller}
                         description={description}
                         phone={phone}
                         whatsapp={whatsapp}

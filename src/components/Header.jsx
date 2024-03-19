@@ -11,6 +11,8 @@ const Header = () => {
     const { isLoggedIn, setIsAuthOpen, buyOrRent, setBuyOrRent, setShowMessenger } = useAppContext();
     const [activeLink, setActiveLink] = useState(null);
 
+    console.log('header rendered');
+
     const navStyles = {
         opacity: navOpen ? 1 : 0,
         transform: navOpen ? 'translateX(0)' : 'translateX(-100%)',
@@ -45,8 +47,6 @@ const Header = () => {
         setNavOpen(false);
         setBuyOrRent(offer);
         setActiveLink(link);
-        console.log('activeLink:', activeLink);
-        console.log('sellOrRent:', buyOrRent);
     };
 
     const handleMessageClick = (link) => {
@@ -55,10 +55,10 @@ const Header = () => {
         setShowMessenger(true)
     }
 
-    useEffect(() => {
-        console.log('activeLink:', activeLink);
-        console.log('sellOrRent:', buyOrRent);
-    }, [activeLink, buyOrRent]);
+    // useEffect(() => {
+    //     console.log('activeLink:', activeLink);
+    //     console.log('sellOrRent:', buyOrRent);
+    // }, [activeLink, buyOrRent]);
 
     return (
         <header className='header'>
@@ -79,7 +79,7 @@ const Header = () => {
                     className={activeLink === '/' ? 'active-link' : ''}
                     to="/">Home</Link>
 
-                <Link onClick={() => handleListClick("/list", "buy")}
+                <Link onClick={() => handleListClick("/list", "sell")}
                     style={{ ...navItemStyles, transitionDelay: '0.4s' }}
                     className={(activeLink === '/list' && buyOrRent === 'buy') ? 'active-link' : ''}
                     to="/list">Buy</Link>

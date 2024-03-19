@@ -21,6 +21,8 @@ const MessageCollection = () => {
     const scroll = useRef();
     const messageInputRef = useRef();
 
+    console.log('Message Collection rendered');
+
     // check for any conversations that contain the current user
     const getRooms = query(
         collection(db, "conversations"),
@@ -60,8 +62,6 @@ const MessageCollection = () => {
                         senderAvatar: roomData.participants.senderAvatar,
                     },
                 });
-
-                // console.log('roomData.lastMessage.timestamp', roomData.lastMessage.timestamp);
             });
             setUserRooms(rooms);
 

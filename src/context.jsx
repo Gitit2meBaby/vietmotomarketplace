@@ -21,9 +21,16 @@ const AppProvider = ({ children }) => {
     })
     const [shouldFetchMessages, setShouldFetchMessages] = useState(false);
 
-
-
+    // Query filters with Sorter
     const [buyOrRent, setBuyOrRent] = useState('sell')
+    const [direction, setDirection] = useState('desc')
+    const [orderType, setOrderType] = useState('createdAt')
+    const [location, setLocation] = useState(null)
+    const [price, setPrice] = useState({
+        minPrice: 0,
+        maxPrice: 50000000000,
+    })
+    const [transmission, setTransmission] = useState('')
 
     // image cropper, store files to edit before sending to firebase
     const [cropper, setCropper] = useState(false)
@@ -44,7 +51,7 @@ const AppProvider = ({ children }) => {
             isLoading, setIsLoading,
             imageUrls, setImageUrls,
             cropper, setCropper,
-            setChosenImage, chosenImage,
+            chosenImage, setChosenImage,
             avatarImageUpload, setAvatarImageUpload,
             featureImageUpload, setFeatureImageUpload,
             secondImageUpload, setSecondImageUpload,
@@ -57,6 +64,11 @@ const AppProvider = ({ children }) => {
             showMessenger, setShowMessenger,
             roomChosen, setRoomChosen,
             shouldFetchMessages, setShouldFetchMessages,
+            direction, setDirection,
+            location, setLocation,
+            price, setPrice,
+            transmission, setTransmission,
+            orderType, setOrderType
         }}>
             {children}
         </AppContext.Provider>
